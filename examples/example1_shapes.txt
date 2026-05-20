@@ -1,0 +1,11 @@
+var y_1 3
+var y_2 3
+var y_3 2
+
+ordering y_1 y_2 y_3
+
+# big -> circle   (i.e. shape is circle OR size is small)
+[0]:y_2 or [0]:y_3
+
+# yellow -> circle   (i.e. shape is circle OR colour is red/blue)
+[0]:y_2 or [1,2]:y_1

@@ -1,0 +1,39 @@
+# Resolution demonstration.
+#
+# This constraint set is the smallest case where Algorithm 1 COMPILE
+# derives a real RESOLVENT — a clause that is logically implied by the
+# input set but is not literally present in it.
+#
+# Variables (all binary, domain = {0, 1}):
+#   y_1, y_2, y_3
+#
+# Background knowledge in natural language:
+#   C1: if y_1 = 1 then y_3 = 0
+#   C2: if y_2 = 1 then y_3 = 1
+#
+# Logical consequence: if y_1 = 1 AND y_2 = 1, then y_3 would have to be
+# both 0 and 1 — impossible. So the assignment (y_1=1, y_2=1, _) cannot
+# satisfy Pi. Equivalently:
+#
+#     y_1 = 0  OR  y_2 = 0
+#
+# That implication is *not* in the input but follows from C1 and C2.
+# Algorithm 1 COMPILE derives it at the binary conflict on y_3 (where
+# C1's y_3-literal {0} and C2's y_3-literal {1} intersect to empty)
+# and places the resolvent in Pi_bar_2.
+#
+# Expected compiled output:
+#
+#     Pi_bar_1 = []
+#     Pi_bar_2 = [ [0]:y_1 or [0]:y_2 ]                 # <-- RESOLVENT
+#     Pi_bar_3 = [ [0]:y_3 or [0]:y_1 ,
+#                  [1]:y_3 or [0]:y_2 ]                 # originals
+
+var y_1 2
+var y_2 2
+var y_3 2
+
+ordering y_1 y_2 y_3
+
+[0]:y_3 or [0]:y_1
+[1]:y_3 or [0]:y_2

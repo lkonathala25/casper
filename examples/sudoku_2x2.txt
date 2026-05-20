@@ -1,0 +1,38 @@
+# 2x2 Sudoku (Latin square, no boxes).
+#
+# Grid layout (4 binary cells, indexed row-major):
+#
+#     y_1  y_2
+#     y_3  y_4
+#
+# Each cell takes a value in {0, 1}.
+#
+# Constraints: every row and every column has distinct values.
+#   Row 0:  y_1 != y_2        Row 1:  y_3 != y_4
+#   Col 0:  y_1 != y_3        Col 1:  y_2 != y_4
+#
+# Two valid solutions:
+#     y = (0, 1, 1, 0)        y = (1, 0, 0, 1)
+
+var y_1 2
+var y_2 2
+var y_3 2
+var y_4 2
+
+ordering y_1 y_2 y_3 y_4
+
+# Row 0: y_1 != y_2
+[0]:y_1 or [0]:y_2
+[1]:y_1 or [1]:y_2
+
+# Row 1: y_3 != y_4
+[0]:y_3 or [0]:y_4
+[1]:y_3 or [1]:y_4
+
+# Col 0: y_1 != y_3
+[0]:y_1 or [0]:y_3
+[1]:y_1 or [1]:y_3
+
+# Col 1: y_2 != y_4
+[0]:y_2 or [0]:y_4
+[1]:y_2 or [1]:y_4

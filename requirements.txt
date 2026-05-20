@@ -1,0 +1,7 @@
+torch>=2.0
+torchvision>=0.15
+numpy>=1.23
+tqdm>=4.65
+cvxpy>=1.4
+cvxpylayers>=0.1.6
+scs>=3.2
