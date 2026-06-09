@@ -85,6 +85,37 @@ class Constraints:
         return cls(_impl=ClauseFeasibility(compiled))
 
     @classmethod
+    def from_compiled_dsl(cls, path: str | Path) -> "Constraints":
+        """Load a DSL file that's the flattened output of a prior compile,
+        WITHOUT re-running elimination.
+
+        Reconstructs `per_var_clauses` by partitioning each parsed clause into
+        the step bucket where it was live: step = max(step_of[v] for v in
+        clause.variables), where step_of comes from the file's `ordering`
+        directive (ordering[i] is the variable eliminated at step i).
+        """
+        path = Path(path)
+        cs = parse_constraints(path.read_text())
+        n = len(cs.var_names)
+        step_of = {v: i for i, v in enumerate(cs.ordering)}
+
+        per_var_clauses: list[list] = [[] for _ in range(n)]
+        for clause in cs.clauses:
+            if not clause.literals:
+                continue
+            step = max(step_of[v] for v in clause.variables)
+            per_var_clauses[step].append(clause)
+
+        cc = CompiledConstraints(
+            var_names=list(cs.var_names),
+            var_domains=list(cs.var_domains),
+            ordering=list(cs.ordering),
+            per_var_clauses=per_var_clauses,
+            value_base=cs.value_base,
+        )
+        return cls(_impl=ClauseFeasibility(cc))
+
+    @classmethod
     def from_function(
         cls,
         fn: Callable[[int, dict[int, int], int], "Iterable[int]"],

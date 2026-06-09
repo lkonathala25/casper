@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import time
+from collections import defaultdict
 from dataclasses import dataclass
 from itertools import combinations
 from math import comb
@@ -33,6 +34,7 @@ class CompiledConstraints:
     var_domains: list[int]
     ordering: list[int]
     per_var_clauses: list[list[SignedClause]]
+    value_base: int = 0
 
 
 def _is_tautology(clause: SignedClause, var_domains: list[int]) -> bool:
@@ -43,6 +45,555 @@ def _is_tautology(clause: SignedClause, var_domains: list[int]) -> bool:
 
 
 _HEARTBEAT_EVERY_K = 200_000
+
+
+class _SubsumerIndex:
+    """Inverted variable index for fast `does any kept clause subsume disj?` queries.
+
+    Each subsumer is registered under exactly one pivot variable (the variable
+    that currently has the smallest bucket — keeps buckets balanced). A query
+    only walks subsumers whose pivot variable is mentioned by the candidate
+    disj — which is necessary for subsumption (s.vars ⊆ disj.vars).
+
+    Within each bucket, entries are ordered as inserted; the caller seeds the
+    index with ambient clauses pre-sorted by ascending literal count so that
+    short, strong subsumers are checked first.
+    """
+
+    __slots__ = ("buckets", "clause_maps", "ambient_count")
+
+    def __init__(self, ambient: list[SignedClause]):
+        self.buckets: dict[int, list[int]] = defaultdict(list)
+        self.clause_maps: list[dict[int, frozenset[int]]] = []
+        ambient_sorted = sorted(ambient, key=lambda c: len(c.literals))
+        for c in ambient_sorted:
+            self._insert(c)
+        self.ambient_count = len(self.clause_maps)
+
+    def _insert(self, clause: SignedClause) -> None:
+        if not clause.literals:
+            return
+        cmap = {lit.var: lit.values for lit in clause.literals}
+        pivot = min(cmap, key=lambda v: len(self.buckets[v]))
+        idx = len(self.clause_maps)
+        self.clause_maps.append(cmap)
+        self.buckets[pivot].append(idx)
+
+    def add_resolvent(self, clause: SignedClause) -> None:
+        self._insert(clause)
+
+    def find_subsumer(
+        self, disj_map: dict[int, frozenset[int]], disj_len: int
+    ) -> int | None:
+        """Return the index of any subsumer, or None. Index < ambient_count
+        means the hit was from the seeded ambient pool."""
+        for v in disj_map:
+            bucket = self.buckets.get(v)
+            if not bucket:
+                continue
+            for idx in bucket:
+                cmap = self.clause_maps[idx]
+                if len(cmap) > disj_len:
+                    continue
+                ok = True
+                for s_var, s_vals in cmap.items():
+                    d_vals = disj_map.get(s_var)
+                    if d_vals is None or not s_vals.issubset(d_vals):
+                        ok = False
+                        break
+                if ok:
+                    return idx
+        return None
+
+
+def _enumerate_minimal_conflict_patterns(
+    distinct_sets: list[frozenset[int]],
+    cap: int,
+    verbose: bool = False,
+    tag: str = "",
+) -> list[tuple[int, ...]]:
+    """Enumerate minimal index-subsets of `distinct_sets` whose intersection is ∅.
+
+    The ground set is the (at-most-2^h - 1) distinct value-sets on the variable
+    being eliminated. By minimality, no two clauses with the same value-set can
+    both belong to a minimal conflict J, so searching over *distinct* sets is
+    equivalent to searching over clauses for the conflict-pattern question — but
+    over a tiny universe (≤ 15 for h=4) instead of a large one (|pi_bar|).
+    """
+    m = len(distinct_sets)
+    minimal: list[tuple[int, ...]] = []
+    max_size = min(m, cap)
+
+    for size in range(1, max_size + 1):
+        total = comb(m, size)
+        t_size = time.time()
+        new_at_size = 0
+        for J in combinations(range(m), size):
+            J_set = set(J)
+            if any(set(prev).issubset(J_set) for prev in minimal):
+                continue
+            inter: frozenset[int] = distinct_sets[J[0]]
+            for j in J[1:]:
+                inter = inter & distinct_sets[j]
+                if not inter:
+                    break
+            if not inter:
+                minimal.append(J)
+                new_at_size += 1
+        if verbose:
+            print(
+                f"#   {tag}pattern-size={size} candidates={total} "
+                f"new_minimal={new_at_size} "
+                f"cumulative_minimal={len(minimal)} "
+                f"elapsed_s={time.time() - t_size:.3f}",
+                flush=True,
+            )
+    return minimal
+
+
+_PAIRWISE_SIZE4_THRESHOLD = 1_000_000
+
+
+def _pairwise_stage(
+    g_a_indices: list[int],
+    g_b_indices: list[int],
+    pi_bar: list[SignedClause],
+    var: int,
+    domains: list[int],
+    ambient_subsumers: list[SignedClause],
+    verbose: bool = False,
+    tag: str = "",
+    label: str = "",
+) -> tuple[list[SignedClause], dict]:
+    """Compute distinct pairwise resolvents from g_a × g_b for one stage of the
+    size-4 pairwise expansion. Each result clause merges the literals of one
+    clause from each group; the var literal is kept with value-set S_a ∪ S_b
+    unless that union is the full domain (in which case it's dropped).
+
+    Forward subsumption is applied against `ambient_subsumers` and against
+    earlier intermediates in this stage. Tautologies and duplicates are skipped.
+    """
+    full_domain = domains[var]
+    intermediates: list[SignedClause] = []
+    seen: set[SignedClause] = set()
+    index = _SubsumerIndex(ambient_subsumers)
+
+    n_raw = 0
+    n_taut = 0
+    n_dup = 0
+    n_subsumed = 0
+    t_start = time.time()
+    last_hb = t_start
+
+    for j_a in g_a_indices:
+        c_a = pi_bar[j_a]
+        s_a = c_a.get(var) or frozenset()
+        a_lits: dict[int, frozenset[int]] = {}
+        for lit in c_a.literals:
+            if lit.var != var:
+                a_lits[lit.var] = lit.values
+
+        for j_b in g_b_indices:
+            c_b = pi_bar[j_b]
+            s_b = c_b.get(var) or frozenset()
+            n_raw += 1
+
+            merged = dict(a_lits)
+            for lit in c_b.literals:
+                if lit.var == var:
+                    continue
+                existing = merged.get(lit.var)
+                merged[lit.var] = (existing | lit.values) if existing else lit.values
+
+            y_union = s_a | s_b
+            if y_union and len(y_union) < full_domain:
+                merged[var] = y_union
+
+            if any(len(vals) == domains[v] for v, vals in merged.items()):
+                n_taut += 1
+            elif not merged:
+                raise Unsatisfiable(
+                    f"empty clause derived at variable index {var} "
+                    f"during pairwise stage-{label}"
+                )
+            else:
+                literals = tuple(
+                    SignedLiteral(v, vals) for v, vals in sorted(merged.items())
+                )
+                clause = SignedClause(literals)
+                if clause in seen:
+                    n_dup += 1
+                else:
+                    hit_idx = index.find_subsumer(merged, len(literals))
+                    if hit_idx is not None:
+                        n_subsumed += 1
+                    else:
+                        intermediates.append(clause)
+                        seen.add(clause)
+                        index.add_resolvent(clause)
+
+            if verbose and n_raw % _HEARTBEAT_EVERY_K == 0:
+                now = time.time()
+                rate = _HEARTBEAT_EVERY_K / max(now - last_hb, 1e-9)
+                last_hb = now
+                print(
+                    f"#     {tag}stage-{label} progress raw={n_raw} "
+                    f"kept={len(intermediates)} taut={n_taut} dup={n_dup} "
+                    f"sub={n_subsumed} rate={rate:.0f}/s",
+                    flush=True,
+                )
+
+    elapsed = time.time() - t_start
+    if verbose:
+        print(
+            f"#   {tag}stage-{label} done raw={n_raw} "
+            f"intermediates={len(intermediates)} taut={n_taut} "
+            f"dup={n_dup} sub={n_subsumed} elapsed_s={elapsed:.3f}",
+            flush=True,
+        )
+
+    return intermediates, {
+        "raw": n_raw,
+        "kept": len(intermediates),
+        "taut": n_taut,
+        "dup": n_dup,
+        "subsumed": n_subsumed,
+        "elapsed": elapsed,
+    }
+
+
+def _grouped_eliminate_var(
+    pi_bar: list[SignedClause],
+    pi_minus_bar: list[SignedClause],
+    var: int,
+    domains: list[int],
+    cap: int,
+    verbose: bool = False,
+    tag: str = "",
+) -> tuple[list[SignedClause], dict]:
+    """Eliminate `var` by grouping pi_bar by value-set, enumerating minimal
+    conflict patterns over distinct value-sets, then expanding each pattern
+    via cross-product with forward-subsumption pruning.
+
+    Returns (kept_resolvents, stats).
+    """
+    groups: dict[frozenset[int], list[int]] = defaultdict(list)
+    for j, c in enumerate(pi_bar):
+        s = c.get(var) or frozenset()
+        groups[s].append(j)
+
+    distinct_sets = list(groups.keys())
+    n_groups = len(distinct_sets)
+
+    if verbose:
+        avg = len(pi_bar) / n_groups if n_groups else 0.0
+        print(
+            f"#   {tag}grouped pi_bar={len(pi_bar)} "
+            f"distinct_value_sets={n_groups} "
+            f"avg_group_size={avg:.1f}",
+            flush=True,
+        )
+
+    patterns = _enumerate_minimal_conflict_patterns(
+        distinct_sets, cap, verbose=verbose, tag=tag
+    )
+
+    pi_bar_dropped = [c.drop(var) for c in pi_bar]
+    index = _SubsumerIndex(pi_minus_bar)
+    ambient_count = index.ambient_count
+
+    kept: list[SignedClause] = []
+    seen: set[SignedClause] = set(pi_minus_bar)
+    counters = {
+        "n_raw": 0,
+        "n_taut": 0,
+        "n_duplicate": 0,
+        "n_subsumed_ambient": 0,
+        "n_subsumed_intra": 0,
+        "n_prefix_taut": 0,
+        "n_lookahead_taut": 0,
+        "n_prefix_subsumed": 0,
+        "n_pruned_leaves": 0,
+    }
+    t_expand = time.time()
+    hb_state = {"last_t": t_expand}
+
+    def maybe_heartbeat() -> None:
+        if not verbose:
+            return
+        n = counters["n_raw"]
+        if n and n % _HEARTBEAT_EVERY_K == 0:
+            now = time.time()
+            rate = _HEARTBEAT_EVERY_K / max(now - hb_state["last_t"], 1e-9)
+            hb_state["last_t"] = now
+            print(
+                f"#     {tag}expand progress raw={n} kept={len(kept)} "
+                f"taut={counters['n_taut']} dup={counters['n_duplicate']} "
+                f"sub_amb={counters['n_subsumed_ambient']} "
+                f"sub_intra={counters['n_subsumed_intra']} "
+                f"prefix_taut={counters['n_prefix_taut']} "
+                f"lookahead_taut={counters['n_lookahead_taut']} "
+                f"prefix_sub={counters['n_prefix_subsumed']} "
+                f"pruned_leaves={counters['n_pruned_leaves']} "
+                f"rate={rate:.0f}/s",
+                flush=True,
+            )
+
+    def expand(group_lists: list[list[int]]) -> None:
+        pattern_size = len(group_lists)
+        # Per-depth descendant leaf counts (for accounting pruned subtrees).
+        suffix_sizes = [1] * (pattern_size + 1)
+        for d in range(pattern_size - 1, -1, -1):
+            suffix_sizes[d] = suffix_sizes[d + 1] * len(group_lists[d])
+
+        # Per-group FORCED contributions per variable. For each group g and
+        # var v, the set of values that *every* clause in g contributes — i.e.
+        # the intersection of V_c[v] across c in g (with ∅ if any clause in g
+        # doesn't mention v at all, since we could pick that clause).
+        # These are values we cannot avoid adding to v regardless of choice.
+        forced_contrib_per_group: list[dict[int, frozenset[int]]] = []
+        for gl in group_lists:
+            contrib: dict[int, frozenset[int]] = {}
+            all_vars: set[int] = set()
+            for j in gl:
+                for lit in pi_bar_dropped[j].literals:
+                    all_vars.add(lit.var)
+            for v in all_vars:
+                inter: frozenset[int] | None = None
+                missing = False
+                for j in gl:
+                    cv = pi_bar_dropped[j].get(v)
+                    if cv is None:
+                        missing = True
+                        break
+                    inter = cv if inter is None else (inter & cv)
+                    if not inter:
+                        break
+                if missing or inter is None or not inter:
+                    contrib[v] = frozenset()
+                else:
+                    contrib[v] = inter
+            forced_contrib_per_group.append(contrib)
+
+        # tail[d][v] = union over groups i in [d+1..pattern_size-1] of
+        # forced_contrib_per_group[i].get(v, ∅). The set of values that
+        # remaining groups will *force* to be added to v on every leaf path.
+        tail: list[dict[int, frozenset[int]]] = [dict() for _ in range(pattern_size)]
+        for d in range(pattern_size - 2, -1, -1):
+            merged: dict[int, frozenset[int]] = dict(tail[d + 1])
+            for v, vs in forced_contrib_per_group[d + 1].items():
+                if not vs:
+                    continue
+                existing = merged.get(v)
+                merged[v] = (existing | vs) if existing else vs
+            tail[d] = merged
+
+        def lookahead_taut(
+            child_map: dict[int, frozenset[int]], depth: int
+        ) -> bool:
+            tail_d = tail[depth]
+            if not tail_d:
+                return False
+            for v, vs in child_map.items():
+                tv = tail_d.get(v)
+                best = (vs | tv) if tv else vs
+                if len(best) == domains[v]:
+                    return True
+            for v, tv in tail_d.items():
+                if v in child_map:
+                    continue
+                if len(tv) == domains[v]:
+                    return True
+            return False
+
+        def recurse(depth: int, cur_map: dict[int, frozenset[int]]) -> None:
+            if depth == pattern_size:
+                counters["n_raw"] += 1
+                if not cur_map:
+                    raise Unsatisfiable(
+                        f"empty clause derived at variable index {var} "
+                        f"during grouped expansion"
+                    )
+                if any(len(vals) == domains[v] for v, vals in cur_map.items()):
+                    counters["n_taut"] += 1
+                    maybe_heartbeat()
+                    return
+                literals = tuple(
+                    SignedLiteral(v, vals)
+                    for v, vals in sorted(cur_map.items())
+                )
+                disj = SignedClause(literals)
+                if disj in seen:
+                    counters["n_duplicate"] += 1
+                    maybe_heartbeat()
+                    return
+                hit_idx = index.find_subsumer(cur_map, len(literals))
+                if hit_idx is not None:
+                    if hit_idx < ambient_count:
+                        counters["n_subsumed_ambient"] += 1
+                    else:
+                        counters["n_subsumed_intra"] += 1
+                    maybe_heartbeat()
+                    return
+                kept.append(disj)
+                seen.add(disj)
+                index.add_resolvent(disj)
+                maybe_heartbeat()
+                return
+
+            for j in group_lists[depth]:
+                child_map = dict(cur_map)
+                for lit in pi_bar_dropped[j].literals:
+                    existing = child_map.get(lit.var)
+                    child_map[lit.var] = (
+                        existing | lit.values if existing else lit.values
+                    )
+
+                if depth + 1 < pattern_size and child_map:
+                    if any(
+                        len(vals) == domains[v]
+                        for v, vals in child_map.items()
+                    ):
+                        counters["n_prefix_taut"] += 1
+                        counters["n_pruned_leaves"] += suffix_sizes[depth + 1]
+                        continue
+                    if lookahead_taut(child_map, depth):
+                        counters["n_lookahead_taut"] += 1
+                        counters["n_pruned_leaves"] += suffix_sizes[depth + 1]
+                        continue
+                    hit = index.find_subsumer(child_map, len(child_map))
+                    if hit is not None:
+                        counters["n_prefix_subsumed"] += 1
+                        counters["n_pruned_leaves"] += suffix_sizes[depth + 1]
+                        continue
+
+                recurse(depth + 1, child_map)
+
+        recurse(0, {})
+
+    def expand_pairwise(group_lists: list[list[int]]) -> None:
+        """Size-4 pattern: two pairwise stages instead of one 4-deep cross-product."""
+        full_domain = domains[var]
+
+        i01, stats_1a = _pairwise_stage(
+            group_lists[0], group_lists[1], pi_bar, var, domains,
+            ambient_subsumers=pi_minus_bar,
+            verbose=verbose, tag=tag, label="1a",
+        )
+        i23, stats_1b = _pairwise_stage(
+            group_lists[2], group_lists[3], pi_bar, var, domains,
+            ambient_subsumers=pi_minus_bar,
+            verbose=verbose, tag=tag, label="1b",
+        )
+
+        t_stage2 = time.time()
+        n_stage2_raw_start = counters["n_raw"]
+
+        for c01 in i01:
+            a_lits: dict[int, frozenset[int]] = {}
+            a_y: frozenset[int] = frozenset()
+            for lit in c01.literals:
+                if lit.var == var:
+                    a_y = lit.values
+                else:
+                    a_lits[lit.var] = lit.values
+
+            for c23 in i23:
+                counters["n_raw"] += 1
+
+                merged = dict(a_lits)
+                b_y: frozenset[int] = frozenset()
+                for lit in c23.literals:
+                    if lit.var == var:
+                        b_y = lit.values
+                        continue
+                    existing = merged.get(lit.var)
+                    merged[lit.var] = (existing | lit.values) if existing else lit.values
+
+                y_union = a_y | b_y
+                if y_union and len(y_union) < full_domain:
+                    merged[var] = y_union
+
+                if any(len(vals) == domains[v] for v, vals in merged.items()):
+                    counters["n_taut"] += 1
+                    maybe_heartbeat()
+                    continue
+
+                if not merged:
+                    raise Unsatisfiable(
+                        f"empty clause derived at variable index {var} "
+                        f"during pairwise stage-2"
+                    )
+
+                literals = tuple(
+                    SignedLiteral(v, vals) for v, vals in sorted(merged.items())
+                )
+                disj = SignedClause(literals)
+                if disj in seen:
+                    counters["n_duplicate"] += 1
+                    maybe_heartbeat()
+                    continue
+                hit_idx = index.find_subsumer(merged, len(literals))
+                if hit_idx is not None:
+                    if hit_idx < ambient_count:
+                        counters["n_subsumed_ambient"] += 1
+                    else:
+                        counters["n_subsumed_intra"] += 1
+                    maybe_heartbeat()
+                    continue
+                kept.append(disj)
+                seen.add(disj)
+                index.add_resolvent(disj)
+                maybe_heartbeat()
+
+        if verbose:
+            stage2_raw = counters["n_raw"] - n_stage2_raw_start
+            print(
+                f"#   {tag}stage-2 done raw={stage2_raw} "
+                f"intermediates_01={len(i01)} intermediates_23={len(i23)} "
+                f"cumulative_kept={len(kept)} "
+                f"elapsed_s={time.time() - t_stage2:.3f}",
+                flush=True,
+            )
+
+    for p_idx, pattern in enumerate(patterns):
+        group_lists = [groups[distinct_sets[i]] for i in pattern]
+        expansion_size = 1
+        for gl in group_lists:
+            expansion_size *= len(gl)
+        use_pairwise = (
+            len(pattern) == 4 and expansion_size > _PAIRWISE_SIZE4_THRESHOLD
+        )
+        if verbose:
+            mode = " mode=pairwise" if use_pairwise else ""
+            print(
+                f"#   {tag}pattern {p_idx + 1}/{len(patterns)} "
+                f"size={len(pattern)} expansion={expansion_size} "
+                f"cumulative_kept={len(kept)}{mode}",
+                flush=True,
+            )
+        if use_pairwise:
+            expand_pairwise(group_lists)
+        else:
+            expand(group_lists)
+
+    stats = {
+        "n_distinct_sets": n_groups,
+        "n_patterns": len(patterns),
+        "max_pattern_size": max((len(p) for p in patterns), default=0),
+        "n_resolvents_raw": counters["n_raw"],
+        "n_tautologies": counters["n_taut"],
+        "n_duplicates": counters["n_duplicate"],
+        "n_fwd_subsumed_ambient": counters["n_subsumed_ambient"],
+        "n_fwd_subsumed_intra": counters["n_subsumed_intra"],
+        "n_prefix_taut": counters["n_prefix_taut"],
+        "n_lookahead_taut": counters["n_lookahead_taut"],
+        "n_prefix_subsumed": counters["n_prefix_subsumed"],
+        "n_pruned_leaves": counters["n_pruned_leaves"],
+        "n_kept": len(kept),
+        "expand_elapsed_s": time.time() - t_expand,
+    }
+    return kept, stats
 
 
 def _minimal_conflict_subsets(
@@ -154,10 +705,78 @@ def _dedup_by_subsumption(clauses: list[SignedClause]) -> list[SignedClause]:
     return kept
 
 
+def _primal_adjacency(cs: ConstraintSet) -> list[set[int]]:
+    """Primal constraint graph: edge u-v iff some clause mentions both."""
+    n = len(cs.var_domains)
+    adj: list[set[int]] = [set() for _ in range(n)]
+    for clause in cs.clauses:
+        vars_here = [lit.var for lit in clause.literals]
+        for i, a in enumerate(vars_here):
+            for b in vars_here[i + 1:]:
+                if a != b:
+                    adj[a].add(b)
+                    adj[b].add(a)
+    return adj
+
+
+def _heuristic_elimination_ordering(
+    cs: ConstraintSet, heuristic: str = "min-fill"
+) -> list[int]:
+    """Compute an elimination ordering by simulating elimination on the primal
+    graph. `heuristic` is "min-degree" or "min-fill".
+
+    Returns an `ordering` list compatible with compile_constraints: the variable
+    at index n-1 is eliminated first (compile iterates step from n-1 down to 0).
+    """
+    n = len(cs.var_domains)
+    adj = _primal_adjacency(cs)
+    remaining = set(range(n))
+    elim_order: list[int] = []
+
+    def fill_in(v: int) -> int:
+        ns = adj[v] & remaining
+        nlist = list(ns)
+        count = 0
+        for i, a in enumerate(nlist):
+            for b in nlist[i + 1:]:
+                if b not in adj[a]:
+                    count += 1
+        return count
+
+    while remaining:
+        if heuristic == "min-degree":
+            chosen = min(remaining, key=lambda x: len(adj[x] & remaining))
+        elif heuristic == "min-fill":
+            chosen = min(remaining, key=lambda x: (fill_in(x), len(adj[x] & remaining)))
+        else:
+            raise ValueError(f"unknown heuristic {heuristic!r}")
+        elim_order.append(chosen)
+        ns = adj[chosen] & remaining
+        for a in ns:
+            for b in ns:
+                if a != b:
+                    adj[a].add(b)
+        remaining.remove(chosen)
+
+    return list(reversed(elim_order))
+
+
 def compile_constraints(
-    cs: ConstraintSet, verbose: bool = False
+    cs: ConstraintSet,
+    verbose: bool = False,
+    legacy_enum: bool = False,
+    stream_to: "Path | str | None" = None,
 ) -> CompiledConstraints:
     """Signed-resolution compile under cs.ordering.
+
+    By default uses the grouped + forward-subsumption enumeration; set
+    `legacy_enum=True` to fall back to the original per-clause combinations
+    enumeration (kept for A/B comparison).
+
+    If `stream_to` is given, each step's finalised pi_bar is appended to that
+    file as DSL lines (with `# step=N var=NAME` header comments) and flushed.
+    Useful for live observability and partial-artifact survival under SIGINT.
+    The file is re-parseable (comments are ignored by parse_constraints).
 
     Raises:
         Unsatisfiable: if the empty clause is derived.
@@ -180,8 +799,24 @@ def compile_constraints(
 
     per_var_clauses: list[list[SignedClause]] = [[] for _ in range(n)]
 
+    stream_file = None
+    if stream_to is not None:
+        stream_file = open(stream_to, "w")
+        for name, h in zip(cs.var_names, cs.var_domains):
+            stream_file.write(f"var {name} {h}\n")
+        if cs.value_base:
+            stream_file.write(f"\nvalue-base {cs.value_base}\n")
+        stream_file.write("\n")
+        stream_file.write(
+            "ordering " + " ".join(cs.var_names[i] for i in ordering) + "\n"
+        )
+        stream_file.write("\n")
+        stream_file.write("# streaming: clauses appear in elimination order\n")
+        stream_file.flush()
+
     if verbose:
         order_names = " ".join(cs.var_names[i] for i in ordering)
+        algo = "legacy" if legacy_enum else "grouped+fwdsub"
         print(
             f"# compile: n_vars={n} "
             f"input_clauses={len(cs.clauses)} "
@@ -190,7 +825,7 @@ def compile_constraints(
             f"preproc_sub_elim={preproc_eliminated} "
             f"preproc_sub_elapsed_s={preproc_elapsed:.3f} "
             f"domains={sorted(set(domains))} "
-            f"cap=per_var_domain",
+            f"cap=per_var_domain algo={algo}",
             flush=True,
         )
         print(f"# ordering: {order_names}", flush=True)
@@ -202,6 +837,16 @@ def compile_constraints(
 
         pi_bar = [c for c in pi_current if var in c.variables]
         per_var_clauses[step] = pi_bar
+
+        if stream_file is not None:
+            stream_file.write(
+                f"\n# step={step} var={var_name} ({len(pi_bar)} clauses)\n"
+            )
+            for clause in pi_bar:
+                stream_file.write(
+                    _clause_to_dsl(clause, cs.var_names, cs.value_base) + "\n"
+                )
+            stream_file.flush()
 
         step_cap = domains[var]
 
@@ -226,49 +871,61 @@ def compile_constraints(
                 )
             continue
 
-        try:
-            minimal_Js = _minimal_conflict_subsets(
-                pi_bar, var,
+        pi_minus_bar = [c for c in pi_current if var not in c.variables]
+
+        if legacy_enum:
+            try:
+                minimal_Js = _minimal_conflict_subsets(
+                    pi_bar, var,
+                    cap=step_cap,
+                    verbose=verbose,
+                    tag=f"step={step} var={var_name} ",
+                )
+            except CompileTooLarge as e:
+                e.step = step
+                e.var_name = var_name
+                e.cap = step_cap
+                if verbose:
+                    print(
+                        f"# CompileTooLarge at step={step} var={var_name} "
+                        f"pi_in={len(pi_bar)} cap={step_cap} "
+                        f"elapsed_s={time.time() - t_step:.3f}",
+                        flush=True,
+                    )
+                raise
+
+            n_minimal_J = len(minimal_Js)
+            max_J_size = max((len(J) for J in minimal_Js), default=0)
+
+            kept_resolvents: list[SignedClause] = []
+            for J in minimal_Js:
+                disj = _disjoin([pi_bar[j].drop(var) for j in J])
+                if not disj.literals:
+                    raise Unsatisfiable(
+                        f"empty clause derived at variable "
+                        f"{var_name!r} (step i={step + 1})"
+                    )
+                if _is_tautology(disj, domains):
+                    continue
+                kept_resolvents.append(disj)
+
+            n_resolvents_raw = n_minimal_J
+            grouped_stats: dict | None = None
+        else:
+            kept_resolvents, grouped_stats = _grouped_eliminate_var(
+                pi_bar, pi_minus_bar, var, domains,
                 cap=step_cap,
                 verbose=verbose,
                 tag=f"step={step} var={var_name} ",
             )
-        except CompileTooLarge as e:
-            e.step = step
-            e.var_name = var_name
-            e.cap = step_cap
-            if verbose:
-                print(
-                    f"# CompileTooLarge at step={step} var={var_name} "
-                    f"pi_in={len(pi_bar)} cap={step_cap} "
-                    f"elapsed_s={time.time() - t_step:.3f}",
-                    flush=True,
-                )
-            raise
-
-        n_minimal_J = len(minimal_Js)
-        max_J_size = max((len(J) for J in minimal_Js), default=0)
-
-        conflict_clauses: list[SignedClause] = []
-        for J in minimal_Js:
-            disj = _disjoin([pi_bar[j].drop(var) for j in J])
-            if not disj.literals:
-                raise Unsatisfiable(
-                    f"empty clause derived at variable "
-                    f"{var_name!r} (step i={step + 1})"
-                )
-            if _is_tautology(disj, domains):
-                continue
-            conflict_clauses.append(disj)
-
-        n_resolvents_raw = n_minimal_J
-
-        pi_minus_bar = [c for c in pi_current if var not in c.variables]
+            n_minimal_J = grouped_stats["n_patterns"]
+            max_J_size = grouped_stats["max_pattern_size"]
+            n_resolvents_raw = grouped_stats["n_resolvents_raw"]
 
         seen: set[SignedClause] = set(pi_minus_bar)
         next_pi: list[SignedClause] = list(pi_minus_bar)
         n_kept = 0
-        for c in conflict_clauses:
+        for c in kept_resolvents:
             if c not in seen:
                 seen.add(c)
                 next_pi.append(c)
@@ -284,13 +941,28 @@ def compile_constraints(
         pi_current = next_pi
 
         if verbose:
+            extra = ""
+            if grouped_stats is not None:
+                extra = (
+                    f" n_distinct_sets={grouped_stats['n_distinct_sets']}"
+                    f" n_taut={grouped_stats['n_tautologies']}"
+                    f" fwd_sub_amb={grouped_stats['n_fwd_subsumed_ambient']}"
+                    f" fwd_sub_intra={grouped_stats['n_fwd_subsumed_intra']}"
+                    f" prefix_taut={grouped_stats['n_prefix_taut']}"
+                    f" lookahead_taut={grouped_stats['n_lookahead_taut']}"
+                    f" prefix_sub={grouped_stats['n_prefix_subsumed']}"
+                    f" pruned_leaves={grouped_stats['n_pruned_leaves']}"
+                    f" dup={grouped_stats['n_duplicates']}"
+                    f" expand_elapsed_s={grouped_stats['expand_elapsed_s']:.3f}"
+                )
             print(
                 f"step={step} var={var_name} pi_in={len(pi_bar)} "
                 f"n_minimal_J={n_minimal_J} n_resolvents_raw={n_resolvents_raw} "
                 f"n_resolvents_kept={n_kept} max_J_size={max_J_size} "
                 f"pi_out_before_sub={pi_out_before_sub} "
                 f"pi_out_after_sub={pi_out_after_sub} "
-                f"sub_elim={sub_eliminated} sub_elapsed_s={sub_elapsed:.3f} "
+                f"sub_elim={sub_eliminated} sub_elapsed_s={sub_elapsed:.3f}"
+                f"{extra} "
                 f"elapsed_s={time.time() - t_step:.3f}",
                 flush=True,
             )
@@ -300,11 +972,15 @@ def compile_constraints(
     assert all(not c.variables for c in pi_current), \
         "post-compile residual mentions variables in the ordering"
 
+    if stream_file is not None:
+        stream_file.close()
+
     return CompiledConstraints(
         var_names=list(cs.var_names),
         var_domains=list(cs.var_domains),
         ordering=list(cs.ordering),
         per_var_clauses=per_var_clauses,
+        value_base=cs.value_base,
     )
 
 
@@ -374,10 +1050,12 @@ class ClauseFeasibility:
         return feasible
 
 
-def _clause_to_dsl(clause: SignedClause, var_names: list[str]) -> str:
+def _clause_to_dsl(
+    clause: SignedClause, var_names: list[str], value_base: int = 0
+) -> str:
     parts = []
     for lit in clause.literals:
-        vs = ",".join(str(v) for v in sorted(lit.values))
+        vs = ",".join(str(v + value_base) for v in sorted(lit.values))
         parts.append(f"[{vs}]:{var_names[lit.var]}")
     return " or ".join(parts)
 
@@ -387,13 +1065,16 @@ def to_dsl(cc: CompiledConstraints) -> str:
     lines: list[str] = []
     for name, h in zip(cc.var_names, cc.var_domains):
         lines.append(f"var {name} {h}")
+    if cc.value_base:
+        lines.append("")
+        lines.append(f"value-base {cc.value_base}")
     lines.append("")
     lines.append("ordering " + " ".join(cc.var_names[i] for i in cc.ordering))
     lines.append("")
 
     for pi_bar in cc.per_var_clauses:
         for clause in pi_bar:
-            lines.append(_clause_to_dsl(clause, cc.var_names))
+            lines.append(_clause_to_dsl(clause, cc.var_names, cc.value_base))
 
     return "\n".join(lines).rstrip() + "\n"
 
@@ -403,6 +1084,7 @@ def to_json(cc: CompiledConstraints) -> dict:
         "var_names": cc.var_names,
         "var_domains": cc.var_domains,
         "ordering": cc.ordering,
+        "value_base": cc.value_base,
         "per_var_clauses": [
             [
                 [[lit.var, sorted(lit.values)] for lit in c.literals]
@@ -431,6 +1113,7 @@ def from_json(d: dict) -> CompiledConstraints:
         var_domains=[int(h) for h in d["var_domains"]],
         ordering=[int(i) for i in d["ordering"]],
         per_var_clauses=per_var_clauses,
+        value_base=int(d.get("value_base", 0)),
     )
 
 
@@ -474,11 +1157,53 @@ def _cli() -> None:
         action="store_true",
         help="Suppress per-step diagnostics (verbose is on by default for the CLI).",
     )
+    p.add_argument(
+        "--legacy-enum",
+        action="store_true",
+        help="Use the original per-clause combinations enumeration (kept for A/B).",
+    )
+    p.add_argument(
+        "--ordering",
+        choices=("file", "min-degree", "min-fill"),
+        default="file",
+        help="Elimination ordering source. 'file' uses cs.ordering from the input; "
+        "'min-degree'/'min-fill' compute a heuristic ordering on the primal graph.",
+    )
+    p.add_argument(
+        "--print-ordering",
+        action="store_true",
+        help="Print the elimination ordering (first-eliminated to last) and exit.",
+    )
     args = p.parse_args()
 
     cs = parse_constraints(args.input.read_text())
+    if args.ordering != "file":
+        new_ordering = _heuristic_elimination_ordering(cs, args.ordering)
+        if not args.quiet:
+            print(
+                f"# ordering source={args.ordering}: "
+                + " ".join(cs.var_names[i] for i in reversed(new_ordering)),
+                flush=True,
+            )
+        cs.ordering = new_ordering
+
+    if args.print_ordering:
+        names = [cs.var_names[i] for i in reversed(cs.ordering)]
+        print(" ".join(names))
+        return
+
+    if args.output.suffix == ".txt":
+        stream_to = args.output
+    else:
+        stream_to = args.output.with_suffix(".stream.txt")
+
     try:
-        cc = compile_constraints(cs, verbose=not args.quiet)
+        cc = compile_constraints(
+            cs,
+            verbose=not args.quiet,
+            legacy_enum=args.legacy_enum,
+            stream_to=stream_to,
+        )
     except Unsatisfiable as e:
         print(f"UNSAT: {e}", flush=True)
         raise SystemExit(1)

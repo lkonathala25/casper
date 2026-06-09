@@ -53,6 +53,7 @@ class ConstraintSet:
     var_domains: list[int]
     clauses: list[SignedClause]
     ordering: list[int]
+    value_base: int = 0
 
 
 class ParseError(Exception):
@@ -60,6 +61,7 @@ class ParseError(Exception):
 
 
 _VAR_RE = re.compile(r"^var\s+([A-Za-z_]\w*)\s+(\d+)\s*$")
+_VALUE_BASE_RE = re.compile(r"^value-base\s+(\d+)\s*$")
 _ORDER_RE = re.compile(r"^ordering\s+(.+)$")
 _LITERAL_RE = re.compile(r"^\s*\[\s*([\d,\s]*)\s*\]\s*:\s*([A-Za-z_]\w*)\s*$")
 
@@ -74,10 +76,24 @@ def parse_constraints(text: str) -> ConstraintSet:
     var_index: dict[str, int] = {}
     clauses: list[SignedClause] = []
     ordering: list[int] | None = None
+    value_base: int = 0
+    value_base_seen: bool = False
 
     for lineno, raw in enumerate(text.splitlines(), start=1):
         line = raw.split("#", 1)[0].strip()
         if not line:
+            continue
+
+        m = _VALUE_BASE_RE.match(line)
+        if m:
+            if value_base_seen:
+                raise ParseError(f"line {lineno}: value-base already declared")
+            if clauses:
+                raise ParseError(
+                    f"line {lineno}: value-base must appear before any clauses"
+                )
+            value_base = int(m.group(1))
+            value_base_seen = True
             continue
 
         m = _VAR_RE.match(line)
@@ -142,15 +158,19 @@ def parse_constraints(text: str) -> ConstraintSet:
             domain = var_domains[var]
             if vals_str.strip():
                 raw_vals = [v for v in re.split(r"[,\s]+", vals_str.strip()) if v]
-                values = frozenset(int(v) for v in raw_vals)
+                parsed = []
+                for raw_v in raw_vals:
+                    iv = int(raw_v)
+                    shifted = iv - value_base
+                    if not (0 <= shifted < domain):
+                        raise ParseError(
+                            f"line {lineno}: value {iv} out of range "
+                            f"[{value_base},{value_base + domain}) for {name!r}"
+                        )
+                    parsed.append(shifted)
+                values = frozenset(parsed)
             else:
                 values = frozenset()
-            for v in values:
-                if not (0 <= v < domain):
-                    raise ParseError(
-                        f"line {lineno}: value {v} out of range "
-                        f"[0,{domain}) for {name!r}"
-                    )
             lits.append(SignedLiteral(var, values))
         clauses.append(SignedClause.from_literals(lits))
 
@@ -170,6 +190,7 @@ def parse_constraints(text: str) -> ConstraintSet:
         var_domains=var_domains,
         clauses=clauses,
         ordering=ordering,
+        value_base=value_base,
     )
 
 
