@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import time
 from collections import defaultdict
 from dataclasses import dataclass
@@ -83,15 +84,19 @@ class _SubsumerIndex:
         self._insert(clause)
 
     def find_subsumer(
-        self, disj_map: dict[int, frozenset[int]], disj_len: int
+        self, disj_map: dict[int, frozenset[int]], disj_len: int,
+        exclude: int | None = None,
     ) -> int | None:
         """Return the index of any subsumer, or None. Index < ambient_count
-        means the hit was from the seeded ambient pool."""
+        means the hit was from the seeded ambient pool. `exclude` skips one
+        stored index (so a clause is not reported as subsuming itself)."""
         for v in disj_map:
             bucket = self.buckets.get(v)
             if not bucket:
                 continue
             for idx in bucket:
+                if idx == exclude:
+                    continue
                 cmap = self.clause_maps[idx]
                 if len(cmap) > disj_len:
                     continue
@@ -152,6 +157,20 @@ def _enumerate_minimal_conflict_patterns(
 
 
 _PAIRWISE_SIZE4_THRESHOLD = 1_000_000
+
+# Reorder the groups of a conflict pattern so that the groups whose clauses
+# carry the widest value-sets (most likely to saturate some variable's domain)
+# are expanded first. Prefix-tautology pruning then fires at a shallower depth
+# and discards a larger subtree. This is a pure permutation of the per-depth
+# group assignment: a resolvent depends only on the *set* of picked clauses
+# (union is order-independent), so the leaf clause set — and hence the compiled
+# output after subsumption — is unchanged. Env override SAT_REORDER_GROUPS=0/1
+# toggles it for A/B measurement.
+_REORDER_GROUPS_BY_SATURATION = os.environ.get("SAT_REORDER_GROUPS", "1") != "0"
+
+# Minimum pile size before the per-step subsumption cleanup is parallelized;
+# below this, pool startup costs more than the serial pass saves.
+_PARALLEL_DEDUP_MIN = 5_000
 
 
 def _pairwise_stage(
@@ -270,6 +289,10 @@ def _grouped_eliminate_var(
     cap: int,
     verbose: bool = False,
     tag: str = "",
+    only_pattern_size: int | None = None,
+    work_pattern_idx: int | None = None,
+    work_first_chunk: tuple[int, int] | None = None,
+    dump_raw: list | None = None,
 ) -> tuple[list[SignedClause], dict]:
     """Eliminate `var` by grouping pi_bar by value-set, enumerating minimal
     conflict patterns over distinct value-sets, then expanding each pattern
@@ -297,6 +320,16 @@ def _grouped_eliminate_var(
     patterns = _enumerate_minimal_conflict_patterns(
         distinct_sets, cap, verbose=verbose, tag=tag
     )
+
+    # Fan the per-pattern expansion across worker processes when requested
+    # (SAT_WORKERS>1). Workers re-enter this function with a fixed work item
+    # (work_pattern_idx set), so they take the serial path below — no recursion.
+    n_workers = int(os.environ.get("SAT_WORKERS", "1"))
+    if n_workers > 1 and work_pattern_idx is None:
+        return _grouped_eliminate_parallel(
+            pi_bar, pi_minus_bar, var, domains, cap, patterns, groups,
+            distinct_sets, n_workers, verbose, tag, only_pattern_size,
+        )
 
     pi_bar_dropped = [c.drop(var) for c in pi_bar]
     index = _SubsumerIndex(pi_minus_bar)
@@ -340,6 +373,25 @@ def _grouped_eliminate_var(
             )
 
     def expand(group_lists: list[list[int]]) -> None:
+        # Front-load the groups most likely to saturate a variable so that
+        # prefix-tautology pruning fires at a shallower depth (pruning a larger
+        # subtree). Primary key: descending average clause width (sum of
+        # value-set sizes per clause) — wider clauses fill domains faster.
+        # Secondary key: ascending group size, so the largest groups sit at the
+        # deepest levels and a shallow prune discards the most leaves. Pure
+        # permutation of depth assignment; the leaf clause set is invariant.
+        if _REORDER_GROUPS_BY_SATURATION and len(group_lists) > 2:
+            def _saturation_key(gl: list[int]) -> tuple[float, int]:
+                if not gl:
+                    return (0.0, 0)
+                width = sum(
+                    len(lit.values)
+                    for j in gl
+                    for lit in pi_bar_dropped[j].literals
+                )
+                return (-width / len(gl), len(gl))
+            group_lists = sorted(group_lists, key=_saturation_key)
+
         pattern_size = len(group_lists)
         # Per-depth descendant leaf counts (for accounting pruned subtrees).
         suffix_sizes = [1] * (pattern_size + 1)
@@ -414,17 +466,21 @@ def _grouped_eliminate_var(
                         f"empty clause derived at variable index {var} "
                         f"during grouped expansion"
                     )
-                if any(len(vals) == domains[v] for v, vals in cur_map.items()):
-                    counters["n_taut"] += 1
-                    maybe_heartbeat()
-                    return
                 literals = tuple(
                     SignedLiteral(v, vals)
                     for v, vals in sorted(cur_map.items())
                 )
                 disj = SignedClause(literals)
+                if any(len(vals) == domains[v] for v, vals in cur_map.items()):
+                    counters["n_taut"] += 1
+                    if dump_raw is not None:
+                        dump_raw.append(("tautology", disj))
+                    maybe_heartbeat()
+                    return
                 if disj in seen:
                     counters["n_duplicate"] += 1
+                    if dump_raw is not None:
+                        dump_raw.append(("duplicate", disj))
                     maybe_heartbeat()
                     return
                 hit_idx = index.find_subsumer(cur_map, len(literals))
@@ -433,30 +489,51 @@ def _grouped_eliminate_var(
                         counters["n_subsumed_ambient"] += 1
                     else:
                         counters["n_subsumed_intra"] += 1
+                    if dump_raw is not None:
+                        dump_raw.append(("subsumed", disj))
                     maybe_heartbeat()
                     return
                 kept.append(disj)
                 seen.add(disj)
                 index.add_resolvent(disj)
+                if dump_raw is not None:
+                    dump_raw.append(("kept", disj))
                 maybe_heartbeat()
                 return
 
             for j in group_lists[depth]:
                 child_map = dict(cur_map)
+                # Build the union one literal at a time and STOP the moment any
+                # variable fills its whole domain: that makes the resolvent a
+                # tautology, so there's no point finishing it or recursing. This
+                # catches tautologies at every depth — including the last, where
+                # the leaf would otherwise build the full clause just to discard
+                # it. (When dumping raw resolvents we finish the union so the
+                # discarded clause can still be recorded.)
+                saturated = False
                 for lit in pi_bar_dropped[j].literals:
                     existing = child_map.get(lit.var)
-                    child_map[lit.var] = (
-                        existing | lit.values if existing else lit.values
-                    )
-
-                if depth + 1 < pattern_size and child_map:
-                    if any(
-                        len(vals) == domains[v]
-                        for v, vals in child_map.items()
-                    ):
+                    merged = (existing | lit.values) if existing else lit.values
+                    child_map[lit.var] = merged
+                    if len(merged) == domains[lit.var]:
+                        saturated = True
+                        if dump_raw is None:
+                            break
+                if saturated:
+                    if depth + 1 < pattern_size:
                         counters["n_prefix_taut"] += 1
                         counters["n_pruned_leaves"] += suffix_sizes[depth + 1]
-                        continue
+                    else:
+                        counters["n_raw"] += 1
+                        counters["n_taut"] += 1
+                        if dump_raw is not None:
+                            dump_raw.append(("tautology", SignedClause(tuple(
+                                SignedLiteral(v, vals)
+                                for v, vals in sorted(child_map.items())))))
+                    maybe_heartbeat()
+                    continue
+
+                if depth + 1 < pattern_size and child_map:
                     if lookahead_taut(child_map, depth):
                         counters["n_lookahead_taut"] += 1
                         counters["n_pruned_leaves"] += suffix_sizes[depth + 1]
@@ -557,6 +634,10 @@ def _grouped_eliminate_var(
             )
 
     for p_idx, pattern in enumerate(patterns):
+        if only_pattern_size is not None and len(pattern) != only_pattern_size:
+            continue
+        if work_pattern_idx is not None and p_idx != work_pattern_idx:
+            continue
         group_lists = [groups[distinct_sets[i]] for i in pattern]
         expansion_size = 1
         for gl in group_lists:
@@ -564,6 +645,14 @@ def _grouped_eliminate_var(
         use_pairwise = (
             len(pattern) == 4 and expansion_size > _PAIRWISE_SIZE4_THRESHOLD
         )
+        # For a parallel work item, restrict the first group to its assigned
+        # chunk. The pairwise decision above is computed from the *full* pattern
+        # first, so chunking never reroutes a huge pattern into the 4-deep
+        # recursion. The union of all chunks reproduces the full pattern's
+        # resolvents (cross-chunk duplicates removed by the caller's dedup).
+        if work_first_chunk is not None:
+            cs0, ce0 = work_first_chunk
+            group_lists = [group_lists[0][cs0:ce0]] + group_lists[1:]
         if verbose:
             mode = " mode=pairwise" if use_pairwise else ""
             print(
@@ -592,6 +681,113 @@ def _grouped_eliminate_var(
         "n_pruned_leaves": counters["n_pruned_leaves"],
         "n_kept": len(kept),
         "expand_elapsed_s": time.time() - t_expand,
+    }
+    return kept, stats
+
+
+# Read-only inputs shared with worker processes via fork inheritance (avoids
+# pickling the large clause lists per task). Set by _grouped_eliminate_parallel
+# in the parent immediately before the worker pool is created.
+_PARALLEL_CTX: dict = {}
+
+
+def _parallel_task(item: tuple[int, tuple[int, int]]):
+    """Worker: expand one conflict pattern (a first-group chunk of it) by
+    re-entering the serial machinery with a fixed work item. Big read-only
+    inputs come from the inherited _PARALLEL_CTX so only the tiny (pattern,
+    chunk) tuple is pickled."""
+    p_idx, chunk = item
+    ctx = _PARALLEL_CTX
+    return _grouped_eliminate_var(
+        ctx["pi_bar"], ctx["pi_minus_bar"], ctx["var"], ctx["domains"],
+        ctx["cap"], verbose=False,
+        work_pattern_idx=p_idx, work_first_chunk=chunk,
+    )
+
+
+def _grouped_eliminate_parallel(
+    pi_bar: list[SignedClause],
+    pi_minus_bar: list[SignedClause],
+    var: int,
+    domains: list[int],
+    cap: int,
+    patterns: list[tuple[int, ...]],
+    groups: dict[frozenset[int], list[int]],
+    distinct_sets: list[frozenset[int]],
+    n_workers: int,
+    verbose: bool,
+    tag: str,
+    only_pattern_size: int | None,
+) -> tuple[list[SignedClause], dict]:
+    """Parallel per-pattern expansion: split each pattern's first group into
+    chunks and expand the chunks across a process pool. Each worker subsumes
+    only against the ambient set, so cross-chunk duplicates/subsumees are left
+    for the caller's final subsumption dedup; the eliminated variable's
+    resolvent set is identical to the serial result."""
+    import multiprocessing as mp
+
+    tasks_per_worker = 4
+    items: list[tuple[int, tuple[int, int]]] = []
+    for p_idx, pattern in enumerate(patterns):
+        if only_pattern_size is not None and len(pattern) != only_pattern_size:
+            continue
+        n0 = len(groups[distinct_sets[pattern[0]]])
+        if n0 == 0:
+            items.append((p_idx, (0, 0)))
+            continue
+        target = max(1, n_workers * tasks_per_worker)
+        step = max(1, (n0 + target - 1) // target)
+        for s in range(0, n0, step):
+            items.append((p_idx, (s, min(s + step, n0))))
+
+    global _PARALLEL_CTX
+    _PARALLEL_CTX = {
+        "pi_bar": pi_bar, "pi_minus_bar": pi_minus_bar, "var": var,
+        "domains": domains, "cap": cap,
+    }
+
+    if verbose:
+        print(
+            f"#   {tag}parallel workers={n_workers} tasks={len(items)}",
+            flush=True,
+        )
+
+    t_expand = time.time()
+    with mp.get_context("fork").Pool(n_workers) as pool:
+        results = pool.map(_parallel_task, items)
+    pool_elapsed = time.time() - t_expand
+
+    kept: list[SignedClause] = []
+    seen: set[SignedClause] = set(pi_minus_bar)
+    agg = {
+        "n_resolvents_raw": 0, "n_tautologies": 0, "n_duplicates": 0,
+        "n_fwd_subsumed_ambient": 0, "n_fwd_subsumed_intra": 0,
+        "n_prefix_taut": 0, "n_lookahead_taut": 0, "n_prefix_subsumed": 0,
+        "n_pruned_leaves": 0,
+    }
+    for kpart, spart in results:
+        for c in kpart:
+            if c not in seen:
+                seen.add(c)
+                kept.append(c)
+        for k in agg:
+            agg[k] += spart.get(k, 0)
+
+    if verbose:
+        print(
+            f"#   {tag}parallel done kept={len(kept)} "
+            f"raw={agg['n_resolvents_raw']} taut={agg['n_tautologies']} "
+            f"elapsed_s={pool_elapsed:.3f}",
+            flush=True,
+        )
+
+    stats = {
+        "n_distinct_sets": len(distinct_sets),
+        "n_patterns": len(patterns),
+        "max_pattern_size": max((len(p) for p in patterns), default=0),
+        "n_kept": len(kept),
+        "expand_elapsed_s": pool_elapsed,
+        **agg,
     }
     return kept, stats
 
@@ -703,6 +899,52 @@ def _dedup_by_subsumption(clauses: list[SignedClause]) -> list[SignedClause]:
             kept = [k for k in kept if not _subsumes(c, k)]
         kept.append(c)
     return kept
+
+
+# Read-only state shared with dedup workers via fork (set in the parent right
+# before the pool is created). The subsumer index is queried, never mutated.
+_DEDUP_CTX: dict = {}
+
+
+def _dedup_slice(bounds: tuple[int, int]) -> list[SignedClause]:
+    """Worker: keep clauses in [lo, hi) that no *other* clause subsumes."""
+    lo, hi = bounds
+    index = _DEDUP_CTX["index"]
+    maps = _DEDUP_CTX["maps"]
+    clauses = _DEDUP_CTX["clauses"]
+    out: list[SignedClause] = []
+    for i in range(lo, hi):
+        if index.find_subsumer(maps[i], len(maps[i]), exclude=i) is None:
+            out.append(clauses[i])
+    return out
+
+
+def _dedup_by_subsumption_parallel(
+    clauses: list[SignedClause], n_workers: int
+) -> list[SignedClause]:
+    """Parallel equivalent of `_dedup_by_subsumption`: the subsumption-minimal
+    subset (every clause not subsumed by some other). Each clause's "is anything
+    else subsuming me?" test is independent, so they fan out across workers.
+    Returns the same set as the serial version (order may differ, which the
+    compiled constraint set is invariant to)."""
+    import multiprocessing as mp
+
+    unique = list(dict.fromkeys(clauses))  # collapse exact duplicates, keep order
+    # _SubsumerIndex sorts by length on insert; pre-sort so `maps[i]` aligns
+    # with `unique_sorted[i]` (stable sort leaves the pre-sorted order intact).
+    unique_sorted = sorted(unique, key=lambda c: len(c.literals))
+    index = _SubsumerIndex(unique_sorted)
+    maps = index.clause_maps
+
+    global _DEDUP_CTX
+    _DEDUP_CTX = {"index": index, "maps": maps, "clauses": unique_sorted}
+
+    n = len(unique_sorted)
+    step = max(1, (n + n_workers * 4 - 1) // (n_workers * 4))
+    bounds = [(s, min(s + step, n)) for s in range(0, n, step)]
+    with mp.get_context("fork").Pool(n_workers) as pool:
+        parts = pool.map(_dedup_slice, bounds)
+    return [c for part in parts for c in part]
 
 
 def _primal_adjacency(cs: ConstraintSet) -> list[set[int]]:
@@ -933,7 +1175,14 @@ def compile_constraints(
 
         pi_out_before_sub = len(next_pi)
         t_sub = time.time()
-        next_pi = _dedup_by_subsumption(next_pi)
+        # The final subsumption cleanup is the single-threaded tail of a
+        # parallel step; fan it across workers too once the pile is big enough
+        # to outweigh pool overhead. Identical result, order may differ.
+        sub_workers = int(os.environ.get("SAT_WORKERS", "1"))
+        if sub_workers > 1 and len(next_pi) > _PARALLEL_DEDUP_MIN:
+            next_pi = _dedup_by_subsumption_parallel(next_pi, sub_workers)
+        else:
+            next_pi = _dedup_by_subsumption(next_pi)
         sub_elapsed = time.time() - t_sub
         pi_out_after_sub = len(next_pi)
         sub_eliminated = pi_out_before_sub - pi_out_after_sub
