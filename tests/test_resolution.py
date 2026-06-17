@@ -266,3 +266,95 @@ def test_json_round_trip_example1():
     assert cc2.var_domains == cc.var_domains
     assert cc2.ordering == cc.ordering
     assert cc2.per_var_clauses == cc.per_var_clauses
+
+
+def test_rectangle_cover_tiles_product_exactly():
+    """Every work item is a rectangle; together they partition the full
+    cross-product (disjoint + complete) — the invariant the parallel expander
+    relies on for its union to equal the serial resolvent set."""
+    from resolution import _rectangle_cover
+
+    cases = [
+        ([11, 9, 9, 9], 400),
+        ([11, 9, 9], 400),
+        ([5], 16),
+        ([1, 1, 1], 16),
+        ([4, 4, 4, 4], 3),
+        ([7], 1),
+        ([20, 3], 50),
+        ([13], 400),
+    ]
+    for sizes, target in cases:
+        rects = _rectangle_cover(sizes, target)
+        total = 1
+        for s in sizes:
+            total *= s
+        seen = set()
+        for rect in rects:
+            ranges = [range(cs, ce) for (cs, ce) in rect]
+            ranges += [range(sizes[i]) for i in range(len(rect), len(sizes))]
+            for combo in product(*ranges):
+                assert combo not in seen, (
+                    f"overlap {combo} for sizes={sizes} target={target}"
+                )
+                seen.add(combo)
+        assert len(seen) == total, (
+            f"cover gap for sizes={sizes} target={target}: "
+            f"{len(seen)} leaves != {total}"
+        )
+
+
+def test_rectangle_cover_fills_cores_on_small_first_group():
+    """The bug this fixes: a heavy pattern whose first group is small must still
+    yield enough rectangles to saturate the pool — first-group-only chunking
+    capped it at the first group's size (~11)."""
+    from resolution import _rectangle_cover
+
+    rects = _rectangle_cover([11, 9, 9, 9, 9, 9, 9, 9, 9], target=400)
+    assert len(rects) >= 100
+
+
+@pytest.mark.parametrize("seed", range(8))
+def test_parallel_multigroup_matches_serial(seed: int, monkeypatch):
+    """Multi-group rectangle splitting (SAT_WORKERS>1) yields a clause set
+    identical to the single-core serial compile."""
+    import random
+
+    from resolution import CompileTooLarge
+
+    rng = random.Random(1000 + seed)
+    text_lines = ["var a 4", "var b 4", "var c 4", "var d 4"]
+    for _ in range(8):
+        k = rng.randint(2, 4)
+        chosen_vars = rng.sample(["a", "b", "c", "d"], k)
+        lits = []
+        for v in chosen_vars:
+            n_vals = rng.randint(1, 3)
+            vals = rng.sample([0, 1, 2, 3], n_vals)
+            lits.append("[" + ",".join(str(x) for x in vals) + "]:" + v)
+        text_lines.append(" or ".join(lits))
+    text = "\n".join(text_lines)
+
+    def compile_with(workers: str):
+        monkeypatch.setenv("SAT_WORKERS", workers)
+        try:
+            return compile_constraints(parse_constraints(text)), None
+        except (Unsatisfiable, CompileTooLarge) as e:
+            return None, type(e)
+
+    serial, serial_exc = compile_with("1")
+    parallel, parallel_exc = compile_with("4")
+
+    assert serial_exc is parallel_exc, (
+        f"seed={seed}: serial raised {serial_exc}, parallel raised {parallel_exc}"
+    )
+    if serial is None:
+        return
+
+    assert len(serial.per_var_clauses) == len(parallel.per_var_clauses)
+    for var, (sv, pv) in enumerate(
+        zip(serial.per_var_clauses, parallel.per_var_clauses)
+    ):
+        assert set(sv) == set(pv), (
+            f"seed={seed} var={var}: parallel clause set diverged from serial"
+        )

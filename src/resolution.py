@@ -5,7 +5,7 @@ import os
 import time
 from collections import defaultdict
 from dataclasses import dataclass
-from itertools import combinations
+from itertools import combinations, product
 from math import comb
 from pathlib import Path
 from typing import Callable, Iterable
@@ -46,6 +46,9 @@ def _is_tautology(clause: SignedClause, var_domains: list[int]) -> bool:
 
 
 _HEARTBEAT_EVERY_K = 200_000
+# Wall-clock interval for parent-side progress during the parallel pool. Tunable
+# via SAT_PARALLEL_HEARTBEAT_S; 0 disables the intermediate progress lines.
+_PARALLEL_HEARTBEAT_S = float(os.environ.get("SAT_PARALLEL_HEARTBEAT_S", "30"))
 
 
 class _SubsumerIndex:
@@ -291,7 +294,7 @@ def _grouped_eliminate_var(
     tag: str = "",
     only_pattern_size: int | None = None,
     work_pattern_idx: int | None = None,
-    work_first_chunk: tuple[int, int] | None = None,
+    work_chunks: tuple[tuple[int, int], ...] | None = None,
     dump_raw: list | None = None,
 ) -> tuple[list[SignedClause], dict]:
     """Eliminate `var` by grouping pi_bar by value-set, enumerating minimal
@@ -645,14 +648,18 @@ def _grouped_eliminate_var(
         use_pairwise = (
             len(pattern) == 4 and expansion_size > _PAIRWISE_SIZE4_THRESHOLD
         )
-        # For a parallel work item, restrict the first group to its assigned
-        # chunk. The pairwise decision above is computed from the *full* pattern
-        # first, so chunking never reroutes a huge pattern into the 4-deep
-        # recursion. The union of all chunks reproduces the full pattern's
-        # resolvents (cross-chunk duplicates removed by the caller's dedup).
-        if work_first_chunk is not None:
-            cs0, ce0 = work_first_chunk
-            group_lists = [group_lists[0][cs0:ce0]] + group_lists[1:]
+        # For a parallel work item, restrict a prefix of the groups to their
+        # assigned sub-ranges — the work item is a rectangle over the product of
+        # the leading groups. The pairwise decision above is computed from the
+        # *full* pattern first, so chunking never reroutes a huge pattern into
+        # the 4-deep recursion. The disjoint rectangles tile the full pattern's
+        # cross-product, so their union reproduces every resolvent (cross-chunk
+        # duplicates removed by the caller's dedup).
+        if work_chunks is not None:
+            k = len(work_chunks)
+            group_lists = [
+                gl[cs:ce] for gl, (cs, ce) in zip(group_lists, work_chunks)
+            ] + group_lists[k:]
         if verbose:
             mode = " mode=pairwise" if use_pairwise else ""
             print(
@@ -691,18 +698,53 @@ def _grouped_eliminate_var(
 _PARALLEL_CTX: dict = {}
 
 
-def _parallel_task(item: tuple[int, tuple[int, int]]):
-    """Worker: expand one conflict pattern (a first-group chunk of it) by
+def _parallel_task(item: tuple[int, tuple[tuple[int, int], ...]]):
+    """Worker: expand one conflict pattern (a leading-group rectangle of it) by
     re-entering the serial machinery with a fixed work item. Big read-only
     inputs come from the inherited _PARALLEL_CTX so only the tiny (pattern,
-    chunk) tuple is pickled."""
-    p_idx, chunk = item
+    chunks) tuple is pickled."""
+    p_idx, chunks = item
     ctx = _PARALLEL_CTX
     return _grouped_eliminate_var(
         ctx["pi_bar"], ctx["pi_minus_bar"], ctx["var"], ctx["domains"],
         ctx["cap"], verbose=False,
-        work_pattern_idx=p_idx, work_first_chunk=chunk,
+        work_pattern_idx=p_idx, work_chunks=chunks,
     )
+
+
+def _rectangle_cover(
+    group_sizes: list[int], target: int
+) -> list[tuple[tuple[int, int], ...]]:
+    """Tile the cross-product of a pattern's groups into >= min(target, product)
+    disjoint rectangles whose union is the whole product.
+
+    Splitting only the first group caps the rectangle count at its size, which
+    starves the pool when the heavy group is small (e.g. a size-9 pattern whose
+    first group holds ~11 clauses yields <=11 tasks regardless of core count).
+    Here we cut a *prefix* of groups into contiguous sub-ranges, multiplying the
+    granularity across groups until the rectangle count reaches `target`. Each
+    returned item is a tuple of (start, end) per leading split group; groups past
+    the tuple length are taken whole. Disjoint contiguous ranges per group make
+    the cartesian product a partition, so the union reproduces every leaf."""
+    splits: list[int] = []
+    prod = 1
+    for n in group_sizes:
+        if prod >= target:
+            break
+        want = -(-target // prod)        # ceil(target / prod)
+        c = min(n, want)                 # at most one chunk per clause in group
+        splits.append(c)
+        prod *= c
+        if c >= want:                    # reached target; stop opening new axes
+            break
+    per_group_ranges: list[list[tuple[int, int]]] = []
+    for gi, c in enumerate(splits):
+        n = group_sizes[gi]
+        step = -(-n // c)                # ceil(n / c) -> near-equal contiguous ranges
+        per_group_ranges.append(
+            [(s, min(s + step, n)) for s in range(0, n, step)]
+        )
+    return [tuple(combo) for combo in product(*per_group_ranges)]
 
 
 def _grouped_eliminate_parallel(
@@ -726,19 +768,35 @@ def _grouped_eliminate_parallel(
     resolvent set is identical to the serial result."""
     import multiprocessing as mp
 
-    tasks_per_worker = 4
-    items: list[tuple[int, tuple[int, int]]] = []
+    # Rectangles per worker to aim for. Higher = finer tiling: better load
+    # balance on skewed patterns (no single straggler dominates the tail) and
+    # more frequent task returns for progress reporting, at the cost of more
+    # pool overhead. Tunable via SAT_TASKS_PER_WORKER (default 4).
+    tasks_per_worker = max(1, int(os.environ.get("SAT_TASKS_PER_WORKER", "4")))
+    target = max(1, n_workers * tasks_per_worker)
+    items: list[tuple[int, tuple[tuple[int, int], ...]]] = []
     for p_idx, pattern in enumerate(patterns):
         if only_pattern_size is not None and len(pattern) != only_pattern_size:
             continue
-        n0 = len(groups[distinct_sets[pattern[0]]])
-        if n0 == 0:
-            items.append((p_idx, (0, 0)))
+        sizes = [len(groups[distinct_sets[i]]) for i in pattern]
+        if min(sizes, default=0) == 0:
+            # Some group is empty -> the cross-product, hence the expansion, is
+            # empty. One trivial work item keeps the pattern accounted for.
+            items.append((p_idx, ((0, 0),)))
             continue
-        target = max(1, n_workers * tasks_per_worker)
-        step = max(1, (n0 + target - 1) // target)
-        for s in range(0, n0, step):
-            items.append((p_idx, (s, min(s + step, n0))))
+        expansion = 1
+        for s in sizes:
+            expansion *= s
+        # Size-4 patterns above the pairwise threshold run the 2+2 pairwise
+        # machinery in the worker; that path consumes a flat first-group chunk,
+        # so keep first-group-only splitting for them. Every other pattern uses
+        # the recursive expander and can be tiled across a prefix of its groups.
+        use_pairwise = (
+            len(pattern) == 4 and expansion > _PAIRWISE_SIZE4_THRESHOLD
+        )
+        cover_sizes = [sizes[0]] if use_pairwise else sizes
+        for rect in _rectangle_cover(cover_sizes, target):
+            items.append((p_idx, rect))
 
     global _PARALLEL_CTX
     _PARALLEL_CTX = {
@@ -752,11 +810,6 @@ def _grouped_eliminate_parallel(
             flush=True,
         )
 
-    t_expand = time.time()
-    with mp.get_context("fork").Pool(n_workers) as pool:
-        results = pool.map(_parallel_task, items)
-    pool_elapsed = time.time() - t_expand
-
     kept: list[SignedClause] = []
     seen: set[SignedClause] = set(pi_minus_bar)
     agg = {
@@ -765,13 +818,43 @@ def _grouped_eliminate_parallel(
         "n_prefix_taut": 0, "n_lookahead_taut": 0, "n_prefix_subsumed": 0,
         "n_pruned_leaves": 0,
     }
-    for kpart, spart in results:
-        for c in kpart:
-            if c not in seen:
-                seen.add(c)
-                kept.append(c)
-        for k in agg:
-            agg[k] += spart.get(k, 0)
+
+    # imap_unordered streams each task's result as it finishes, so we can report
+    # progress mid-pool and fold results in incrementally (lower peak memory than
+    # holding all task outputs). Caveat: task sizes are skewed — the lone size-9
+    # pattern's rectangles dwarf the size-2 ones — so the task-count % races
+    # ahead then crawls while a few heavy tasks finish; the raw-resolvent rate is
+    # the truer measure of throughput, and counts freeze between task returns
+    # (a single in-flight heavy rectangle reports nothing until it completes).
+    t_expand = time.time()
+    n_items = len(items)
+    done = 0
+    last_log = t_expand
+    with mp.get_context("fork").Pool(n_workers) as pool:
+        for kpart, spart in pool.imap_unordered(_parallel_task, items):
+            for c in kpart:
+                if c not in seen:
+                    seen.add(c)
+                    kept.append(c)
+            for k in agg:
+                agg[k] += spart.get(k, 0)
+            done += 1
+            now = time.time()
+            if (
+                verbose and _PARALLEL_HEARTBEAT_S > 0
+                and now - last_log >= _PARALLEL_HEARTBEAT_S
+            ):
+                elapsed = now - t_expand
+                rate = agg["n_resolvents_raw"] / max(elapsed, 1e-9)
+                print(
+                    f"#   {tag}parallel progress tasks={done}/{n_items} "
+                    f"({100 * done / n_items:.0f}%) kept={len(kept)} "
+                    f"raw={agg['n_resolvents_raw']} rate={rate:.0f}/s "
+                    f"elapsed_s={elapsed:.0f}",
+                    flush=True,
+                )
+                last_log = now
+    pool_elapsed = time.time() - t_expand
 
     if verbose:
         print(
