@@ -133,6 +133,10 @@ class MNISTConstraintNet(nn.Module):
             offset += vr
         return torch.cat(out, dim=1)
 
+    def forward_raw(self, x):
+        """Return raw per-variable probabilities without applying the constraint."""
+        return self._logits_to_probs(self.get_logits(x))
+
     def forward_diagnostic(self, x):
         """Return raw and projected per-variable probabilities."""
         probs = self._logits_to_probs(self.get_logits(x))

@@ -49,6 +49,11 @@ _HEARTBEAT_EVERY_K = 200_000
 # Wall-clock interval for parent-side progress during the parallel pool. Tunable
 # via SAT_PARALLEL_HEARTBEAT_S; 0 disables the intermediate progress lines.
 _PARALLEL_HEARTBEAT_S = float(os.environ.get("SAT_PARALLEL_HEARTBEAT_S", "30"))
+# Per-worker heartbeat from *inside* a single rectangle's expansion, pid-tagged.
+# Off by default; set SAT_WORKER_HEARTBEAT_S>0 to watch a long-running heavy
+# rectangle make progress rather than waiting for it to finish and report.
+_WORKER_HEARTBEAT_S = float(os.environ.get("SAT_WORKER_HEARTBEAT_S", "0"))
+_WORKER_HB_RAW_STRIDE = 1 << 16  # only check the clock every ~65k full leaves
 
 
 class _SubsumerIndex:
@@ -324,6 +329,31 @@ def _grouped_eliminate_var(
         distinct_sets, cap, verbose=verbose, tag=tag
     )
 
+    # Cost guard: drop patterns whose cross-product expansion would exceed the
+    # SAT_MAX_EXPANSION budget (0 = unlimited). Skipping a pattern omits its
+    # conflict clauses, which only relaxes the constraint (sound, incomplete),
+    # so a high cap stays tractable instead of stalling on one explosive var.
+    max_expansion = int(os.environ.get("SAT_MAX_EXPANSION", "0"))
+    if max_expansion > 0 and patterns:
+        affordable: list[tuple[int, ...]] = []
+        n_skipped = 0
+        for pattern in patterns:
+            sz = 1
+            for i in pattern:
+                sz *= len(groups[distinct_sets[i]])
+            if sz > max_expansion:
+                n_skipped += 1
+            else:
+                affordable.append(pattern)
+        if n_skipped and verbose:
+            print(
+                f"#   {tag}expansion-budget={max_expansion}: skipped "
+                f"{n_skipped}/{len(patterns)} over-budget pattern(s) "
+                f"(their conflict clauses are dropped)",
+                flush=True,
+            )
+        patterns = affordable
+
     # Fan the per-pattern expansion across worker processes when requested
     # (SAT_WORKERS>1). Workers re-enter this function with a fixed work item
     # (work_pattern_idx set), so they take the serial path below — no recursion.
@@ -352,28 +382,44 @@ def _grouped_eliminate_var(
         "n_pruned_leaves": 0,
     }
     t_expand = time.time()
-    hb_state = {"last_t": t_expand}
+    hb_state = {"last_t": t_expand, "last_n": 0}
 
     def maybe_heartbeat() -> None:
-        if not verbose:
-            return
         n = counters["n_raw"]
-        if n and n % _HEARTBEAT_EVERY_K == 0:
+        if not n:
+            return
+        if verbose:
+            if n % _HEARTBEAT_EVERY_K == 0:
+                now = time.time()
+                rate = _HEARTBEAT_EVERY_K / max(now - hb_state["last_t"], 1e-9)
+                hb_state["last_t"] = now
+                print(
+                    f"#     {tag}expand progress raw={n} kept={len(kept)} "
+                    f"taut={counters['n_taut']} dup={counters['n_duplicate']} "
+                    f"sub_amb={counters['n_subsumed_ambient']} "
+                    f"sub_intra={counters['n_subsumed_intra']} "
+                    f"prefix_taut={counters['n_prefix_taut']} "
+                    f"lookahead_taut={counters['n_lookahead_taut']} "
+                    f"prefix_sub={counters['n_prefix_subsumed']} "
+                    f"pruned_leaves={counters['n_pruned_leaves']} "
+                    f"rate={rate:.0f}/s",
+                    flush=True,
+                )
+        elif _WORKER_HEARTBEAT_S > 0 and n % _WORKER_HB_RAW_STRIDE == 0:
+            # Worker process inside one rectangle: time-throttled, pid-tagged, so
+            # a heavy box shows it's still emitting leaves instead of looking hung.
             now = time.time()
-            rate = _HEARTBEAT_EVERY_K / max(now - hb_state["last_t"], 1e-9)
-            hb_state["last_t"] = now
-            print(
-                f"#     {tag}expand progress raw={n} kept={len(kept)} "
-                f"taut={counters['n_taut']} dup={counters['n_duplicate']} "
-                f"sub_amb={counters['n_subsumed_ambient']} "
-                f"sub_intra={counters['n_subsumed_intra']} "
-                f"prefix_taut={counters['n_prefix_taut']} "
-                f"lookahead_taut={counters['n_lookahead_taut']} "
-                f"prefix_sub={counters['n_prefix_subsumed']} "
-                f"pruned_leaves={counters['n_pruned_leaves']} "
-                f"rate={rate:.0f}/s",
-                flush=True,
-            )
+            if now - hb_state["last_t"] >= _WORKER_HEARTBEAT_S:
+                rate = (n - hb_state["last_n"]) / max(now - hb_state["last_t"], 1e-9)
+                hb_state["last_t"] = now
+                hb_state["last_n"] = n
+                print(
+                    f"#     {tag}[pid {os.getpid()}] expand raw={n} "
+                    f"kept={len(kept)} taut={counters['n_taut']} "
+                    f"pruned_leaves={counters['n_pruned_leaves']} "
+                    f"rate={rate:.0f}/s",
+                    flush=True,
+                )
 
     def expand(group_lists: list[list[int]]) -> None:
         # Front-load the groups most likely to saturate a variable so that
@@ -707,7 +753,7 @@ def _parallel_task(item: tuple[int, tuple[tuple[int, int], ...]]):
     ctx = _PARALLEL_CTX
     return _grouped_eliminate_var(
         ctx["pi_bar"], ctx["pi_minus_bar"], ctx["var"], ctx["domains"],
-        ctx["cap"], verbose=False,
+        ctx["cap"], verbose=False, tag=f"box p{p_idx} ",
         work_pattern_idx=p_idx, work_chunks=chunks,
     )
 
@@ -819,19 +865,44 @@ def _grouped_eliminate_parallel(
         "n_pruned_leaves": 0,
     }
 
-    # imap_unordered streams each task's result as it finishes, so we can report
-    # progress mid-pool and fold results in incrementally (lower peak memory than
-    # holding all task outputs). Caveat: task sizes are skewed — the lone size-9
-    # pattern's rectangles dwarf the size-2 ones — so the task-count % races
-    # ahead then crawls while a few heavy tasks finish; the raw-resolvent rate is
-    # the truer measure of throughput, and counts freeze between task returns
-    # (a single in-flight heavy rectangle reports nothing until it completes).
+    # imap_unordered streams each task's result as it finishes, so we fold
+    # results in incrementally (lower peak memory than holding all task outputs).
+    # We wait on the next result with a timeout equal to the heartbeat, so a
+    # progress line is emitted on the clock even when no task has finished in the
+    # window — otherwise one long-running heavy rectangle would look hung. Task
+    # sizes are skewed (the size-9 pattern's rectangles dwarf the size-2 ones),
+    # so the task-count % races ahead then crawls; the raw-resolvent rate and the
+    # climbing elapsed are the truer liveness signals.
     t_expand = time.time()
     n_items = len(items)
     done = 0
     last_log = t_expand
+
+    def _emit_progress() -> None:
+        elapsed = time.time() - t_expand
+        rate = agg["n_resolvents_raw"] / max(elapsed, 1e-9)
+        print(
+            f"#   {tag}parallel progress tasks={done}/{n_items} "
+            f"({100 * done / n_items:.0f}%) kept={len(kept)} "
+            f"raw={agg['n_resolvents_raw']} rate={rate:.0f}/s "
+            f"elapsed_s={elapsed:.0f}",
+            flush=True,
+        )
+
+    hb = _PARALLEL_HEARTBEAT_S if _PARALLEL_HEARTBEAT_S > 0 else None
     with mp.get_context("fork").Pool(n_workers) as pool:
-        for kpart, spart in pool.imap_unordered(_parallel_task, items):
+        result_iter = pool.imap_unordered(_parallel_task, items)
+        while True:
+            try:
+                kpart, spart = result_iter.next(timeout=hb)
+            except StopIteration:
+                break
+            except mp.TimeoutError:
+                # No task finished within the heartbeat window — tick anyway.
+                if verbose and hb is not None:
+                    _emit_progress()
+                    last_log = time.time()
+                continue
             for c in kpart:
                 if c not in seen:
                     seen.add(c)
@@ -839,21 +910,9 @@ def _grouped_eliminate_parallel(
             for k in agg:
                 agg[k] += spart.get(k, 0)
             done += 1
-            now = time.time()
-            if (
-                verbose and _PARALLEL_HEARTBEAT_S > 0
-                and now - last_log >= _PARALLEL_HEARTBEAT_S
-            ):
-                elapsed = now - t_expand
-                rate = agg["n_resolvents_raw"] / max(elapsed, 1e-9)
-                print(
-                    f"#   {tag}parallel progress tasks={done}/{n_items} "
-                    f"({100 * done / n_items:.0f}%) kept={len(kept)} "
-                    f"raw={agg['n_resolvents_raw']} rate={rate:.0f}/s "
-                    f"elapsed_s={elapsed:.0f}",
-                    flush=True,
-                )
-                last_log = now
+            if verbose and hb is not None and time.time() - last_log >= hb:
+                _emit_progress()
+                last_log = time.time()
     pool_elapsed = time.time() - t_expand
 
     if verbose:
@@ -968,20 +1027,27 @@ def _subsumes(c1: SignedClause, c2: SignedClause) -> bool:
 def _dedup_by_subsumption(clauses: list[SignedClause]) -> list[SignedClause]:
     """Drop every clause that is subsumed by some other clause in the input.
 
-    Sort smallest-first so the candidate subsumers are added before potential
-    subsumees; then for each new clause check whether it subsumes any
-    same-width clause already kept (smaller-width kept can't be subsumed
-    since c subsumes k requires len(c) <= len(k)).
+    Exact duplicates are collapsed first (mutual subsumption between distinct
+    signed clauses is impossible — it forces identical literal sets — so the
+    survivors are exactly the clauses no *other* clause subsumes). Each such
+    test is routed through `_SubsumerIndex`, which only visits subsumers
+    pivoted on a variable the candidate mentions, instead of scanning every
+    clause kept so far. Same result as the all-pairs scan; the serial twin of
+    `_dedup_by_subsumption_parallel`.
     """
-    sorted_clauses = sorted(clauses, key=lambda c: len(c.literals))
-    kept: list[SignedClause] = []
-    for c in sorted_clauses:
-        if any(_subsumes(k, c) for k in kept):
-            continue
-        if kept and len(kept[-1].literals) == len(c.literals):
-            kept = [k for k in kept if not _subsumes(c, k)]
-        kept.append(c)
-    return kept
+    unique = list(dict.fromkeys(clauses))  # collapse exact duplicates, keep order
+    for c in unique:
+        if not c.literals:
+            return [c]  # the empty clause subsumes everything else
+    # _SubsumerIndex sorts by length on insert; pre-sort so `maps[i]` aligns
+    # with `unique_sorted[i]` (stable sort leaves the pre-sorted order intact).
+    unique_sorted = sorted(unique, key=lambda c: len(c.literals))
+    index = _SubsumerIndex(unique_sorted)
+    maps = index.clause_maps
+    return [
+        c for i, c in enumerate(unique_sorted)
+        if index.find_subsumer(maps[i], len(maps[i]), exclude=i) is None
+    ]
 
 
 # Read-only state shared with dedup workers via fork (set in the parent right
@@ -1091,6 +1157,7 @@ def compile_constraints(
     verbose: bool = False,
     legacy_enum: bool = False,
     stream_to: "Path | str | None" = None,
+    cap: int | None = None,
 ) -> CompiledConstraints:
     """Signed-resolution compile under cs.ordering.
 
@@ -1102,6 +1169,15 @@ def compile_constraints(
     file as DSL lines (with `# step=N var=NAME` header comments) and flushed.
     Useful for live observability and partial-artifact survival under SIGINT.
     The file is re-parseable (comments are ignored by parse_constraints).
+
+    `cap` bounds the size of the minimal conflicts derived at each step. The
+    full compile uses `cap = var domain size`, which derives every conflict and
+    yields the satisfaction guarantee. A smaller `cap` derives only conflicts up
+    to that arity, producing an under-constrained (sound but incomplete)
+    relaxation that is tractable when the full compile is not: the per-variable
+    feasible sets come out more permissive, so the layer never wrongly rejects a
+    valid value but may admit a constraint-violating one. `None` means no
+    override (each step uses its var's domain size).
 
     Raises:
         Unsatisfiable: if the empty clause is derived.
@@ -1150,7 +1226,7 @@ def compile_constraints(
             f"preproc_sub_elim={preproc_eliminated} "
             f"preproc_sub_elapsed_s={preproc_elapsed:.3f} "
             f"domains={sorted(set(domains))} "
-            f"cap=per_var_domain algo={algo}",
+            f"cap={'per_var_domain' if cap is None else cap} algo={algo}",
             flush=True,
         )
         print(f"# ordering: {order_names}", flush=True)
@@ -1173,7 +1249,7 @@ def compile_constraints(
                 )
             stream_file.flush()
 
-        step_cap = domains[var]
+        step_cap = domains[var] if cap is None else min(cap, domains[var])
 
         if verbose:
             print(
@@ -1506,7 +1582,27 @@ def _cli() -> None:
         action="store_true",
         help="Print the elimination ordering (first-eliminated to last) and exit.",
     )
+    p.add_argument(
+        "--cap",
+        type=int,
+        default=None,
+        help="Bound the minimal-conflict arity per step (default: var domain size, "
+        "the full guaranteed compile). A smaller cap (e.g. 2 or 3) derives only "
+        "low-arity conflicts: tractable but under-constrained, dropping the "
+        "satisfaction guarantee.",
+    )
+    p.add_argument(
+        "--max-expansion",
+        type=int,
+        default=None,
+        help="Per-pattern cross-product budget (0/unset: unlimited). Patterns "
+        "exceeding it are skipped-and-logged rather than expanded, keeping a "
+        "high --cap tractable. Also settable via SAT_MAX_EXPANSION.",
+    )
     args = p.parse_args()
+
+    if args.max_expansion is not None:
+        os.environ["SAT_MAX_EXPANSION"] = str(args.max_expansion)
 
     cs = parse_constraints(args.input.read_text())
     if args.ordering != "file":
@@ -1535,6 +1631,7 @@ def _cli() -> None:
             verbose=not args.quiet,
             legacy_enum=args.legacy_enum,
             stream_to=stream_to,
+            cap=args.cap,
         )
     except Unsatisfiable as e:
         print(f"UNSAT: {e}", flush=True)

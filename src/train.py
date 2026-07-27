@@ -20,7 +20,7 @@ from data import (
     mnist_sum_num_samples,
     mnist_add_num_samples,
 )
-from loss import MaskedLoss
+from loss import MaskedLoss, PlainSumLoss
 from model import MNISTConstraintNet
 from carry_chain_constraint_layer import compute_carry_chain
 
@@ -80,16 +80,16 @@ def split_logits(logits, variable_ranges):
 
 
 CSV_HEADER = [
-    'task', 'n_digits', 'projection_backend', 'run_id', 'epoch', 'loss',
+    'task', 'n_digits', 'projection_backend', 'constraint_mode', 'run_id', 'epoch', 'loss',
     'neural_acc', 'symbolic_acc', 'constraint_sat',
     'avg_digit_acc', 'avg_l2_edit', 'grad_norm',
     'gpu_mem_mb', 'epoch_time_s',
 ]
 
 
-def _nan_row(task, n_digits, backend, run_id, epoch, gpu_mem_mb, epoch_time):
+def _nan_row(task, n_digits, backend, constraint_mode, run_id, epoch, gpu_mem_mb, epoch_time):
     nan = float('nan')
-    return [task, n_digits, backend, run_id, epoch, nan,
+    return [task, n_digits, backend, constraint_mode, run_id, epoch, nan,
             nan, nan, nan, nan, nan, nan,
             gpu_mem_mb, epoch_time]
 
@@ -143,7 +143,7 @@ def train_epoch_sum(model, loader, optimizer, criterion, variable_ranges,
     }
 
 
-def evaluate_sum(model, loader, variable_ranges, n_digits, device):
+def evaluate_sum(model, loader, variable_ranges, n_digits, device, apply_constraint=True):
     model.eval()
     n_vars = len(variable_ranges)
     correct = {f'a{i+1}': 0 for i in range(n_vars)}
@@ -158,9 +158,14 @@ def evaluate_sum(model, loader, variable_ranges, n_digits, device):
             digit_labels = digit_labels.to(device)
             sum_label = sum_label.to(device)
 
-            raw_probs, projected_probs, _info = model.forward_diagnostic(imgs)
+            if apply_constraint:
+                raw_probs, eval_probs, _info = model.forward_diagnostic(imgs)
+                l2_edit = torch.norm(eval_probs - raw_probs, p=2, dim=1).sum().item()
+            else:
+                eval_probs = model.forward_raw(imgs)
+                l2_edit = 0.0
 
-            proj_slices = split_logits(projected_probs, variable_ranges)
+            proj_slices = split_logits(eval_probs, variable_ranges)
             preds = [s.argmax(dim=1) for s in proj_slices]
 
             target_list = [digit_labels[:, i] for i in range(n_digits)] + [sum_label]
@@ -171,7 +176,7 @@ def evaluate_sum(model, loader, variable_ranges, n_digits, device):
             correct['constraint'] += (symbolic_result == preds[-1]).sum().item()
             correct['symbolic_sum'] += (symbolic_result == sum_label).sum().item()
 
-            total_l2 += torch.norm(projected_probs - raw_probs, p=2, dim=1).sum().item()
+            total_l2 += l2_edit
             total += imgs.shape[0]
 
     return {
@@ -184,7 +189,7 @@ def evaluate_sum(model, loader, variable_ranges, n_digits, device):
 
 
 def train_epoch_add(model, loader, optimizer, variable_ranges, n_inputs,
-                    device, lambda_proj, per_iter_timeout_s):
+                    device, lambda_proj, per_iter_timeout_s, apply_constraint=True):
     model.train()
     n_output = len(variable_ranges) - n_inputs
     total_loss, total_proj = 0.0, 0.0
@@ -208,11 +213,14 @@ def train_epoch_add(model, loader, optimizer, variable_ranges, n_inputs,
                                                 output_digit_labels[:, j])
                                 for j in range(n_output))
 
-                probs = torch.cat([F.softmax(s, dim=1) for s in logit_slices], dim=1)
-                _proj_probs, proj_info = model.constraint_layer(probs)
-                proj_loss = proj_info['projection_loss']
-
-                loss = input_ce + output_ce + lambda_proj * proj_loss
+                if apply_constraint:
+                    probs = torch.cat([F.softmax(s, dim=1) for s in logit_slices], dim=1)
+                    _proj_probs, proj_info = model.constraint_layer(probs)
+                    proj_loss = proj_info['projection_loss']
+                    loss = input_ce + output_ce + lambda_proj * proj_loss
+                else:
+                    proj_loss = torch.zeros((), device=device)
+                    loss = input_ce + output_ce
 
                 optimizer.zero_grad()
                 loss.backward()
@@ -241,7 +249,8 @@ def train_epoch_add(model, loader, optimizer, variable_ranges, n_inputs,
     }
 
 
-def evaluate_add(model, loader, variable_ranges, n_inputs, n_digits_per_num, device):
+def evaluate_add(model, loader, variable_ranges, n_inputs, n_digits_per_num, device,
+                 apply_constraint=True):
     model.eval()
     n_output = n_digits_per_num + 1
 
@@ -259,9 +268,16 @@ def evaluate_add(model, loader, variable_ranges, n_inputs, n_digits_per_num, dev
             output_digit_labels = output_digit_labels.to(device)
             B = imgs.shape[0]
 
-            raw_probs, projected_probs, _info = model.forward_diagnostic(imgs)
+            if apply_constraint:
+                raw_probs, eval_probs, _info = model.forward_diagnostic(imgs)
+                l2_edit = torch.norm(eval_probs - raw_probs, p=2, dim=1).sum().item()
+            else:
+                raw_probs = model.forward_raw(imgs)
+                eval_probs = raw_probs
+                l2_edit = 0.0
+
             raw_slices = split_logits(raw_probs, variable_ranges)
-            proj_slices = split_logits(projected_probs, variable_ranges)
+            proj_slices = split_logits(eval_probs, variable_ranges)
 
             for i in range(n_inputs):
                 input_correct += (raw_slices[i].argmax(dim=1) == digit_labels[:, i]).sum().item()
@@ -278,7 +294,7 @@ def evaluate_add(model, loader, variable_ranges, n_inputs, n_digits_per_num, dev
             s_consistent = compute_carry_chain(a_preds, b_preds)
             chain_satisfied += (proj_output_preds == s_consistent).all(dim=1).sum().item()
 
-            total_l2 += torch.norm(projected_probs - raw_probs, p=2, dim=1).sum().item()
+            total_l2 += l2_edit
             total += B
 
     return {
@@ -293,10 +309,13 @@ def evaluate_add(model, loader, variable_ranges, n_inputs, n_digits_per_num, dev
 def run_one(task, n_digits, seed, epochs, lr, batch_size, device,
             train_loader, test_loader, csv_writer, csv_file,
             projection_backend, solver_time_limit,
-            per_iter_timeout_s, max_run_time_s):
+            per_iter_timeout_s, max_run_time_s, constraint_mode='train_infer'):
     torch.manual_seed(seed)
     if device.type == 'cuda':
         torch.cuda.manual_seed_all(seed)
+
+    train_constraint = constraint_mode in ('train_infer', 'train_only')
+    infer_constraint = constraint_mode in ('train_infer', 'infer_only')
 
     variable_ranges, n_inputs, constraint_fn = get_config(n_digits, task)
     n_vars = len(variable_ranges)
@@ -315,12 +334,16 @@ def run_one(task, n_digits, seed, epochs, lr, batch_size, device,
         optimizer, T_max=epochs, eta_min=1e-5)
 
     if task == 'sum':
-        n_sum_categories = variable_ranges[-1]
-        criterion = MaskedLoss(n_sum_categories=n_sum_categories,
-                               constraint_fn=constraint_fn)
+        if train_constraint:
+            n_sum_categories = variable_ranges[-1]
+            criterion = MaskedLoss(n_sum_categories=n_sum_categories,
+                                   constraint_fn=constraint_fn)
+        else:
+            criterion = PlainSumLoss()
 
     print(f"\n{'=' * 60}")
-    print(f"task={task}  N={n_digits}  seed={seed}  backend={projection_backend}")
+    print(f"task={task}  N={n_digits}  seed={seed}  backend={projection_backend}  "
+          f"mode={constraint_mode}")
     print(f"epochs={epochs}  lr={lr}  batch_size={batch_size}")
     print(f"{'=' * 60}")
 
@@ -339,31 +362,34 @@ def run_one(task, n_digits, seed, epochs, lr, batch_size, device,
         else:
             train_info = train_epoch_add(
                 model, train_loader, optimizer, variable_ranges, n_inputs,
-                device, lambda_proj=1.0, per_iter_timeout_s=per_iter_timeout_s)
+                device, lambda_proj=1.0, per_iter_timeout_s=per_iter_timeout_s,
+                apply_constraint=train_constraint)
 
         if train_info['timed_out']:
             epoch_time = time.time() - epoch_start
             gpu_mem_mb = (torch.cuda.max_memory_allocated() / (1024 ** 2)
                           if device.type == 'cuda' else float('nan'))
             csv_writer.writerow(_nan_row(task, n_digits, projection_backend,
-                                         seed, epoch + 1, gpu_mem_mb, epoch_time))
+                                         constraint_mode, seed, epoch + 1,
+                                         gpu_mem_mb, epoch_time))
             csv_file.flush()
             print(f"  Aborting after epoch {epoch+1} timeout marker.")
             aborted = True
             break
 
         if task == 'sum':
-            metrics = evaluate_sum(model, test_loader, variable_ranges, n_digits, device)
+            metrics = evaluate_sum(model, test_loader, variable_ranges, n_digits, device,
+                                   apply_constraint=infer_constraint)
         else:
             metrics = evaluate_add(model, test_loader, variable_ranges, n_inputs,
-                                   n_digits, device)
+                                   n_digits, device, apply_constraint=infer_constraint)
 
         epoch_time = time.time() - epoch_start
         gpu_mem_mb = (torch.cuda.max_memory_allocated() / (1024 ** 2)
                       if device.type == 'cuda' else float('nan'))
 
         csv_writer.writerow([
-            task, n_digits, projection_backend, seed, epoch + 1,
+            task, n_digits, projection_backend, constraint_mode, seed, epoch + 1,
             train_info['loss'],
             metrics['neural_acc'],
             metrics['symbolic_acc'],
@@ -387,7 +413,8 @@ def run_one(task, n_digits, seed, epochs, lr, batch_size, device,
         if max_run_time_s is not None and (time.time() - run_start) > max_run_time_s:
             elapsed = time.time() - run_start
             csv_writer.writerow(_nan_row(task, n_digits, projection_backend,
-                                         seed, epoch + 1, gpu_mem_mb, elapsed))
+                                         constraint_mode, seed, epoch + 1,
+                                         gpu_mem_mb, elapsed))
             csv_file.flush()
             print(f"  Per-run cap hit ({elapsed:.1f}s > {max_run_time_s}s). Aborting.")
             aborted = True
@@ -407,6 +434,10 @@ def main():
     parser.add_argument('--csv', type=str, required=True)
     parser.add_argument('--projection-backend', type=str, default='closed_form',
                         choices=['closed_form', 'cvxpy'])
+    parser.add_argument('--constraint-mode', type=str, default='train_infer',
+                        choices=['train_infer', 'train_only', 'infer_only', 'none'],
+                        help='When the constraint is applied: at train+inference, '
+                             'train only, inference only, or never (unconstrained).')
     parser.add_argument('--solver-time-limit', type=float, default=None)
     parser.add_argument('--per-iter-timeout-s', type=float, default=None)
     parser.add_argument('--max-run-time-s', type=float, default=None)
@@ -474,6 +505,7 @@ def main():
             solver_time_limit=args.solver_time_limit,
             per_iter_timeout_s=args.per_iter_timeout_s,
             max_run_time_s=args.max_run_time_s,
+            constraint_mode=args.constraint_mode,
         )
 
 
