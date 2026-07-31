@@ -15,7 +15,9 @@ python3 examples/bench_topology_compile.py \
     --classes 6 \
     --tau 0.5 \
     --clauses-per-edge 2 \
-    --trials 3 \
+    --trials 5 \
+    --heavy-trials 15 \
+    --heavy-from-band 3 \
     --timeout-s 120 \
     --prefix compile_topology_timing 2>&1 | tee "$LOG"
 echo "exit=${PIPESTATUS[0]}"

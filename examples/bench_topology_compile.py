@@ -74,6 +74,7 @@ def run_one(
         "m": m,
         "graph": graph,
         "band": b if graph == "exp" else 0,
+        "classes": args.classes,
         "seed": seed,
         "induced_width": width,
         "clauses_in": len(cs.clauses),
@@ -85,26 +86,47 @@ def run_one(
     }
 
 
+def _quantile(sorted_vals: list[float], q: float) -> float:
+    """Linear-interpolated quantile of an already-sorted list."""
+    if len(sorted_vals) == 1:
+        return sorted_vals[0]
+    pos = q * (len(sorted_vals) - 1)
+    lo = int(pos)
+    hi = min(lo + 1, len(sorted_vals) - 1)
+    return sorted_vals[lo] + (pos - lo) * (sorted_vals[hi] - sorted_vals[lo])
+
+
 def aggregate(trials: list[dict]) -> dict:
-    """Collapse per-seed trials of one config into a mean/std/min row."""
-    times = [t["compile_s"] for t in trials]
+    """Collapse per-seed trials of one config into one row.
+
+    Compile times across random instances are right-skewed, so the median and
+    the interquartile range are reported alongside the mean: a single unlucky
+    instance can move the mean by more than the effect being measured.
+    """
+    times = sorted(t["compile_s"] for t in trials)
     head = trials[0]
+    p25, p75 = _quantile(times, 0.25), _quantile(times, 0.75)
     return {
         "m": head["m"],
         "graph": head["graph"],
         "band": head["band"],
+        "classes": head["classes"],
         "trials": len(trials),
         "induced_width": head["induced_width"],
         "clauses_in": head["clauses_in"],
         "clauses_out": round(statistics.mean(t["clauses_out"] for t in trials)),
         "resolvents": round(statistics.mean(t["resolvents"] for t in trials)),
         "max_bucket": max(t["max_bucket"] for t in trials),
-        "gen_s": round(statistics.mean(t["gen_s"] for t in trials), 4),
-        "compile_s": round(statistics.mean(times), 4),
+        "gen_s": round(statistics.mean(t["gen_s"] for t in trials), 6),
+        "compile_s": round(statistics.mean(times), 6),
         "compile_std": round(
-            statistics.stdev(times) if len(times) > 1 else 0.0, 4
+            statistics.stdev(times) if len(times) > 1 else 0.0, 6
         ),
-        "compile_min": round(min(times), 4),
+        "compile_med": round(statistics.median(times), 6),
+        "compile_p25": round(p25, 6),
+        "compile_p75": round(p75, 6),
+        "compile_min": round(times[0], 6),
+        "compile_max": round(times[-1], 6),
     }
 
 
@@ -125,24 +147,52 @@ def write_markdown(rows: list[dict], out: Path, args) -> None:
         f"Signed-resolution compile (`compile_constraints`) of synthetic "
         f"binary-clause instances over m variables of domain K={args.classes}, "
         f"|S_t| = round(tau*K) with tau={args.tau}. Elimination ordering: "
-        f"`{args.ordering}`. Each row is the mean over {args.trials} seeds.",
+        f"`{args.ordering}`. Configs with b >= {args.heavy_from_band} use "
+        f"{args.heavy_trials} seeds, the rest {args.trials}; instance-to-"
+        "instance spread is far larger than run-to-run timing noise, so the "
+        "median and IQR below are over independently generated instances.",
         "",
         "`exp` is the banded graph (edge iff 0 < |i-j| <= b); `poly` is a "
         f"spanning tree ({args.tree_shape} attachment, m-1 edges).",
         "",
-        "| topology | b | m | width | clauses in | clauses out | resolvents | "
-        "compile (mean) | std | per var |",
-        "|:--|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+        f"`K` is the number of classes (= each variable's domain size) and `r` "
+        f"the number of clauses in the generated instance — "
+        f"{args.clauses_per_edge} per edge, so r = {args.clauses_per_edge}|E| "
+        "with |E| = m-1 for `poly` and |E| = mb - b(b+1)/2 for `exp`.",
+        "",
     ]
+    headers = ["topology", "b", "m", "K", "r", "width", "seeds",
+               "compile (ms, mean ± sd)"]
+    aligns = ["left"] + ["right"] * 7
+    body = []
     for r in rows:
-        per_var = r["compile_s"] / r["m"]
         band = str(r["band"]) if r["graph"] == "exp" else "-"
-        lines.append(
-            f"| `{r['graph']}` | {band} | {r['m']} | {r['induced_width']} | "
-            f"{r['clauses_in']:,} | {r['clauses_out']:,} | {r['resolvents']:,} "
-            f"| {r['compile_s']:.4f}s | {r['compile_std']:.4f} | "
-            f"{per_var * 1000:.3f}ms |"
-        )
+        body.append([
+            f"`{r['graph']}`", band, str(r["m"]), str(r["classes"]),
+            f"{r['clauses_in']:,}", str(r["induced_width"]), str(r["trials"]),
+            f"{r['compile_s'] * 1000:,.2f} ± {r['compile_std'] * 1000:,.2f}",
+        ])
+    widths = [
+        max(len(h), max((len(row[i]) for row in body), default=0))
+        for i, h in enumerate(headers)
+    ]
+
+    def _row(cells: list[str]) -> str:
+        """Pad one row's cells to the shared column widths."""
+        return "| " + " | ".join(
+            c.ljust(w) if a == "left" else c.rjust(w)
+            for c, w, a in zip(cells, widths, aligns)
+        ) + " |"
+
+    lines.append(_row(headers))
+    lines.append(
+        "|" + "|".join(
+            ":" + "-" * (w + 1) if a == "left" else "-" * (w + 1) + ":"
+            for w, a in zip(widths, aligns)
+        ) + "|"
+    )
+    for cells in body:
+        lines.append(_row(cells))
     lines += [
         "",
         "`width` is the induced width of the primal graph under the elimination "
@@ -180,19 +230,26 @@ def make_png(rows: list[dict], out: Path, args) -> None:
     bands = sorted({r["band"] for r in rows if r["graph"] == "exp"})
     cmap = plt.get_cmap("autumn")
 
+    def iqr_bars(sub: list[dict]) -> list[list[float]]:
+        """Asymmetric median-to-quartile error bars."""
+        return [
+            [max(r["compile_med"] - r["compile_p25"], 0.0) for r in sub],
+            [max(r["compile_p75"] - r["compile_med"], 0.0) for r in sub],
+        ]
+
     ax = axes[0]
     poly = [r for r in rows if r["graph"] == "poly"]
     if poly:
         ax.errorbar(
-            [r["m"] for r in poly], [r["compile_s"] for r in poly],
-            yerr=[r["compile_std"] for r in poly], fmt="o-", color="#2980b9",
+            [r["m"] for r in poly], [r["compile_med"] for r in poly],
+            yerr=iqr_bars(poly), fmt="o-", color="#2980b9",
             lw=2, ms=6, capsize=3, label="poly (tree, width 1)",
         )
     for k, b in enumerate(bands):
         sub = [r for r in rows if r["graph"] == "exp" and r["band"] == b]
         ax.errorbar(
-            [r["m"] for r in sub], [r["compile_s"] for r in sub],
-            yerr=[r["compile_std"] for r in sub], fmt="o-",
+            [r["m"] for r in sub], [r["compile_med"] for r in sub],
+            yerr=iqr_bars(sub), fmt="o-",
             color=cmap(0.15 + 0.55 * k / max(len(bands) - 1, 1)),
             lw=2, ms=6, capsize=3, label=f"exp b={b} (width {sub[0]['induced_width']})",
         )
@@ -213,15 +270,16 @@ def make_png(rows: list[dict], out: Path, args) -> None:
         )
         if len(sub) < 2:
             continue
-        ax.plot(
-            [r["band"] for r in sub], [r["compile_s"] for r in sub], "o-",
+        ax.errorbar(
+            [r["band"] for r in sub], [r["compile_med"] for r in sub],
+            yerr=iqr_bars(sub), fmt="o-",
             color=cmap(0.1 + 0.6 * k / max(len(ms) - 1, 1)), lw=2, ms=5,
-            label=f"m={m}",
+            capsize=3, label=f"m={m}",
         )
     for m in ms:
         sub = [r for r in rows if r["graph"] == "poly" and r["m"] == m]
         if sub:
-            ax.axhline(sub[0]["compile_s"], ls=":", lw=1, color="#2980b9")
+            ax.axhline(sub[0]["compile_med"], ls=":", lw=1, color="#2980b9")
     ax.set_yscale("log")
     ax.set_xlabel("bandwidth b (`exp` only)")
     ax.set_ylabel("compile wall time (s)")
@@ -251,8 +309,13 @@ def main() -> None:
     p.add_argument("--classes", type=int, default=4, help="K.")
     p.add_argument("--tau", type=float, default=0.5)
     p.add_argument("--clauses-per-edge", type=int, default=1)
-    p.add_argument("--trials", type=int, default=3,
-                   help="Seeds per config; compile time is averaged over them.")
+    p.add_argument("--trials", type=int, default=5,
+                   help="Seeds per config for the cheap (low-b) configs.")
+    p.add_argument("--heavy-trials", type=int, default=15,
+                   help="Seeds for configs with b >= --heavy-from-band, where "
+                        "instance-to-instance spread is large.")
+    p.add_argument("--heavy-from-band", type=int, default=3,
+                   help="Bandwidth at which --heavy-trials takes over.")
     p.add_argument("--seed", type=int, default=0, help="First seed.")
     p.add_argument("--ordering", choices=("file", "min-degree", "min-fill"),
                    default="min-fill",
@@ -287,9 +350,14 @@ def main() -> None:
         for m in sorted(args.m):
             if graph == "exp" and b >= m:
                 continue
+            n_trials = (
+                args.heavy_trials
+                if graph == "exp" and b >= args.heavy_from_band
+                else args.trials
+            )
             trials = []
             try:
-                for t in range(args.trials):
+                for t in range(n_trials):
                     trials.append(run_one(m, graph, b, args, args.seed + t))
             except Unsatisfiable:
                 print(f"{graph} b={b} m={m}: UNSAT, skipped", flush=True)
@@ -298,13 +366,15 @@ def main() -> None:
             rows.append(row)
             print(
                 f"{graph:<4} b={b} m={m:<4} width={row['induced_width']:<3} "
-                f"clauses_in={row['clauses_in']:<6} "
+                f"n={row['trials']:<3} "
                 f"out={row['clauses_out']:<7} res={row['resolvents']:<7} "
-                f"compile={row['compile_s']:.4f}s "
-                f"(+-{row['compile_std']:.4f})",
+                f"median={row['compile_med']:.4f}s "
+                f"IQR=[{row['compile_p25']:.4f},{row['compile_p75']:.4f}] "
+                f"mean={row['compile_s']:.4f}s "
+                f"range=[{row['compile_min']:.4f},{row['compile_max']:.4f}]",
                 flush=True,
             )
-            if args.timeout_s is not None and row["compile_s"] > args.timeout_s:
+            if args.timeout_s is not None and row["compile_med"] > args.timeout_s:
                 print(
                     f"  {graph} b={b}: exceeded {args.timeout_s}s at m={m}, "
                     f"skipping larger m for this config", flush=True,

@@ -26,13 +26,16 @@ def generate_data(
     lam: float = 0.5,
     eps: float = 1.0,
     noise_frac: float = 0.5,
+    noise_dist: str = "gaussian",
     rng: np.random.Generator | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     """Draw chi = <X_1..X_m> from K isotropic Gaussians on a circle.
 
     Labels are uniform over the K classes; X_i ~ N(mu_{c_i}, theta^2 I). A
     `noise_frac` fraction of the points is then corrupted by convex mixing,
-    X_i <- (1-lam) X_i + lam * e with e ~ N(0, eps^2 I). Returns (X, labels)
+    X_i <- (1-lam) X_i + lam * e. `noise_dist` selects the corruption law:
+    "gaussian" draws e ~ N(0, eps^2 I), "uniform" draws e ~ eps * U[0,1]^2.
+    The class-conditional scatter stays Gaussian either way. Returns (X, labels)
     with X of shape (m, 2).
     """
     rng = np.random.default_rng() if rng is None else rng
@@ -43,7 +46,12 @@ def generate_data(
     n_noisy = int(round(noise_frac * m))
     if n_noisy > 0 and lam > 0.0:
         idx = rng.choice(m, size=n_noisy, replace=False)
-        noise = eps * rng.standard_normal((n_noisy, 2))
+        if noise_dist == "gaussian":
+            noise = eps * rng.standard_normal((n_noisy, 2))
+        elif noise_dist == "uniform":
+            noise = eps * rng.random((n_noisy, 2))
+        else:
+            raise ValueError(f"unknown noise_dist {noise_dist!r}")
         X[idx] = (1.0 - lam) * X[idx] + lam * noise
     return X, labels
 
@@ -177,6 +185,7 @@ def generate_instance(
     lam: float = 0.5,
     eps: float = 1.0,
     noise_frac: float = 0.5,
+    noise_dist: str = "gaussian",
     tree_shape: str = "random",
     seed: int = 0,
     satisfiable: bool = True,
@@ -187,7 +196,7 @@ def generate_instance(
 
     X, labels = generate_data(
         m, n_classes, theta=theta, radius=radius, lam=lam, eps=eps,
-        noise_frac=noise_frac, rng=np_rng,
+        noise_frac=noise_frac, noise_dist=noise_dist, rng=np_rng,
     )
     edges = build_edges(m, graph, b=b, rng=py_rng, tree_shape=tree_shape)
     cs = build_constraints(

@@ -119,6 +119,388 @@ class _SubsumerIndex:
         return None
 
 
+_ENUM_CTX: dict = {}
+
+# Below this many candidates at one pattern size, the fork and result
+# marshalling cost more than the scan itself, so the size stays serial.
+_ENUM_PARALLEL_MIN = int(os.environ.get("SAT_ENUM_PARALLEL_MIN", "200000"))
+
+
+def _enum_worker_count() -> int:
+    """Worker count for the candidate scan, or 1 when nesting is impossible.
+
+    The per-pattern expansion pool runs daemonic workers, and those re-enter
+    the enumerator for their own work item. A daemonic process cannot start
+    children, so inside one the scan has to stay serial — the outer pool is
+    already saturating the cores in that case.
+    """
+    import multiprocessing as mp
+
+    if mp.current_process().daemon:
+        return 1
+    return int(os.environ.get("SAT_WORKERS", "1"))
+
+
+def _unrank_combination(m: int, k: int, rank: int) -> list[int]:
+    """The k-subset of range(m) sitting at lexicographic position `rank`.
+
+    Lets a worker jump straight to its slice of the candidate stream instead of
+    generating and discarding everything before it.
+    """
+    out: list[int] = []
+    x = 0
+    for i in range(k):
+        while True:
+            cnt = comb(m - x - 1, k - i - 1)
+            if rank < cnt:
+                out.append(x)
+                x += 1
+                break
+            rank -= cnt
+            x += 1
+    return out
+
+
+def _advance_combination(c: list[int], m: int, k: int) -> bool:
+    """Step `c` to the next k-subset in lexicographic order, in place.
+
+    Returns False when `c` is already the last subset.
+    """
+    i = k - 1
+    while i >= 0 and c[i] == m - k + i:
+        i -= 1
+    if i < 0:
+        return False
+    c[i] += 1
+    for j in range(i + 1, k):
+        c[j] = c[j - 1] + 1
+    return True
+
+
+def _scan_candidate_slice(
+    sets: list[frozenset[int]],
+    prior: list[frozenset[int]],
+    m: int,
+    k: int,
+    start: int,
+    count: int,
+) -> list[tuple[int, ...]]:
+    """Test `count` size-k candidates from lexicographic position `start`.
+
+    Returns the ones whose value-sets have empty intersection and that no
+    already-known smaller pattern subsumes, in lexicographic order.
+    """
+    found: list[tuple[int, ...]] = []
+    if count <= 0:
+        return found
+    c = _unrank_combination(m, k, start)
+    for _ in range(count):
+        J_set = set(c)
+        if not any(p <= J_set for p in prior):
+            inter: frozenset[int] = sets[c[0]]
+            for j in c[1:]:
+                inter = inter & sets[j]
+                if not inter:
+                    break
+            if not inter:
+                found.append(tuple(c))
+        if not _advance_combination(c, m, k):
+            break
+    return found
+
+
+def _enum_chunk(item: tuple[int, int]) -> list[tuple[int, ...]]:
+    """Worker entry point: scan one contiguous slice of the candidate stream.
+
+    The ground set and the prior patterns come from the inherited `_ENUM_CTX`,
+    so only the (start, count) pair crosses the process boundary.
+    """
+    ctx = _ENUM_CTX
+    start, count = item
+    return _scan_candidate_slice(
+        ctx["sets"], ctx["prior"], ctx["m"], ctx["k"], start, count
+    )
+
+
+def _enumerate_size_parallel(
+    sets: list[frozenset[int]],
+    prior: list[frozenset[int]],
+    m: int,
+    k: int,
+    total: int,
+    n_workers: int,
+    verbose: bool,
+    tag: str,
+) -> list[tuple[int, ...]]:
+    """Scan one pattern size across a process pool.
+
+    The candidate stream is cut into contiguous lexicographic chunks and folded
+    back in chunk order, so the patterns come out in exactly the order — and
+    therefore the compiled output comes out identical to — the serial scan.
+    """
+    import multiprocessing as mp
+
+    global _ENUM_CTX
+    _ENUM_CTX = {"sets": sets, "prior": prior, "m": m, "k": k}
+
+    tasks_per_worker = max(1, int(os.environ.get("SAT_TASKS_PER_WORKER", "4")))
+    n_chunks = min(total, max(1, n_workers * tasks_per_worker))
+    base, extra = divmod(total, n_chunks)
+
+    items: list[tuple[int, int]] = []
+    start = 0
+    for i in range(n_chunks):
+        count = base + (1 if i < extra else 0)
+        items.append((start, count))
+        start += count
+
+    if verbose:
+        print(
+            f"#   {tag}pattern-size={k} parallel workers={n_workers} "
+            f"chunks={len(items)}",
+            flush=True,
+        )
+
+    with mp.get_context("fork").Pool(n_workers) as pool:
+        parts = pool.map(_enum_chunk, items)
+
+    _ENUM_CTX = {}
+    return [J for part in parts for J in part]
+
+
+_USE_ORBIT_ENUM = os.environ.get("SAT_ORBIT_ENUM", "1") != "0"
+_USE_ORBIT_EXPAND = os.environ.get("SAT_ORBIT_EXPAND", "0") != "0"
+
+
+def value_generators(n_values: int) -> list[tuple[int, ...]]:
+    """A transposition and an n-cycle, which together generate S_n.
+
+    Closure under these two is closure under the whole symmetric group, so
+    checks and orbit walks built on them cover all n! relabelings.
+    """
+    if n_values < 2:
+        return []
+    swap = tuple([1, 0] + list(range(2, n_values)))
+    cycle = tuple(list(range(1, n_values)) + [0])
+    return [swap, cycle]
+
+
+def permute_clause_values(clause: SignedClause, perm: tuple[int, ...]) -> SignedClause:
+    """Relabel every literal's value-set through `perm`, leaving variables fixed."""
+    return SignedClause(
+        tuple(
+            SignedLiteral(lit.var, frozenset(perm[v] for v in lit.values))
+            for lit in clause.literals
+        )
+    )
+
+
+def _orbit_representatives(
+    patterns: list[tuple[int, ...]],
+    distinct_sets: list[frozenset[int]],
+    n_values: int,
+) -> list[tuple[int, ...]] | None:
+    """One pattern per orbit under value relabeling, or None if the action fails.
+
+    Returns None when some relabeled value-set is not itself a value-set of this
+    step, which means the clause set is not closed under the group and the
+    caller must fall back to expanding every pattern.
+    """
+    idx_of = {s: i for i, s in enumerate(distinct_sets)}
+    gmaps: list[list[int]] = []
+    for g in value_generators(n_values):
+        gmap: list[int] = []
+        for s in distinct_sets:
+            img = frozenset(g[v] for v in s)
+            if img not in idx_of:
+                return None
+            gmap.append(idx_of[img])
+        gmaps.append(gmap)
+    if not gmaps:
+        return None
+
+    known = set(patterns)
+    seen: set[tuple[int, ...]] = set()
+    reps: list[tuple[int, ...]] = []
+    for J in patterns:
+        if J in seen:
+            continue
+        reps.append(J)
+        stack = [J]
+        seen.add(J)
+        while stack:
+            cur = stack.pop()
+            for gmap in gmaps:
+                img = tuple(sorted(gmap[i] for i in cur))
+                if img not in known:
+                    # The orbit escaped the pattern set — the symmetry does not
+                    # act on this step's patterns, so the shortcut is unsound.
+                    return None
+                if img not in seen:
+                    seen.add(img)
+                    stack.append(img)
+    return reps
+
+
+def _close_clauses_under_values(
+    clauses: list[SignedClause], n_values: int
+) -> list[SignedClause]:
+    """Smallest superset of `clauses` closed under value relabeling.
+
+    Expanding one pattern per orbit yields only that representative's
+    resolvents; the rest of the orbit's resolvents are exactly the relabeled
+    images, so closing the (small) result set recovers them without expanding
+    a single extra pattern.
+    """
+    gens = value_generators(n_values)
+    out = set(clauses)
+    stack = list(out)
+    while stack:
+        c = stack.pop()
+        for g in gens:
+            c2 = permute_clause_values(c, g)
+            if c2 not in out:
+                out.add(c2)
+                stack.append(c2)
+    return list(out)
+
+# Guard for the abort condition: if the live frontier at any size exceeds this,
+# the output-sensitivity assumption has broken and grinding on is pointless.
+_ENUM_FRONTIER_MAX = int(os.environ.get("SAT_ENUM_FRONTIER_MAX", "0"))
+
+
+class EnumerationTooLarge(Exception):
+    """Raised when the live frontier exceeds SAT_ENUM_FRONTIER_MAX."""
+
+
+def _is_minimal_conflict(
+    J: tuple[int, ...], sets: list[frozenset[int]], full: frozenset[int]
+) -> bool:
+    """True when J conflicts but every proper subset of J does not.
+
+    Uses prefix/suffix intersections so the k leave-one-out tests cost O(k)
+    intersections rather than O(k^2).
+    """
+    k = len(J)
+    if k == 1:
+        return True
+    pre = [full] * (k + 1)
+    for i in range(k):
+        pre[i + 1] = pre[i] & sets[J[i]]
+    suf = [full] * (k + 1)
+    for i in range(k - 1, -1, -1):
+        suf[i] = sets[J[i]] & suf[i + 1]
+    return all(pre[i] & suf[i + 1] for i in range(k))
+
+
+def _enumerate_minimal_conflict_patterns_orbit(
+    distinct_sets: list[frozenset[int]],
+    cap: int,
+    n_values: int,
+    verbose: bool = False,
+    tag: str = "",
+) -> list[tuple[int, ...]]:
+    """Output-sensitive enumeration of the minimal conflict patterns.
+
+    Grows the *live* (non-conflicting) subsets one element at a time instead of
+    scanning every C(m, k) candidate. Intersection is antitone, so the live
+    subsets are downward-closed and every minimal conflict sits exactly one
+    element above a live set: for minimal J, no proper subset conflicts, hence
+    J \\ {max J} is live and already in the frontier. Extending each live set
+    only by indices above its own maximum generates every subset exactly once,
+    so the walk is both complete and duplicate-free.
+
+    Cost tracks the number of live subsets — bounded by the union over values v
+    of the power set of {S : v in S} — rather than the binomial search space,
+    which is what removes the C(m, 9) blow-up.
+    """
+    m = len(distinct_sets)
+    max_size = min(m, cap)
+    full = (1 << n_values) - 1
+    masks = [
+        sum(1 << v for v in distinct_sets[i]) for i in range(m)
+    ]
+
+    minimal: list[tuple[int, ...]] = []
+    # Each live entry carries its running intersection plus the leave-one-out
+    # intersections, all as h-bit masks so every set operation is one integer
+    # AND. The leave-one-outs make the minimality test free and enable the
+    # viability prune below; they update incrementally, never recomputed.
+    live: list[tuple[tuple[int, ...], int, tuple[int, ...]]] = []
+
+    for i in range(m):
+        if not masks[i]:
+            minimal.append((i,))
+        elif full & ~masks[i]:
+            live.append(((i,), masks[i], (full,)))
+
+    n_examined = m
+    n_pruned = 0
+    if verbose:
+        print(
+            f"#   {tag}orbit-enum size=1 live={len(live)} "
+            f"new_minimal={len(minimal)}",
+            flush=True,
+        )
+
+    for size in range(2, max_size + 1):
+        t_size = time.time()
+        new_live: list[tuple[tuple[int, ...], int, tuple[int, ...]]] = []
+        found: list[tuple[int, ...]] = []
+        pruned = 0
+
+        for L, inter_L, loo_L in live:
+            for x in range(L[-1] + 1, m):
+                mx = masks[x]
+                inter = inter_L & mx
+                n_examined += 1
+                loo = tuple(w & mx for w in loo_L) + (inter_L,)
+                J = L + (x,)
+                if not inter:
+                    # Conflict. Minimal exactly when dropping any one element
+                    # leaves a non-empty intersection.
+                    if all(loo):
+                        found.append(J)
+                    continue
+                # Live. Keep it only if it can still sit inside some minimal
+                # conflict: every element j of a minimal J owns a private
+                # witness value in every other set of J but absent from D[j],
+                # so a set whose leave-one-out intersection is already
+                # contained in its own value-set can never be completed.
+                for t, w in enumerate(loo):
+                    if not (w & ~masks[J[t]]):
+                        pruned += 1
+                        break
+                else:
+                    new_live.append((J, inter, loo))
+
+        minimal.extend(found)
+        live = new_live
+        n_pruned += pruned
+
+        if verbose:
+            print(
+                f"#   {tag}orbit-enum size={size} examined={n_examined} "
+                f"live={len(live)} pruned={pruned} new_minimal={len(found)} "
+                f"cumulative_minimal={len(minimal)} "
+                f"elapsed_s={time.time() - t_size:.3f}",
+                flush=True,
+            )
+
+        if _ENUM_FRONTIER_MAX and len(live) > _ENUM_FRONTIER_MAX:
+            raise EnumerationTooLarge(
+                f"live frontier {len(live)} exceeds "
+                f"SAT_ENUM_FRONTIER_MAX={_ENUM_FRONTIER_MAX} at size={size}"
+            )
+        if not live:
+            break
+
+    # Sorted by (size, lexicographic) so the pattern list matches the order the
+    # brute-force scan produced, keeping downstream output comparable.
+    minimal.sort(key=lambda J: (len(J), J))
+    return minimal
+
+
 def _enumerate_minimal_conflict_patterns(
     distinct_sets: list[frozenset[int]],
     cap: int,
@@ -136,27 +518,33 @@ def _enumerate_minimal_conflict_patterns(
     m = len(distinct_sets)
     minimal: list[tuple[int, ...]] = []
     max_size = min(m, cap)
+    n_workers = _enum_worker_count()
 
     for size in range(1, max_size + 1):
         total = comb(m, size)
         t_size = time.time()
-        new_at_size = 0
-        for J in combinations(range(m), size):
-            J_set = set(J)
-            if any(set(prev).issubset(J_set) for prev in minimal):
-                continue
-            inter: frozenset[int] = distinct_sets[J[0]]
-            for j in J[1:]:
-                inter = inter & distinct_sets[j]
-                if not inter:
-                    break
-            if not inter:
-                minimal.append(J)
-                new_at_size += 1
+
+        # Built once per size rather than rebuilt inside the candidate loop.
+        # Sound because a pattern found *at* this size can never prune another
+        # candidate of the same size: distinct equal-cardinality subsets are
+        # never subsets of one another. Every pruning test here therefore reads
+        # only patterns from strictly smaller sizes, which are already final.
+        prior = [frozenset(p) for p in minimal]
+
+        if n_workers > 1 and total >= _ENUM_PARALLEL_MIN:
+            new = _enumerate_size_parallel(
+                distinct_sets, prior, m, size, total, n_workers, verbose, tag
+            )
+        else:
+            new = _scan_candidate_slice(
+                distinct_sets, prior, m, size, 0, total
+            )
+
+        minimal.extend(new)
         if verbose:
             print(
                 f"#   {tag}pattern-size={size} candidates={total} "
-                f"new_minimal={new_at_size} "
+                f"new_minimal={len(new)} "
                 f"cumulative_minimal={len(minimal)} "
                 f"elapsed_s={time.time() - t_size:.3f}",
                 flush=True,
@@ -325,9 +713,21 @@ def _grouped_eliminate_var(
             flush=True,
         )
 
-    patterns = _enumerate_minimal_conflict_patterns(
-        distinct_sets, cap, verbose=verbose, tag=tag
-    )
+    # An expansion worker re-enters this function for its own work item; the
+    # parent already enumerated, and the fork hands the result down through
+    # _PARALLEL_CTX. Re-deriving it per worker would repeat the single most
+    # expensive phase of the step once per task.
+    inherited = _PARALLEL_CTX.get("patterns") if work_pattern_idx is not None else None
+    if inherited is not None:
+        patterns = inherited
+    elif _USE_ORBIT_ENUM:
+        patterns = _enumerate_minimal_conflict_patterns_orbit(
+            distinct_sets, cap, domains[var], verbose=verbose, tag=tag
+        )
+    else:
+        patterns = _enumerate_minimal_conflict_patterns(
+            distinct_sets, cap, verbose=verbose, tag=tag
+        )
 
     # Cost guard: drop patterns whose cross-product expansion would exceed the
     # SAT_MAX_EXPANSION budget (0 = unlimited). Skipping a pattern omits its
@@ -354,15 +754,47 @@ def _grouped_eliminate_var(
             )
         patterns = affordable
 
+    # Expand one pattern per orbit instead of every pattern, then recover the
+    # rest of each orbit's resolvents by relabeling the (much smaller) result
+    # set. Sound only while the clause set is closed under the group, which
+    # _orbit_representatives verifies as it walks; None means fall back.
+    orbit_reps = None
+    if _USE_ORBIT_EXPAND and work_pattern_idx is None and patterns:
+        orbit_reps = _orbit_representatives(patterns, distinct_sets, domains[var])
+        if orbit_reps is not None:
+            if verbose:
+                print(
+                    f"#   {tag}orbit-expand patterns={len(patterns)} "
+                    f"representatives={len(orbit_reps)} "
+                    f"({len(patterns) / len(orbit_reps):.0f}x fewer expansions)",
+                    flush=True,
+                )
+            patterns = orbit_reps
+        elif verbose:
+            print(
+                f"#   {tag}orbit-expand unavailable (group does not act on "
+                f"this step's patterns); expanding all {len(patterns)}",
+                flush=True,
+            )
+
     # Fan the per-pattern expansion across worker processes when requested
     # (SAT_WORKERS>1). Workers re-enter this function with a fixed work item
     # (work_pattern_idx set), so they take the serial path below — no recursion.
     n_workers = int(os.environ.get("SAT_WORKERS", "1"))
     if n_workers > 1 and work_pattern_idx is None:
-        return _grouped_eliminate_parallel(
+        kept, stats = _grouped_eliminate_parallel(
             pi_bar, pi_minus_bar, var, domains, cap, patterns, groups,
             distinct_sets, n_workers, verbose, tag, only_pattern_size,
         )
+        if orbit_reps is not None:
+            kept = _close_clauses_under_values(kept, domains[var])
+            stats["n_kept"] = len(kept)
+            if verbose:
+                print(
+                    f"#   {tag}orbit-expand closure -> {len(kept)} resolvents",
+                    flush=True,
+                )
+        return kept, stats
 
     pi_bar_dropped = [c.drop(var) for c in pi_bar]
     index = _SubsumerIndex(pi_minus_bar)
@@ -719,6 +1151,14 @@ def _grouped_eliminate_var(
         else:
             expand(group_lists)
 
+    if orbit_reps is not None:
+        kept = _close_clauses_under_values(kept, domains[var])
+        if verbose:
+            print(
+                f"#   {tag}orbit-expand closure -> {len(kept)} resolvents",
+                flush=True,
+            )
+
     stats = {
         "n_distinct_sets": n_groups,
         "n_patterns": len(patterns),
@@ -847,7 +1287,7 @@ def _grouped_eliminate_parallel(
     global _PARALLEL_CTX
     _PARALLEL_CTX = {
         "pi_bar": pi_bar, "pi_minus_bar": pi_minus_bar, "var": var,
-        "domains": domains, "cap": cap,
+        "domains": domains, "cap": cap, "patterns": patterns,
     }
 
     if verbose:
@@ -966,6 +1406,9 @@ def _minimal_conflict_subsets(
             )
         t_size = time.time()
         new_at_size = 0
+        # Same hoist as the grouped path: same-size patterns cannot subsume one
+        # another, so this snapshot is complete for every test at this size.
+        prior = [frozenset(p) for p in minimal]
         for idx, J in enumerate(combinations(range(m), size)):
             if verbose and idx and idx % _HEARTBEAT_EVERY_K == 0:
                 elapsed = time.time() - t_size
@@ -978,7 +1421,7 @@ def _minimal_conflict_subsets(
                     flush=True,
                 )
             J_set = set(J)
-            if any(set(prev).issubset(J_set) for prev in minimal):
+            if any(p <= J_set for p in prior):
                 continue
             inter: frozenset[int] = s_sets[J[0]]
             for j in J[1:]:
