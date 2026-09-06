@@ -8,6 +8,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from data import WarcraftDataset
+from edge_bridge import embed_monotone_head_into_full
 from model import ResNet18NodeCategorical, is_valid_path
 from node_categories import build_node_categories, node_preds_to_edge_preds
 
@@ -145,6 +146,18 @@ def main():
     parser.add_argument("--grid-size", type=int, required=True, choices=[12, 30])
     parser.add_argument("--processing-order", type=str, default="row",
                         choices=["row", "diagonal"])
+    parser.add_argument("--alphabet", type=str, default="monotone",
+                        choices=["monotone", "full"],
+                        help="Node category alphabet. 'monotone' represents only "
+                             "down/right traversal; 'full' represents every "
+                             "4-connected simple path.")
+    parser.add_argument("--constraint-mode", type=str, default="monotone",
+                        choices=["monotone", "lazy_exact"],
+                        help="Projection: the original flow sweep, or compiled "
+                             "degree clauses plus ring elimination.")
+    parser.add_argument("--artifact", type=str, default=None,
+                        help="Clause artifact for lazy_exact (defaults by grid size).")
+    parser.add_argument("--max-rounds", type=int, default=20)
     parser.add_argument("--apply-constraints", type=_str_to_bool, default=True,
                         help="Apply the constraint layer at inference (default True).")
     parser.add_argument("--batch-size", type=int, default=128)
@@ -160,7 +173,12 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     N = args.grid_size
 
-    node_info, var_ranges, node_order, _ = build_node_categories(N)
+    if args.constraint_mode == "lazy_exact" and args.alphabet != "full":
+        parser.error("--constraint-mode lazy_exact requires --alphabet full; "
+                     "the monotone alphabet cannot represent up/left traversal.")
+
+    node_info, var_ranges, node_order, _ = build_node_categories(
+        N, alphabet=args.alphabet)
     data_dir = Path(args.data_dir)
 
     test_ds = WarcraftDataset(data_dir, "test", node_info, node_order)
@@ -181,13 +199,26 @@ def main():
         model = ResNet18NodeCategorical(
             var_ranges=var_ranges, grid_size=N,
             processing_order=args.processing_order,
+            constraint_mode=args.constraint_mode,
+            artifact=args.artifact, alphabet=args.alphabet,
+            max_rounds=args.max_rounds,
         ).to(device)
         sd = torch.load(ckpt, weights_only=True, map_location=device)
         if isinstance(sd, dict) and "nn_state_dict" in sd:
             sd = sd["nn_state_dict"]
         elif isinstance(sd, dict) and "model_state" in sd:
             sd = sd["model_state"]
-        model.load_state_dict(sd)
+        sd = {k: v for k, v in sd.items() if k.startswith("backbone.")}
+        if sd["backbone.fc.weight"].shape[0] != sum(var_ranges):
+            # A monotone-trained head evaluated under the full alphabet: widen it,
+            # giving the added backward-corner categories ~zero mass.
+            sd = embed_monotone_head_into_full(sd, N)
+        # The projection layers hold no parameters, so backbone.* is the whole
+        # state dict; keep the load strict so a missing weight still errors.
+        assert set(sd) == set(model.state_dict()), (
+            f"state dict mismatch: missing={set(model.state_dict()) - set(sd)}, "
+            f"unexpected={set(sd) - set(model.state_dict())}")
+        model.load_state_dict(sd, strict=True)
 
         pred_edges, gt_edges = _collect_predictions(
             model, loader, node_info, node_order, edges_lookup.shape[0],

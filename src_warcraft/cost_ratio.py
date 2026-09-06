@@ -34,6 +34,8 @@ def main():
     parser.add_argument("--grid-size", type=int, default=12)
     parser.add_argument("--processing-order", type=str, default="row",
                         choices=["row", "diagonal"])
+    parser.add_argument("--alphabet", type=str, default="monotone",
+                        choices=["monotone", "full"])
     parser.add_argument("--out_json", type=str,
         default="../logs/warcraft_ablation_edge_aux_v2/cost_ratio_multi_seed.json")
     args = parser.parse_args()
@@ -41,7 +43,8 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     N = args.grid_size
 
-    node_info, var_ranges, node_order, total_dim = build_node_categories(N)
+    node_info, var_ranges, node_order, total_dim = build_node_categories(
+        N, alphabet=args.alphabet)
     data_dir = Path(args.data_dir)
 
     test_ds = WarcraftDataset(data_dir, "test", node_info, node_order)

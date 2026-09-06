@@ -1,0 +1,241 @@
+% ---------------------------------------------------------------------------
+% Section: the distance-trimmed time-unrolled walk encoding.
+% Paste-ready. TODO markers point to labels of the main text.
+% ---------------------------------------------------------------------------
+
+\section{A distance-trimmed time-unrolled encoding of grid walks}
+\label{sec:trimmed-steps}
+
+Let $G=(V,E)$ be the four-neighbour grid graph on a $g\times g$ board,
+$n=g^2=|V|$, with source $s$ (top-left) and target $t$ (bottom-right).
+Write $d(u,v)$ for the graph (Manhattan) distance. Recall that $G$ is
+bipartite under the checkerboard two-colouring: every edge joins cells of
+different colours, hence a walk of length $\ell$ from $s$ can only end on
+a cell $v$ whose distance $d(s,v)$ has the same parity as $\ell$
+($\ell \equiv d(s,v) \pmod 2$; e.g.\ a cell at even distance is reachable
+only in an even number of moves).
+
+\paragraph{Variables and transitions.}
+Fix the horizon $L = n-1$, the maximum number of edges of any simple
+path. Introduce multi-valued variables $X_0,\dots,X_L$ with intended
+reading ``$X_i$ = the cell occupied at time $i$''. The \emph{absorbing
+transition relation} is
+\[
+  T(u,v) \iff \bigl(u\neq t \wedge \{u,v\}\in E\bigr) \;\lor\; u=v=t ,
+\]
+i.e.\ every step is a real move, except that the target, once reached,
+repeats forever (and can never be left). (There is no general waiting move; this is what makes
+the parity argument below available.) The formula is the chain
+\[
+  \Phi \;=\; \bigwedge_{i=0}^{L-1} T(X_i, X_{i+1}),
+\]
+endpoint pinning being absorbed into the domains below.
+
+\paragraph{From the relation to signed clauses.}
+$T$ is not a primitive of the constraint language; it is unrolled value
+by value. Writing $[S]{:}X$ for the signed literal ``$X\in S$'', each
+conjunct $T(X_i,X_{i+1})$ becomes one clause per value $u\in D_i$,
+\[
+  [\,D_i\setminus\{u\}\,]{:}X_i \;\vee\;
+  [\,\mathrm{succ}(u)\cap D_{i+1}\,]{:}X_{i+1},
+  \qquad
+  \mathrm{succ}(u)=\begin{cases}
+    N(u) & u\neq t,\\
+    \{t\} & u=t,
+  \end{cases}
+\]
+i.e.\ the implication $X_i{=}u \Rightarrow X_{i+1}\in\mathrm{succ}(u)$
+written as a disjunction. The edge set $E$ never appears as an object:
+adjacency ($N(u)$ = the up/down/left/right cells of $u$) is materialized
+inside the enumerated successor lists. A guard $[\emptyset]{:}X_i$
+(empty when $D_i=\{u\}$ is a singleton) is dropped, leaving a unary
+clause. For the trimmed $2\times 2$ instance the whole formula is four
+clauses:
+\[
+  [1,2]{:}X_1, \qquad
+  [2]{:}X_1 \vee [3]{:}X_2, \qquad
+  [1]{:}X_1 \vee [3]{:}X_2, \qquad
+  [3]{:}X_3,
+\]
+(step $0$: $D_0=\{0\}$ forces $X_1\in N(0)\cap D_1=\{1,2\}$; step $1$:
+from $u=1$ or $u=2$ the only admissible successor in $D_2=\{3\}$ is the
+target; step $2$: absorption). Optionally,
+\textsc{AllDifferent} clauses over the non-target positions restrict the
+models to simple paths; we omit them (\texttt{allow\_cycles}) because
+they connect every pair of step variables and destroy the chain
+structure — simplicity is instead recovered downstream (loop erasure) or
+left to the learner.
+
+\paragraph{Domain trimming.}
+The untrimmed encoding gives every $X_i$ the full domain $V$. The
+trimmed encoding declares instead
+\[
+  D_i \;=\;
+  \bigl\{\, v \in V\setminus\{t\} \;:\;
+      \underbrace{d(s,v)\le i}_{\text{forward}},\;
+      \underbrace{i \equiv d(s,v) \!\!\pmod 2}_{\text{parity}},\;
+      \underbrace{d(v,t)\le L-i}_{\text{backward}} \,\bigr\}
+  \;\cup\;
+  \bigl\{\, t \;:\; i \ge d(s,t) \,\bigr\}.
+\]
+In particular $D_0=\{s\}$ and $D_L=\{t\}$: the endpoint constraints are
+domain facts, not clauses.
+
+\paragraph{Reading the three tests.}
+Since $D_L=\{t\}$, the walk must have \emph{arrived by the deadline}
+$L$; at time $i$ it therefore has exactly $L-i$ transitions left. The
+three tests bound where it can possibly stand at that moment:
+\begin{itemize}
+\item \emph{Forward} ($d(s,v)\le i$): the past constrains the present —
+  in $i$ moves from $s$ no walk outruns the graph distance, so cells
+  farther than $i$ from the source are unoccupiable.
+\item \emph{Backward} ($d(v,t)\le L-i$): the future constrains the
+  present — from $v$ even the most direct route to $t$ costs $d(v,t)$
+  moves, so a cell with $d(v,t)>L-i$ admits \emph{no} completion by the
+  deadline, whatever the walk does afterwards. (At $i=L$ this test alone
+  yields $D_L=\{t\}$; one step earlier only $t$ and its neighbours
+  survive.)
+\item \emph{Parity} ($i\equiv d(s,v) \bmod 2$): within reach is not
+  enough — every move flips the checkerboard colour, so the step count
+  and the distance must also agree modulo $2$.
+\end{itemize}
+The forward and backward tests are the two cones of a discrete
+space--time ``light cone'' — reachable-from-$s$ and
+can-still-reach-$t$ — and $D_i$ is their intersection restricted to the
+correct colour class. Domains are accordingly narrow near both ends of
+the horizon and widest in the middle. Deleting a cell that fails any
+test removes no walk, since every walk satisfies all three by the
+prefix/suffix argument of Proposition~\ref{prop:trim-exact}; the
+backward family is also precisely what bucket elimination would
+otherwise have to derive as resolvents (see below), while the forward
+and parity families are stronger facts that the target-first elimination
+would never produce.
+
+\begin{proposition}[Exactness of the trimming]
+\label{prop:trim-exact}
+An assignment $(x_0,\dots,x_L)\in D_0\times\cdots\times D_L$ satisfies
+$\Phi$ if and only if it is an absorbing $s$--$t$ walk: a four-neighbour
+walk that starts at $s$, first reaches $t$ at some time
+$\ell \le L$, and repeats $t$ thereafter. Moreover the trimming deletes
+no such walk: the models of the trimmed formula and of the untrimmed
+formula (with absorbing transitions and pinned endpoints) coincide.
+Consequently \emph{every} simple $s$--$t$ path — of every length, the
+maximum being $L=n-1$ — is a model, obtained by padding it with
+repetitions of $t$; the remaining models are exactly the walks that
+revisit a cell before reaching $t$.
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+($\Leftarrow$) Let $(x_i)$ be an absorbing walk with arrival time
+$\ell$. For $i<\ell$ the prefix $x_0\cdots x_i$ is a genuine walk of
+length $i$ from $s$, so $d(s,x_i)\le i$ and, by bipartiteness,
+$i\equiv d(s,x_i) \pmod 2$; the suffix $x_i\cdots x_\ell$ reaches $t$ in
+$\ell-i\le L-i$ moves, so $d(x_i,t)\le L-i$. For $i\ge\ell$, $x_i=t$ and
+$i \ge \ell \ge d(s,t)$. Hence every position lies in its trimmed
+domain, and consecutive positions satisfy $T$ by definition of a walk.
+($\Rightarrow$) Conversely, a satisfying assignment moves along edges
+until its first visit to $t$ (self-repetition is licensed only at $t$),
+and $x_L=t$ because $D_L=\{t\}$; it is therefore an absorbing $s$--$t$
+walk. Both directions never invoke the trimming tests negatively, which
+proves the coincidence of model sets. Finally, a simple path padded at
+$t$ is an absorbing walk, and an absorbing walk with pairwise-distinct
+non-target positions is a padded simple path.
+\end{proof}
+
+\paragraph{Why this compiles with zero resolvents.}
+The primal graph of $\Phi$ is the chain
+$X_0 - X_1 - \cdots - X_L$ (induced width $1$), so bucket elimination
+never couples more than two step variables. Its only derivations would
+be the backward-reachability constraints
+``$X_i$ must lie within distance $L-i$ of $t$'' propagated from the
+pinned endpoint — precisely the \emph{backward} trimming test, which the
+domains already encode; the forward and parity tests are stronger facts
+that resolution would not derive at all. The trimmed input is therefore
+its own compilation fixpoint. Measured compilation costs (single
+worker, AMD EPYC 9335):
+
+\begin{center}
+\begin{tabular}{llrrrr}
+\hline
+grid & variant & clauses & resolvents & time & artifact \\
+\hline
+$12\times 12$ & untrimmed (waiting) & $20{,}448$ & $1{,}441$ & $38.2$\,s & $11$\,MB \\
+$12\times 12$ & \textbf{trimmed}    & $8{,}839$  & $\mathbf{0}$ & $\mathbf{2.0}$\,\textbf{s} & $1.9$\,MB \\
+$30\times 30$ & untrimmed (waiting) & $808{,}202$ & --- & unfinished after $19.8$\,h$^{*}$ & ($2.7$\,GB input) \\
+$30\times 30$ & \textbf{trimmed}    & $379{,}315$ & $\mathbf{0}$ & $\mathbf{968}$\,\textbf{s} & $612$\,MB \\
+\hline
+\end{tabular}
+\end{center}
+
+\noindent
+$^{*}$Snapshot at the time of writing: 37 of 900 buckets eliminated in
+$19.8$\,h. The untrimmed $30\times 30$ compile proceeds at $\approx 30$
+minutes per bucket through the $2(g{-}1)=58$-bucket backward-reachability
+zone — deriving, one resolvent family at a time in width-$900$ literal
+arithmetic, exactly the information the backward trimming test
+precomputes — with a multi-day projected total. The trimmed encoding
+eliminates this zone entirely at every grid size (zero resolvents at
+$12\times 12$ and $30\times 30$ alike), leaving compilation dominated by
+parsing and subsumption bookkeeping.
+
+\paragraph{Worked example: $2\times 2$.}
+Cells row-major: $s=0=(0,0)$, $1=(0,1)$, $2=(1,0)$, $t=3=(1,1)$;
+$d(s,t)=2$, $L=3$. The trimmed domains are
+\[
+  D_0=\{0\},\qquad
+  D_1=\{1,2\},\qquad
+  D_2=\{3\},\qquad
+  D_3=\{3\}.
+\]
+(E.g.\ $0\notin D_1$ by parity; $0\notin D_2$ because
+$d(0,t)=2>L-2=1$; $t\notin D_1$ because $1<d(s,t)$.)
+The formula has exactly two models,
+\[
+  (0,1,3,3) \qquad\text{and}\qquad (0,2,3,3),
+\]
+i.e.\ precisely the two simple $s$--$t$ paths — at this size the walk
+relaxation is already exact, and the model count equals the path count.
+
+\paragraph{Worked example: $3\times 3$.}
+Cells $0..8$ row-major, $s=0$, $t=8$, $d(s,t)=4$, $L=8$. Distances from
+$s$ are $(0,1,2,1,2,3,2,3,4)$ and to $t$ are $(4,3,2,3,2,1,2,1,0)$.
+The trimmed domains are
+\[
+\begin{array}{ll}
+  D_0=\{0\} &
+  D_1=\{1,3\}\\
+  D_2=\{0,2,4,6\} &
+  D_3=\{1,3,5,7\}\\
+  D_4=\{0,2,4,6,8\} &
+  D_5=\{1,3,5,7,8\}\\
+  D_6=\{2,4,6,8\} &
+  D_7=\{5,7,8\}\\
+  D_8=\{8\}
+\end{array}
+\]
+— $29$ values in total against $81$ untrimmed (the parity test alone
+halves each interior domain; the backward test additionally removes
+$0$ from $D_6$ and $1,3$ from $D_7$; $t$ enters only from step
+$d(s,t)=4$ on). Sample models:
+\begin{itemize}
+\item a geodesic simple path, padded at the target:
+      $(0,1,2,5,8,8,8,8,8)$;
+\item a maximal simple path using the full horizon (no padding):
+      $(0,1,2,5,4,3,6,7,8)$;
+\item a cyclic walk retained by \texttt{allow\_cycles} — it revisits
+      $0$ and $3$ before arriving:
+      $(0,1,4,3,0,3,6,7,8)$; loop erasure maps it to $(0,3,6,7,8)$.
+\end{itemize}
+All three satisfy every domain membership and transition. Excluded by
+construction are: assignments that leave the target after reaching it
+(absorption), assignments placing any cell off its parity class (e.g.\
+$x_2=1$), jumps between non-adjacent cells, and prefixes that stray too
+far to return (e.g.\ $x_6=0$: $d(0,t)=4>L-6$).
+
+% ---------------------------------------------------------------------------
+% Summary sentence for the experiments section, if wanted:
+% The trimmed chain encoding represents every simple s-t path exactly,
+% adds only loop-erasable cyclic walks, and is its own compilation
+% fixpoint: COMPILE finds zero resolvents at every grid size tested,
+% turning a multi-day 30x30 compilation into a 16-minute one.
+% ---------------------------------------------------------------------------

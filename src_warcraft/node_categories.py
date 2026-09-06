@@ -1,121 +1,164 @@
 import numpy as np
 
 
-def build_node_categories(grid_size=12):
+# Unordered direction pairs, ordered so that the four monotone pairs come first.
+# This makes the 'full' alphabet a strict prefix extension of 'monotone' at every
+# node, so a monotone-trained head embeds into the full head by zero-padding.
+_PAIR_ORDER = [('L', 'R'), ('L', 'D'), ('U', 'R'), ('U', 'D'), ('L', 'U'), ('R', 'D')]
+
+
+def build_node_categories(grid_size=12, alphabet='monotone'):
     """
     Build the categorical variable definition for each node in the grid.
-    
+
+    Args:
+        grid_size: N for an NxN grid.
+        alphabet:  'monotone' — one incoming (left/above) and one outgoing
+                   (right/below) edge per routing category. Only down/right
+                   traversal is representable; this is the original encoding.
+                   'full' — every unordered pair of incident edges, so all
+                   4-connected simple paths are representable.
+
     Returns:
         node_info: dict mapping (i,j) -> {
             'categories': list of category names,
             'n_cats': int,
-            'incoming': list of edge indices,
-            'outgoing': list of edge indices,
-            'edge_pattern': dict mapping category_idx -> {edge_idx: 0 or 1}
+            'incoming': dict label -> edge index (left='R', above='D'),
+            'outgoing': dict label -> edge index (right='R', below='D'),
+            'edge_dirs': dict 'L'/'U'/'R'/'D' -> edge index,
+            'edge_patterns': list indexed by category -> {edge_idx: 0 or 1},
+            'all_edges': list of incident edge indices,
+            'is_source', 'is_sink': bool
         }
         var_ranges: list of category counts per node (in row-major order)
         node_order: list of (i,j) tuples in row-major order
         total_dim: sum of all category counts
     """
+    if alphabet not in ('monotone', 'full'):
+        raise ValueError(f"alphabet must be 'monotone' or 'full', got {alphabet!r}")
+
     n_w = grid_size - 1
     n_right = grid_size * n_w  # 132 horizontal edges
-    
+
     def right_idx(i, j):
         return i * n_w + j
-    
+
     def down_idx(i, j):
         return n_right + i * grid_size + j
-    
+
     node_info = {}
     node_order = []
     var_ranges = []
-    
+
     for i in range(grid_size):
         for j in range(grid_size):
             node = (i, j)
             node_order.append(node)
-            
-            # Determine available edges
-            incoming = {}  # label -> edge_idx
-            outgoing = {}
-            
+
+            # Incident edges by compass direction.
+            edge_dirs = {}
             if j > 0:
-                incoming['R'] = right_idx(i, j - 1)
+                edge_dirs['L'] = right_idx(i, j - 1)
             if i > 0:
-                incoming['D'] = down_idx(i - 1, j)
+                edge_dirs['U'] = down_idx(i - 1, j)
             if j < grid_size - 1:
-                outgoing['R'] = right_idx(i, j)
+                edge_dirs['R'] = right_idx(i, j)
             if i < grid_size - 1:
-                outgoing['D'] = down_idx(i, j)
-            
+                edge_dirs['D'] = down_idx(i, j)
+
+            # Legacy view: 'R'/'D' keyed by traversal role, not compass direction.
+            incoming = {}
+            outgoing = {}
+            if 'L' in edge_dirs:
+                incoming['R'] = edge_dirs['L']
+            if 'U' in edge_dirs:
+                incoming['D'] = edge_dirs['U']
+            if 'R' in edge_dirs:
+                outgoing['R'] = edge_dirs['R']
+            if 'D' in edge_dirs:
+                outgoing['D'] = edge_dirs['D']
+
             is_source = (i == 0 and j == 0)
             is_sink = (i == grid_size - 1 and j == grid_size - 1)
-            
+
             all_edge_indices = list(incoming.values()) + list(outgoing.values())
-            
+
             categories = []
             edge_patterns = []
-            
-            if is_source:
-                # Must emit flow: one outgoing edge ON, no incoming
-                for out_label, out_idx in outgoing.items():
-                    categories.append(out_label)
+
+            if is_source or is_sink:
+                # Endpoints carry exactly one incident edge. Iterating the legacy
+                # dicts preserves the original category indices; the names are
+                # compass directions, so the sink reads 'L'/'U' not 'R'/'D'.
+                endpoint_edges = (outgoing if is_source else incoming)
+                compass = {v: k for k, v in edge_dirs.items()}
+                for idx in endpoint_edges.values():
+                    categories.append(compass[idx])
                     pattern = {e: 0 for e in all_edge_indices}
-                    pattern[out_idx] = 1
+                    pattern[idx] = 1
                     edge_patterns.append(pattern)
-                    
-            elif is_sink:
-                # Must absorb flow: one incoming edge ON, no outgoing
-                for in_label, in_idx in incoming.items():
-                    categories.append(in_label)
-                    pattern = {e: 0 for e in all_edge_indices}
-                    pattern[in_idx] = 1
-                    edge_patterns.append(pattern)
-                    
+
             else:
                 # Skip: all edges OFF
                 categories.append('skip')
                 edge_patterns.append({e: 0 for e in all_edge_indices})
-                
-                # Routing: one incoming ON, one outgoing ON
-                for in_label, in_idx in incoming.items():
-                    for out_label, out_idx in outgoing.items():
-                        categories.append(f'{in_label}→{out_label}')
-                        pattern = {e: 0 for e in all_edge_indices}
-                        pattern[in_idx] = 1
-                        pattern[out_idx] = 1
-                        edge_patterns.append(pattern)
-            
+
+                if alphabet == 'monotone':
+                    pairs = [(a, b) for (a, b) in _PAIR_ORDER[:4]
+                             if a in edge_dirs and b in edge_dirs]
+                else:
+                    pairs = [(a, b) for (a, b) in _PAIR_ORDER
+                             if a in edge_dirs and b in edge_dirs]
+
+                for a, b in pairs:
+                    categories.append(f'{a}|{b}')
+                    pattern = {e: 0 for e in all_edge_indices}
+                    pattern[edge_dirs[a]] = 1
+                    pattern[edge_dirs[b]] = 1
+                    edge_patterns.append(pattern)
+
             info = {
                 'categories': categories,
                 'n_cats': len(categories),
                 'incoming': incoming,
                 'outgoing': outgoing,
+                'edge_dirs': edge_dirs,
                 'edge_patterns': edge_patterns,
                 'all_edges': all_edge_indices,
                 'is_source': is_source,
                 'is_sink': is_sink,
+                'alphabet': alphabet,
             }
-            
+
             node_info[node] = info
             var_ranges.append(len(categories))
-    
+
     total_dim = sum(var_ranges)
-    
+
     return node_info, var_ranges, node_order, total_dim
 
 
-def edge_labels_to_node_labels(edge_labels, node_info, node_order):
+class UnrepresentablePatternError(ValueError):
+    """A ground-truth edge pattern has no category under the active alphabet."""
+
+
+def edge_labels_to_node_labels(edge_labels, node_info, node_order, instance_ids=None):
     """
     Convert binary edge labels (batch, 264) to node categorical labels (batch, 144).
-    
+
     For each node, find which category matches the observed edge pattern.
-    
+
+    Raises UnrepresentablePatternError if any node's observed edge pattern has no
+    matching category. Silently relabelling such a node (the previous behaviour)
+    corrupts the training target without warning.
+
     Args:
         edge_labels: (batch, 264) binary
         node_info: from build_node_categories
         node_order: list of (i,j)
-    
+        instance_ids: optional per-row identifiers used in the error message;
+                      defaults to the row index within `edge_labels`.
+
     Returns:
         node_labels: (batch, 144) integer category indices
     """
@@ -147,12 +190,20 @@ def edge_labels_to_node_labels(edge_labels, node_info, node_order):
                     node_labels[b, n_idx] = cat_idx
                     matched = True
                     break
-            
+
             if not matched:
-                # Shouldn't happen with valid paths, default to skip (cat 0)
-                # or first category for source/sink
-                node_labels[b, n_idx] = 0
-    
+                inst = b if instance_ids is None else instance_ids[b]
+                on = sorted(e for e, v in observed.items() if v == 1)
+                dirs = {v: k for k, v in info['edge_dirs'].items()}
+                raise UnrepresentablePatternError(
+                    f"instance {inst}: node {node} has edge pattern "
+                    f"{{{', '.join(f'{dirs.get(e, e)}(e{e})' for e in on)}}} "
+                    f"(on-edges {on}, all incident {sorted(all_edges)}), which has no "
+                    f"category under alphabet {info['alphabet']!r}. "
+                    f"Categories here: {info['categories']}. "
+                    f"Rebuild with alphabet='full' to represent all 4-connected paths."
+                )
+
     return node_labels
 
 
@@ -198,39 +249,16 @@ def node_preds_to_edge_preds(node_probs, node_info, node_order, num_edges=264):
 
 
 if __name__ == "__main__":
-    print("Building node categories for 12x12 grid...")
-    node_info, var_ranges, node_order, total_dim = build_node_categories(12)
-    
-    print(f"\nTotal nodes: {len(node_order)}")
-    print(f"Total output dim: {total_dim}")
-    print(f"Variable ranges: min={min(var_ranges)}, max={max(var_ranges)}")
-    
-    # Count by type
     from collections import Counter
-    cat_counts = Counter(var_ranges)
-    print(f"\nCategory distribution:")
-    for n_cats, count in sorted(cat_counts.items()):
-        print(f"  {n_cats} categories: {count} nodes")
-    
-    # Show examples
-    print(f"\nSource (0,0): {node_info[(0,0)]['categories']}")
-    print(f"Sink (11,11): {node_info[(11,11)]['categories']}")
-    print(f"Top edge (0,5): {node_info[(0,5)]['categories']}")
-    print(f"Interior (5,5): {node_info[(5,5)]['categories']}")
-    
-    # Show edge patterns for interior node
-    print(f"\nInterior (5,5) edge patterns:")
-    info = node_info[(5, 5)]
-    for cat_idx, (name, pattern) in enumerate(zip(info['categories'], info['edge_patterns'])):
-        active = [f"e{e}=1" for e, v in pattern.items() if v == 1]
-        print(f"  Cat {cat_idx} ({name}): {active if active else 'all OFF'}")
-    
-    # Test label conversion
-    print(f"\nTesting edge→node label conversion...")
-    dummy_edges = np.zeros((2, 264), dtype=int)
-    # Sample 0: path goes right from source
-    dummy_edges[0, node_info[(0,0)]['outgoing']['R']] = 1  # R[0,0] = 1
-    
-    node_labels = edge_labels_to_node_labels(dummy_edges, node_info, node_order)
-    print(f"  Source category: {node_labels[0, 0]} = {node_info[(0,0)]['categories'][node_labels[0, 0]]}")
-    print(f"  Node (0,1) category: {node_labels[0, 1]} = {node_info[(0,1)]['categories'][node_labels[0, 1]]}")
+
+    for alphabet in ("monotone", "full"):
+        node_info, var_ranges, node_order, total_dim = build_node_categories(
+            12, alphabet=alphabet)
+        print(f"\n=== 12x12, alphabet={alphabet!r} ===")
+        print(f"  Nodes: {len(node_order)}   total_dim: {total_dim}")
+        for n_cats, count in sorted(Counter(var_ranges).items()):
+            print(f"    {n_cats} categories: {count} nodes")
+        print(f"  Source (0,0):   {node_info[(0,0)]['categories']}")
+        print(f"  Sink (11,11):   {node_info[(11,11)]['categories']}")
+        print(f"  Top edge (0,5): {node_info[(0,5)]['categories']}")
+        print(f"  Interior (5,5): {node_info[(5,5)]['categories']}")

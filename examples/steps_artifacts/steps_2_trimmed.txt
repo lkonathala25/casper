@@ -1,0 +1,20 @@
+# steps encoding: g=2 n=4 L=3 s=0 t=3
+# trimmed=True waiting=False allow_cycles=True
+# X_i values are positions within D_i; see the domain map below.
+
+var X_0 1
+var X_1 2
+var X_2 1
+var X_3 1
+
+ordering X_0 X_1 X_2 X_3
+
+# D_0 = [0]
+# D_1 = [1,2]
+# D_2 = [3]
+# D_3 = [3]
+
+[0,1]:X_1
+[1]:X_1 or [0]:X_2
+[0]:X_1 or [0]:X_2
+[0]:X_3

@@ -423,6 +423,10 @@ def run_condition(condition, args, device, train_loader, val_loader, test_loader
             model = ResNet18NodeCategorical(
                 var_ranges=var_ranges, grid_size=N,
                 processing_order=args.processing_order,
+                constraint_mode=args.constraint_mode,
+                alphabet=args.alphabet,
+                artifact=args.artifact,
+                max_rounds=args.max_rounds,
             ).to(device)
             optimizer = torch.optim.Adam(model.parameters(), lr=args.lr,
                                          weight_decay=args.weight_decay)
@@ -624,6 +628,27 @@ def main():
                              "'row' is the original row-major sweep; 'diagonal' "
                              "sweeps anti-diagonals (i+j ascending) with top-down "
                              "tiebreak. Both are valid topological orders.")
+    parser.add_argument("--constraint-mode", type=str, default="monotone",
+                        choices=["monotone", "lazy_exact", "steps"],
+                        help="Projection layer. 'monotone' is the original "
+                             "down/right flow sweep (the default, unchanged); "
+                             "'lazy_exact' is the compiled degree clauses plus "
+                             "ring elimination; 'steps' is the sequential "
+                             "min-edit projection over the trimmed steps "
+                             "encoding. Must match --alphabet.")
+    parser.add_argument("--artifact", type=str, default=None,
+                        help="Constraint artifact path for --constraint-mode "
+                             "lazy_exact; ignored by the other modes.")
+    parser.add_argument("--max-rounds", type=int, default=20,
+                        help="Ring-repair round cap for --constraint-mode "
+                             "lazy_exact. The steps layer has no repair loop: "
+                             "loop erasure is a single deterministic pass.")
+    parser.add_argument("--alphabet", type=str, default="monotone",
+                        choices=["monotone", "full"],
+                        help="Node category alphabet. 'monotone' represents only "
+                             "down/right traversal and rejects non-monotone "
+                             "ground truth; 'full' represents every 4-connected "
+                             "simple path.")
     args = parser.parse_args()
 
     device = torch.device(
@@ -634,14 +659,33 @@ def main():
     print(f"Device: {device}")
 
     N = args.grid_size
-    node_info, var_ranges, node_order, total_dim = build_node_categories(N)
+    node_info, var_ranges, node_order, total_dim = build_node_categories(
+        N, alphabet=args.alphabet)
     print(f"Grid: {N}x{N} | Nodes: {len(node_order)}, total_dim: {total_dim}")
 
     data_dir = Path(args.data_dir)
+    # Startup gate: WarcraftDataset converts edge labels to node labels through
+    # the fail-loud converter, so an unrepresentable pattern raises here rather
+    # than silently corrupting a training target. Report it instead of relying
+    # on the absence of an exception.
     train_ds = WarcraftDataset(data_dir, "train", node_info, node_order)
     val_ds = WarcraftDataset(data_dir, "val", node_info, node_order)
     test_ds = WarcraftDataset(data_dir, "test", node_info, node_order)
     print(f"Train: {len(train_ds)}, Val: {len(val_ds)}, Test: {len(test_ds)}")
+    print(f"Label conversion gate (alphabet={args.alphabet!r}): clean over "
+          f"{len(train_ds) + len(val_ds) + len(test_ds)} instances, "
+          f"0 UnrepresentablePatternError")
+
+    dropped = {k: getattr(args, k) for k in
+               ("beta_ce", "gamma_focal", "lambda_edge", "lambda_pair", "lambda_len")
+               if getattr(args, k) == 0.0}
+    if dropped:
+        print(f"Auxiliary losses off: {', '.join(sorted(dropped))}")
+    save_root = Path(args.save_dir)
+    save_root.mkdir(parents=True, exist_ok=True)
+    (save_root / "config.json").write_text(json.dumps(
+        {"args": vars(args), "total_dim": total_dim,
+         "auxiliary_losses_off": sorted(dropped)}, indent=2, default=str))
 
     train_loader = DataLoader(train_ds, batch_size=args.batch_size, shuffle=True,
                               num_workers=args.num_workers)

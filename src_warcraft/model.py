@@ -14,21 +14,60 @@ from node_categories import node_preds_to_edge_preds
 # =============================================================================
 
 class ResNet18NodeCategorical(nn.Module):
-    """ResNet-18 (no pretrained weights) -> per-node softmax over routing categories."""
+    """ResNet-18 (no pretrained weights) -> per-node softmax over routing categories.
 
-    def __init__(self, var_ranges, grid_size, processing_order='row'):
+    `constraint_mode` selects the projection: 'monotone' is the original
+    down/right flow sweep, 'lazy_exact' is the compiled degree clauses plus ring
+    elimination, 'steps' is the sequential min-edit projection over the
+    time-unrolled steps encoding. The mode must match the alphabet
+    `var_ranges` was built with, which the constructor now enforces.
+    """
+
+    def __init__(self, var_ranges, grid_size, processing_order='row',
+                 constraint_mode='monotone', artifact=None, alphabet='full',
+                 max_rounds=20, certify=False):
         super().__init__()
         self.var_ranges = var_ranges
         self.total_dim = sum(var_ranges)
+        self.constraint_mode = constraint_mode
 
         # Trained from scratch — no pretrained weights.
         self.backbone = models.resnet18(weights=None)
         in_features = self.backbone.fc.in_features
         self.backbone.fc = nn.Linear(in_features, self.total_dim)
 
-        self.constraint_layer = WarcraftConstraintLayer(
-            grid_size=grid_size, processing_order=processing_order
-        )
+        if constraint_mode == 'monotone':
+            self.constraint_layer = WarcraftConstraintLayer(
+                grid_size=grid_size, processing_order=processing_order
+            )
+        elif constraint_mode == 'steps':
+            import sys
+            from pathlib import Path
+            steps_dir = Path(__file__).resolve().parents[1] / "src_steps"
+            if str(steps_dir) not in sys.path:
+                sys.path.append(str(steps_dir))
+            from steps_layer import StepsProjectionLayer
+            self.constraint_layer = StepsProjectionLayer(
+                grid_size=grid_size, alphabet=alphabet, certify=certify,
+            )
+        else:
+            from lazy_exact_layer import build_constraint_layer
+            self.constraint_layer = build_constraint_layer(
+                constraint_mode, grid_size=grid_size,
+                processing_order=processing_order, artifact=artifact,
+                alphabet=alphabet, max_rounds=max_rounds,
+            )
+
+        # A layer built for a different alphabet than the head silently
+        # mis-slices every node block and returns a correctly-shaped, wrong
+        # answer. Make that class of bug impossible to reach.
+        layer_dim = getattr(self.constraint_layer, 'total_dim', None)
+        if layer_dim != self.total_dim:
+            raise ValueError(
+                f"constraint layer total_dim {layer_dim} != head dim "
+                f"{self.total_dim}: constraint_mode={constraint_mode!r} does "
+                f"not match the alphabet the head was built for"
+            )
 
     def forward(self, x, apply_constraints=False):
         logits = self.backbone(x)

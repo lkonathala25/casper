@@ -1,0 +1,1 @@
+{"g": 3, "n": 9, "horizon": 8, "source": 0, "target": 8, "trimmed": true, "waiting": false, "n_clauses": 28, "domains": [[0], [1, 3], [0, 2, 4, 6], [1, 3, 5, 7], [0, 2, 4, 6, 8], [1, 3, 5, 7, 8], [2, 4, 6, 8], [5, 7, 8], [8]]}
