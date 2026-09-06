@@ -7,6 +7,12 @@ from signed_clauses import parse_constraints, constraints_satisfied
 from constraints import Constraints
 from casper_layer import CasperLayer
 
+import sys
+from pathlib import Path as _P
+_ARCHIVE = _P(__file__).resolve().parents[1] / "archive" / "mnist_closed_form"
+if str(_ARCHIVE) not in sys.path:
+    sys.path.append(str(_ARCHIVE))
+
 
 EXAMPLE1_PATH = Path(__file__).resolve().parents[1] / "examples" / "example1_shapes.txt"
 
@@ -145,7 +151,7 @@ def _make_sum_feasibility_fn(n_digits: int):
 def test_algebraic_sum_equals_existing_constraint_layer(seed: int):
     """CasperLayer with Constraints.from_function wrapping sum produces
     bit-identical projections to the legacy ConstraintLayer."""
-    from constraint_layer import ConstraintLayer
+    from mnist_sum_constraint_layer import ConstraintLayer
 
     torch.manual_seed(seed)
 

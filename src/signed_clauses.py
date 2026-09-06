@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from functools import cached_property
 from typing import Iterable
 
 
@@ -28,8 +29,12 @@ class SignedClause:
         items = sorted(merged.items())
         return cls(tuple(SignedLiteral(v, s) for v, s in items))
 
-    @property
+    @cached_property
     def variables(self) -> frozenset[int]:
+        # Cached: the compiler queries this in per-elimination-step scans, so
+        # rebuilding the frozenset on every access is quadratic overall.
+        # (cached_property stores via instance __dict__, which works on frozen
+        # dataclasses; equality and hash still use only `literals`.)
         return frozenset(lit.var for lit in self.literals)
 
     def get(self, var: int) -> frozenset[int] | None:

@@ -2,8 +2,10 @@ import argparse
 import csv
 import os
 import signal
+import sys
 import time
 from contextlib import contextmanager
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -22,7 +24,7 @@ from data import (
 )
 from loss import MaskedLoss, PlainSumLoss
 from model import MNISTConstraintNet
-from carry_chain_constraint_layer import compute_carry_chain
+from carry_chain import compute_carry_chain
 
 
 class IterTimeoutError(Exception):
@@ -69,6 +71,38 @@ def get_config(n_digits, task):
         n_output_digits = n_digits + 1
         return [10] * (n_inputs + n_output_digits), n_inputs, _make_addn_constraint(n_digits)
     raise ValueError(f"Unknown task: {task!r}")
+
+
+def resolve_compiled_file(task, n_digits, explicit=None):
+    """Path to the compiled constraint artifact for (task, n_digits).
+
+    MNIST-Add's carry-chain DSL is its own compile fixpoint at every N, so a
+    missing artifact is generated rather than compiled. MNIST-Sum's flat
+    encoding gives S a domain of 9N+1 and only N=2 is tractable; larger N needs
+    the digit-tree encoding, which has a different variable layout than
+    get_config() builds, so it is refused here rather than silently downgraded.
+    """
+    if explicit is not None:
+        return explicit
+
+    examples = Path(__file__).resolve().parents[1] / "examples"
+    if task == 'add':
+        dsl = examples / f"mnist_add_n{n_digits}.txt"
+        if not dsl.exists():
+            sys.path.append(str(examples))
+            from generate_mnist_add import generate_mnist_add_dsl
+            dsl.write_text(generate_mnist_add_dsl(n_digits))
+        return str(dsl)
+
+    artifact = examples / f"mnist_sum_n{n_digits}_compiled.txt"
+    if artifact.exists():
+        return str(artifact)
+    raise SystemExit(
+        f"no compiled artifact for task=sum N={n_digits} "
+        f"({artifact} not found). The flat sum encoding is only tractable at "
+        f"N=2; for larger N use the digit-tree encoding, or pass "
+        f"--projection-backend closed_form to run the archived layer."
+    )
 
 
 def split_logits(logits, variable_ranges):
@@ -309,7 +343,8 @@ def evaluate_add(model, loader, variable_ranges, n_inputs, n_digits_per_num, dev
 def run_one(task, n_digits, seed, epochs, lr, batch_size, device,
             train_loader, test_loader, csv_writer, csv_file,
             projection_backend, solver_time_limit,
-            per_iter_timeout_s, max_run_time_s, constraint_mode='train_infer'):
+            per_iter_timeout_s, max_run_time_s, constraint_mode='train_infer',
+            compiled_file=None):
     torch.manual_seed(seed)
     if device.type == 'cuda':
         torch.cuda.manual_seed_all(seed)
@@ -327,6 +362,7 @@ def run_one(task, n_digits, seed, epochs, lr, batch_size, device,
         constraint_fn=constraint_fn,
         projection_backend=projection_backend,
         solver_time_limit=solver_time_limit,
+        compiled_file=compiled_file,
     ).to(device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
@@ -432,8 +468,14 @@ def main():
     parser.add_argument('--lr', type=float, default=None)
     parser.add_argument('--batch-size', type=int, default=None)
     parser.add_argument('--csv', type=str, required=True)
-    parser.add_argument('--projection-backend', type=str, default='closed_form',
-                        choices=['closed_form', 'cvxpy'])
+    parser.add_argument('--projection-backend', type=str, default='compiled',
+                        choices=['compiled', 'closed_form', 'cvxpy'],
+                        help="'compiled' (default) projects against the "
+                             "compiled clause artifact; 'closed_form' and "
+                             "'cvxpy' run the archived on-the-fly layers.")
+    parser.add_argument('--compiled-file', type=str, default=None,
+                        help="Compiled constraint artifact; required by "
+                             "--projection-backend compiled.")
     parser.add_argument('--constraint-mode', type=str, default='train_infer',
                         choices=['train_infer', 'train_only', 'infer_only', 'none'],
                         help='When the constraint is applied: at train+inference, '
@@ -503,6 +545,10 @@ def main():
             csv_file=f,
             projection_backend=args.projection_backend,
             solver_time_limit=args.solver_time_limit,
+            compiled_file=(
+                resolve_compiled_file(args.task, args.n_digits, args.compiled_file)
+                if args.projection_backend == 'compiled' else None
+            ),
             per_iter_timeout_s=args.per_iter_timeout_s,
             max_run_time_s=args.max_run_time_s,
             constraint_mode=args.constraint_mode,

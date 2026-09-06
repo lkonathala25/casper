@@ -358,3 +358,14 @@ def test_parallel_multigroup_matches_serial(seed: int, monkeypatch):
         assert set(sv) == set(pv), (
             f"seed={seed} var={var}: parallel clause set diverged from serial"
         )
+def test_conflict_pattern_global_intersection_proves_no_conflicts():
+    from resolution import _enumerate_minimal_conflict_patterns
+
+    value_sets = [
+        frozenset({0, 1, 2}),
+        frozenset({1, 2, 3}),
+        frozenset({1, 4}),
+    ]
+    assert _enumerate_minimal_conflict_patterns(value_sets, cap=5) == []
+
+

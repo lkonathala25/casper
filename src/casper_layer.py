@@ -55,7 +55,11 @@ class CasperLayer(nn.Module):
 
         assignments: list[dict[int, int]] = [{} for _ in range(B)]
 
-        l2_per_sample = torch.zeros(B, device=device, dtype=probs.dtype)
+        l2_cols: list[torch.Tensor] = [
+            torch.zeros(B, device=device, dtype=probs.dtype)
+            for _ in range(n_vars)
+        ]
+        n_projected_per_var: list[int] = [0] * n_vars
         total_projected = 0
 
         for level in self.ordering_levels:
@@ -138,7 +142,8 @@ class CasperLayer(nn.Module):
                 expanded_l2 = torch.zeros(
                     B, device=device, dtype=probs.dtype
                 ).index_copy(0, global_need, best_dist)
-                l2_per_sample = l2_per_sample + expanded_l2
+                l2_cols[var] = l2_cols[var] + expanded_l2
+                n_projected_per_var[var] += int(need_local.numel())
                 total_projected += int(need_local.numel())
 
                 for k, local_j in enumerate(need_local.tolist()):
@@ -148,11 +153,18 @@ class CasperLayer(nn.Module):
             slices[var] = new_slice
 
         adjusted = torch.cat(slices, dim=1)
+        # (B, n_vars) differentiable per-variable L2 edits; column v is the
+        # edit applied to variable v's slice. Lets callers weight or exclude
+        # variables (e.g. auxiliary variables with no neural head).
+        l2_per_var = torch.stack(l2_cols, dim=1)
+        l2_per_sample = l2_per_var.sum(dim=1)
         info = {
             "projection_loss": l2_per_sample.sum() / max(B, 1),
             "total_l2_distance": float(l2_per_sample.sum().item()),
             "avg_l2_per_sample": float(l2_per_sample.mean().item()) if B else 0.0,
             "total_constraints_applied": total_projected,
             "final_assignments": assignments,
+            "l2_per_var": l2_per_var,
+            "n_projected_per_var": n_projected_per_var,
         }
         return adjusted, info

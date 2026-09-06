@@ -45,6 +45,84 @@ def _is_tautology(clause: SignedClause, var_domains: list[int]) -> bool:
     )
 
 
+def _functional_bucket_proof(
+    clauses: list[SignedClause],
+    output: int,
+    var_domains: list[int],
+    step_of: dict[int, int],
+) -> dict | None:
+    """Prove that eliminating ``output`` retains no resolvents.
+
+    Recognises exact-trigger deterministic functions:
+
+        [D_A \\ {a}]:A or ... or [{f(a,...)}]:Y
+
+    Every output-conflicting pair has different input tuples (determinism), so
+    at least one pair of complement literals unions to its full input domain.
+    Its resolvent is therefore tautological.  This proof is conservative:
+    anything outside this exact form returns ``None`` and uses general
+    resolution unchanged.
+
+    Totality is reported but not required for the zero-resolvent proof.  A
+    partial deterministic function simply leaves its missing input tuples
+    unconstrained, exactly as the original clauses do.
+    """
+    if not clauses:
+        return None
+    output_step = step_of[output]
+    parents: tuple[int, ...] | None = None
+    mapping: dict[tuple[int, ...], int] = {}
+    output_values_seen: set[int] = set()
+
+    for clause in clauses:
+        out_values = clause.get(output)
+        if out_values is None or len(out_values) != 1:
+            return None
+        clause_parents = tuple(
+            lit.var for lit in clause.literals if lit.var != output
+        )
+        if not clause_parents:
+            return None
+        if parents is None:
+            parents = clause_parents
+        elif clause_parents != parents:
+            return None
+        if any(step_of[parent] >= output_step for parent in clause_parents):
+            return None
+
+        trigger: list[int] = []
+        for parent in clause_parents:
+            values = clause.get(parent)
+            domain = var_domains[parent]
+            if values is None or len(values) != domain - 1:
+                return None
+            missing = set(range(domain)) - set(values)
+            if len(missing) != 1:
+                return None
+            trigger.append(next(iter(missing)))
+
+        key = tuple(trigger)
+        value = next(iter(out_values))
+        previous = mapping.setdefault(key, value)
+        if previous != value:
+            # The same exact input trigger requires two different outputs.
+            # Resolving those clauses derives a real constraint on the inputs.
+            return None
+        output_values_seen.add(value)
+
+    assert parents is not None
+    possible_inputs = 1
+    for parent in parents:
+        possible_inputs *= var_domains[parent]
+    return {
+        "parents": parents,
+        "n_mappings": len(mapping),
+        "is_total": len(mapping) == possible_inputs,
+        "n_outputs": len(output_values_seen),
+        "n_output_conflicts": comb(len(output_values_seen), 2),
+    }
+
+
 _HEARTBEAT_EVERY_K = 200_000
 # Wall-clock interval for parent-side progress during the parallel pool. Tunable
 # via SAT_PARALLEL_HEARTBEAT_S; 0 disables the intermediate progress lines.
@@ -1630,6 +1708,11 @@ def compile_constraints(
     domains = list(cs.var_domains)
     ordering = list(cs.ordering)
     n = len(ordering)
+    step_of = {v: s for s, v in enumerate(ordering)}
+    functional_fastpath = (
+        not legacy_enum
+        and os.environ.get("SAT_FUNCTIONAL_FASTPATH", "1") != "0"
+    )
 
     pi_current: list[SignedClause] = [
         c for c in cs.clauses if c.literals and not _is_tautology(c, domains)
@@ -1717,7 +1800,50 @@ def compile_constraints(
 
         pi_minus_bar = [c for c in pi_current if var not in c.variables]
 
-        if legacy_enum:
+        functional_proof = (
+            _functional_bucket_proof(pi_bar, var, domains, step_of)
+            if functional_fastpath
+            else None
+        )
+
+        if functional_proof is not None:
+            # Exact deterministic functional links are already compiled for
+            # this output variable: every possible output-conflict resolvent
+            # is tautological by the proof in _functional_bucket_proof.
+            kept_resolvents = []
+            n_minimal_J = functional_proof["n_output_conflicts"]
+            max_J_size = 2 if n_minimal_J else 0
+            n_resolvents_raw = 0
+            grouped_stats = {
+                "n_distinct_sets": functional_proof["n_outputs"],
+                "n_patterns": n_minimal_J,
+                "max_pattern_size": max_J_size,
+                "n_resolvents_raw": 0,
+                "n_tautologies": n_minimal_J,
+                "n_duplicates": 0,
+                "n_fwd_subsumed_ambient": 0,
+                "n_fwd_subsumed_intra": 0,
+                "n_prefix_taut": 0,
+                "n_lookahead_taut": 0,
+                "n_prefix_subsumed": 0,
+                "n_pruned_leaves": 0,
+                "n_kept": 0,
+                "expand_elapsed_s": 0.0,
+                "functional_fastpath": True,
+                "functional_total": functional_proof["is_total"],
+                "functional_mappings": functional_proof["n_mappings"],
+            }
+            if verbose:
+                print(
+                    f"#   step={step} var={var_name} functional-fastpath "
+                    f"parents={len(functional_proof['parents'])} "
+                    f"mappings={functional_proof['n_mappings']} "
+                    f"total={int(functional_proof['is_total'])} "
+                    f"output_values={functional_proof['n_outputs']} "
+                    f"proved_tautological_patterns={n_minimal_J}",
+                    flush=True,
+                )
+        elif legacy_enum:
             try:
                 minimal_Js = _minimal_conflict_subsets(
                     pi_bar, var,
@@ -1777,14 +1903,24 @@ def compile_constraints(
 
         pi_out_before_sub = len(next_pi)
         t_sub = time.time()
-        # The final subsumption cleanup is the single-threaded tail of a
-        # parallel step; fan it across workers too once the pile is big enough
-        # to outweigh pool overhead. Identical result, order may differ.
-        sub_workers = int(os.environ.get("SAT_WORKERS", "1"))
-        if sub_workers > 1 and len(next_pi) > _PARALLEL_DEDUP_MIN:
-            next_pi = _dedup_by_subsumption_parallel(next_pi, sub_workers)
+        if n_kept == 0:
+            # No new resolvents: next_pi is a subset of the previous step's
+            # subsumption-minimal pile, so minimization is a provable no-op.
+            # The pile is also already in the dedup's output order (stable
+            # sort by width), which per-variable filtering preserves, so not
+            # even a re-sort is needed. This keeps resolvent-free encodings
+            # (functional chains, the trimmed steps encoding) linear-time.
+            pass
         else:
-            next_pi = _dedup_by_subsumption(next_pi)
+            # The final subsumption cleanup is the single-threaded tail of a
+            # parallel step; fan it across workers too once the pile is big
+            # enough to outweigh pool overhead. Identical result, order may
+            # differ.
+            sub_workers = int(os.environ.get("SAT_WORKERS", "1"))
+            if sub_workers > 1 and len(next_pi) > _PARALLEL_DEDUP_MIN:
+                next_pi = _dedup_by_subsumption_parallel(next_pi, sub_workers)
+            else:
+                next_pi = _dedup_by_subsumption(next_pi)
         sub_elapsed = time.time() - t_sub
         pi_out_after_sub = len(next_pi)
         sub_eliminated = pi_out_before_sub - pi_out_after_sub

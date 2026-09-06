@@ -20,6 +20,10 @@ def load_warcraft(name):
     path = str(ROOT / "src_warcraft")
     added = path not in sys.path
     sys.path.insert(0, path)
+    # Evict first as well as last: a src/ module already cached under a
+    # colliding name would otherwise satisfy this import and hand back the
+    # wrong implementation.
+    stashed = {m: sys.modules.pop(m) for m in _COLLIDING if m in sys.modules}
     before = set(sys.modules)
     try:
         return importlib.import_module(name)
@@ -31,3 +35,4 @@ def load_warcraft(name):
         for mod in set(sys.modules) - before:
             if mod in _COLLIDING:
                 del sys.modules[mod]
+        sys.modules.update(stashed)

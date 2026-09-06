@@ -68,14 +68,34 @@ class OutputDigitClassifier(nn.Module):
         return self.mlp(x)
 
 
+def _add_archive_to_path():
+    """Make the archived closed-form/cvxpy MNIST layers importable.
+
+    They are kept only to reproduce the pre-compilation results and as the
+    oracles the compiled-path equivalence tests compare against; nothing on
+    the compiled path imports them, so archive/ can be deleted once those
+    results are no longer needed.
+    """
+    import sys
+    from pathlib import Path as _Path
+
+    archive = _Path(__file__).resolve().parents[1] / "archive" / "mnist_closed_form"
+    if str(archive) not in sys.path:
+        sys.path.append(str(archive))
+
+
 class MNISTConstraintNet(nn.Module):
     """End-to-end model for MNIST-Sum or MNIST-Add with constraint projection."""
 
     def __init__(self, task, variable_ranges, n_inputs, constraint_fn=None,
-                 projection_backend='closed_form', solver_time_limit=None):
+                 projection_backend='closed_form', solver_time_limit=None,
+                 compiled_file=None):
         super().__init__()
         if task not in ('sum', 'add'):
             raise ValueError(f"task must be 'sum' or 'add', got {task!r}")
+        if projection_backend == 'compiled' and compiled_file is None:
+            raise ValueError(
+                "projection_backend='compiled' requires compiled_file")
         self.task = task
         self.var_ranges = variable_ranges
         self.start_indices = self._compute_start_indices(variable_ranges)
@@ -83,11 +103,25 @@ class MNISTConstraintNet(nn.Module):
 
         self.digit_encoder = DigitEncoder()
 
+        n_digits_per_num = n_inputs // 2
         if task == 'sum':
-            from constraint_layer import ConstraintLayer
-
             n_sum_categories = variable_ranges[-1]
             self.head = SumClassifier(n_inputs * 10, n_sum_categories)
+        else:
+            self.head = OutputDigitClassifier(
+                n_inputs * 10, n_digits_per_num + 1)
+
+        if projection_backend in ('closed_form', 'cvxpy'):
+            _add_archive_to_path()
+
+        if projection_backend == 'compiled':
+            from compiled_layer import CompiledConstraintLayer
+
+            self.constraint_layer = CompiledConstraintLayer(
+                compiled_file, variable_ranges)
+        elif task == 'sum':
+            from mnist_sum_constraint_layer import ConstraintLayer
+
             self.constraint_layer = ConstraintLayer(
                 variable_ranges,
                 constraint_fn=constraint_fn,
@@ -97,9 +131,6 @@ class MNISTConstraintNet(nn.Module):
         else:
             from carry_chain_constraint_layer import CarryChainConstraintLayer
 
-            n_digits_per_num = n_inputs // 2
-            n_output_digits = n_digits_per_num + 1
-            self.head = OutputDigitClassifier(n_inputs * 10, n_output_digits)
             self.constraint_layer = CarryChainConstraintLayer(
                 n_digits_per_num,
                 projection_backend=projection_backend,
