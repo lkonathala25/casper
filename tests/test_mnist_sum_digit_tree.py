@@ -7,7 +7,7 @@ from resolution import ClauseFeasibility, compile_constraints, to_dsl
 from signed_clauses import parse_constraints
 
 
-EXAMPLES = Path(__file__).resolve().parents[1] / "examples"
+EXAMPLES = Path(__file__).resolve().parents[1] / "tasks" / "mnist"
 CONSTRAINTS = Path(__file__).resolve().parents[1] / "constraints" / "mnist"
 sys.path.insert(0, str(EXAMPLES))
 

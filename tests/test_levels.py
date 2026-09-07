@@ -6,7 +6,7 @@ import torch
 from constraints import Constraints, compute_levels
 
 
-EXAMPLE1_PATH = Path(__file__).resolve().parents[1] / "examples" / "example1_shapes.txt"
+EXAMPLE1_PATH = Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "example1_shapes.txt"
 SUDOKU_TXT = Path(__file__).resolve().parents[1] / "constraints" / "sudoku" / "sudoku_2x2.txt"
 
 

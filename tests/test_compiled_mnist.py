@@ -19,7 +19,7 @@ from carry_chain import compute_carry_chain
 # Archived oracles: the hard-coded layers the compiled path is checked against.
 from carry_chain_constraint_layer import CarryChainConstraintLayer
 
-EXAMPLES = Path(__file__).resolve().parents[1] / "examples"
+EXAMPLES = Path(__file__).resolve().parents[1] / "tasks" / "mnist"
 CONSTRAINTS = Path(__file__).resolve().parents[1] / "constraints" / "mnist"
 if str(EXAMPLES) not in sys.path:
     sys.path.insert(0, str(EXAMPLES))

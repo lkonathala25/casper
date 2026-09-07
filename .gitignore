@@ -6,3 +6,8 @@ __pycache__/
 # artifacts rather than source. The N=1024 sum tree alone is 53 MB.
 constraints/mnist/mnist_add_n*.txt
 constraints/mnist/mnist_sum_digit_tree_n*.txt
+
+# Baseline run outputs (logs, checkpoints, generated configs)
+baselines/*/logs/
+baselines/*/model/
+baselines/*/**/_cfg_*.yaml

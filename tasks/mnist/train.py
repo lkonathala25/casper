@@ -5,7 +5,7 @@ from pathlib import Path as _Path
 # the path. Sibling task directories are deliberately not added -- they share
 # module names (data, model, train, minedit).
 _ROOT = _Path(__file__).resolve().parents[2]
-for _d in (_ROOT / "casper", _Path(__file__).resolve().parent, _ROOT / "examples"):
+for _d in (_ROOT / "casper", _Path(__file__).resolve().parent):
     if str(_d) not in _sys.path:
         _sys.path.insert(0, str(_d))
 
@@ -125,7 +125,7 @@ def resolve_compiled_file(task, n_digits, explicit=None):
     root = Path(__file__).resolve().parents[2]
     out = root / "constraints" / "mnist"
     out.mkdir(parents=True, exist_ok=True)
-    sys.path.append(str(root / "examples"))
+    sys.path.append(str(Path(__file__).resolve().parent))
     if task == 'add':
         dsl = out / f"mnist_add_n{n_digits}.txt"
         if not dsl.exists():

@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-for sub in ("tasks/warcraft", "tasks/warcraft", "examples"):
+for sub in ("tasks/warcraft", "tasks/warcraft"):
     if str(ROOT / sub) not in sys.path:
         sys.path.insert(0, str(ROOT / sub))
 

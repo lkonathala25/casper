@@ -14,7 +14,7 @@ if str(_ARCHIVE) not in sys.path:
     sys.path.append(str(_ARCHIVE))
 
 
-EXAMPLE1_PATH = Path(__file__).resolve().parents[1] / "examples" / "example1_shapes.txt"
+EXAMPLE1_PATH = Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "example1_shapes.txt"
 
 
 def _example1_constraints() -> Constraints:

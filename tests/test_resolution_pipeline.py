@@ -14,8 +14,8 @@ from constraints import Constraints
 from casper_layer import CasperLayer
 
 
-DEMO_TXT = Path(__file__).resolve().parents[1] / "examples" / "resolvent_demo.txt"
-DEMO_COMPILED = Path(__file__).resolve().parents[1] / "examples" / "resolvent_demo_compiled.txt"
+DEMO_TXT = Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "resolvent_demo.txt"
+DEMO_COMPILED = Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "resolvent_demo_compiled.txt"
 
 
 def _lit(var: int, *values: int) -> SignedLiteral:

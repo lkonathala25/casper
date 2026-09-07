@@ -19,7 +19,7 @@ from resolution import (
 )
 
 
-EXAMPLE1_PATH = Path(__file__).resolve().parents[1] / "examples" / "example1_shapes.txt"
+EXAMPLE1_PATH = Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "example1_shapes.txt"
 EXAMPLE1_TEXT = EXAMPLE1_PATH.read_text()
 
 

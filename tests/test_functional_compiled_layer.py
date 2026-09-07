@@ -6,7 +6,7 @@ from compiled_layer import CompiledConstraintLayer
 from functional_compiled_layer import FunctionalCompiledConstraintLayer
 
 
-EXAMPLES = Path(__file__).resolve().parents[1] / "examples"
+EXAMPLES = Path(__file__).resolve().parents[1] / "tasks" / "mnist"
 CONSTRAINTS = Path(__file__).resolve().parents[1] / "constraints" / "mnist"
 
 

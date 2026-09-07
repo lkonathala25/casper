@@ -1,21 +1,38 @@
 # Baselines
 
-One directory per method. Each holds:
+One directory per method, each self-contained:
 
 ```
 <method>/
-  src/       vendored + adapted code (small; datasets are not copied here)
-  env.yml    locked interpreter for this method
-  run.sh     canonical invocation, naming its own python
+  <task dirs or package>   vendored + adapted code
+  run_sum.sh  run_add.sh   canonical invocations
+  README.md                provenance and how it was ported
 ```
 
-They cannot share one interpreter — Scallop needs a compiled `scallopy` (Rust),
-DeepSoftLog needs a Cython build, and SPL pins a 2023 Python 3.9 + TensorFlow
-stack. So "one place" means one repo and one command surface, not one env.
+All baselines read MNIST from the repo-root `data/` — never a private copy.
 
-For MNIST specifically, most methods do fit a single environment: blackbox,
-ICR, ISED, CCN+ and DeepProbLog all run on the `dpl` interpreter as-is, and
-CTSketch needs only `tensorly` plus a vendored `tt_sketch`. Scallop and SPL are
-the two that genuinely need isolation.
+## Environment
 
-All methods read MNIST from `data/` at the repo root -- never a private copy.
+`ctsketch` and `anesi` share **`casper_env`** with CASPER itself:
+
+```bash
+conda create -n casper_env python=3.10
+pip install torch==2.6.0 torchvision==0.21.0 tensorly==0.9.0 \
+            numpy scipy wandb tqdm pyyaml pytest cvxpy cvxpylayers
+```
+
+CASPER's own suite passes on this env (227 tests), so one interpreter covers
+all three. Methods added later will not all fit here — Scallop needs a compiled
+`scallopy` (Rust), DeepSoftLog needs a Cython build, and SPL pins a 2023
+Python 3.9 + TensorFlow stack. Those get their own `env.yml`.
+
+## Smoke tests (1 epoch, smallest n, `casper_env`)
+
+| method | task | result |
+|---|---|---|
+| CTSketch | sum, n=2 | acc 80.00%, digit 89.25% |
+| CTSketch | add, 2 digits | acc 85.92%, digit 96.23% |
+| A-NeSI | sum, arity=2 | acc 80.56%, digit 89.98% |
+| A-NeSI | add, N=2 | acc 29.49%, digit 88.82% |
+
+Sanity only — the published n=2 figures are ~95-98% after 50-100 epochs.
