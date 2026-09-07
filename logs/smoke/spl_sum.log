@@ -1,0 +1,17 @@
+# spl sum  started 2026-09-07T16:27:15+01:00
+Device: cuda
+Loaded SDD from sdd_files/mnistsum_N2.sdd
+Train: 5000 samples, Test: 1000 samples
+Model params: 215,370
+
+Epoch     Loss   DigAcc   SumAcc   Viol    Time  PeakMem(MB)
+--------------------------------------------------------------
+    1   1.7015   0.7981   0.6770  0.000    6.4s         63.7
+
+--- Test set evaluation ---
+  Loss:           0.7556
+  Digit accuracy: 0.9305
+  Sum accuracy:   0.8630
+  Violation rate: 0.0000
+  Peak GPU mem:   26.1 MB
+# spl sum  exit=0  10s  2026-09-07T16:27:25+01:00

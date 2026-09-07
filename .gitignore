@@ -11,3 +11,7 @@ constraints/mnist/mnist_sum_digit_tree_n*.txt
 baselines/*/logs/
 baselines/*/model/
 baselines/*/**/_cfg_*.yaml
+
+# Warcraft dataset (~4.7 GB). Provenance and regeneration in data/warcraft/MANIFEST.md
+data/warcraft/
+!data/warcraft/MANIFEST.md
