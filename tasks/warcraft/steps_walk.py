@@ -4,6 +4,8 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import json
+
 import numpy as np
 import torch
 
@@ -96,6 +98,79 @@ class WalkStats:
     divergences: list = field(default_factory=list)
 
 
+class CompiledStepsEncoding:
+    """Steps encoding reconstructed from compilation output alone.
+
+    `domains` are read from the DSL sidecar and the per-tick successor relation
+    is derived from the compiled clauses, so nothing here calls
+    build_steps_encoding. This is what the layer walks when it is given an
+    artifact: the constraints it enforces are the ones resolution emitted.
+    """
+
+    def __init__(self, compiled, sidecar: dict):
+        self.g = int(sidecar["g"])
+        self.horizon = int(sidecar["horizon"])
+        self.source = int(sidecar["source"])
+        self.target = int(sidecar["target"])
+        self.trimmed = bool(sidecar["trimmed"])
+        self.domains = tuple(tuple(d) for d in sidecar["domains"])
+        self._local = [self.local_index(i) for i in range(self.horizon + 1)]
+        self._succ = self._derive_successors(compiled)
+
+    @property
+    def n(self) -> int:
+        return self.g * self.g
+
+    def local_index(self, step: int) -> dict:
+        """Cell index -> position within D_step, the DSL value for that step."""
+        return {v: k for k, v in enumerate(self.domains[step])}
+
+    def _derive_successors(self, compiled):
+        """succ tables read off the compiled clauses, one dict per tick."""
+        by_var = {}
+        for pi in compiled.per_var_clauses:
+            for clause in pi:
+                vs = sorted(lit.var for lit in clause.literals)
+                lo, hi = (vs[0], vs[0]) if len(vs) == 1 else (vs[0], vs[1])
+                by_var.setdefault(lo, []).append((clause, lo, hi))
+
+        succ = [dict() for _ in range(self.horizon + 1)]
+        for i in range(self.horizon):
+            nxt_dom = self.domains[i + 1]
+            # Unary clauses on X_{i+1} restrict the whole tick regardless of X_i.
+            base = set(nxt_dom)
+            for clause, lo, hi in by_var.get(i + 1, []):
+                if lo == hi == i + 1:
+                    base &= {nxt_dom[k] for k in (clause.get(hi) or frozenset())}
+            binary = [c for c in by_var.get(i, []) if c[2] == i + 1 and c[1] != c[2]]
+            for u in self.domains[i]:
+                got = set(base)
+                u_local = self._local[i][u]
+                for clause, lo, hi in binary:
+                    if u_local in (clause.get(lo) or frozenset()):
+                        continue
+                    got &= {nxt_dom[k] for k in (clause.get(hi) or frozenset())}
+                succ[i + 1][u] = tuple(sorted(got))
+        return succ
+
+    def feasible(self, i: int, prev: int) -> tuple:
+        """Candidates for X_i given X_{i-1} = prev, straight from the artifact."""
+        return self._succ[i].get(prev, ())
+
+
+def load_compiled_encoding(compiled_path, domains_path=None):
+    """Read a compiled steps artifact and its domain sidecar into an encoding."""
+    from resolution import from_json
+
+    compiled_path = Path(compiled_path)
+    if domains_path is None:
+        stem = compiled_path.name.replace("_compiled.json", "")
+        domains_path = compiled_path.with_name(stem + ".domains.json")
+    compiled = from_json(json.loads(Path(compiled_path).read_text()))
+    sidecar = json.loads(Path(domains_path).read_text())
+    return CompiledStepsEncoding(compiled, sidecar)
+
+
 class StepsWalkDecoder:
     """Sequential projection over X_0..X_L on the trimmed steps encoding.
 
@@ -105,17 +180,33 @@ class StepsWalkDecoder:
     licenses; `feasible_matches_artifact` checks this rather than assuming it.
     """
 
-    def __init__(self, g: int, eps: float = 1e-3, dtype=torch.float32):
+    def __init__(self, g: int, eps: float = 1e-3, dtype=torch.float32,
+                 compiled_artifact=None):
         self.g = g
         self.eps = eps
         self.dtype = dtype
-        self.enc = build_steps_encoding(g, trimmed=True)
+        self.from_artifact = compiled_artifact is not None
+        self.enc = (
+            load_compiled_encoding(compiled_artifact) if self.from_artifact
+            else build_steps_encoding(g, trimmed=True)
+        )
+        if self.from_artifact and self.enc.g != g:
+            raise ValueError(
+                f"artifact {compiled_artifact} is for a {self.enc.g}x{self.enc.g} "
+                f"grid, not {g}x{g}"
+            )
         self.domain_sets = [set(d) for d in self.enc.domains]
         self.local = [self.enc.local_index(i) for i in range(self.enc.horizon + 1)]
         self._minedit = {}
 
     def feasible(self, i: int, prev: int) -> tuple[int, ...]:
-        """succ(prev) cap D_i, the candidates for X_i given X_{i-1} = prev."""
+        """Candidates for X_i given X_{i-1} = prev.
+
+        Read off the compiled clauses when the decoder was built from an
+        artifact; otherwise succ(prev) cap D_i from the generator.
+        """
+        if self.from_artifact:
+            return self.enc.feasible(i, prev)
         d = self.domain_sets[i]
         return tuple(v for v in successors(self.g, prev) if v in d)
 

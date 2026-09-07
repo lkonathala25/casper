@@ -1,0 +1,20 @@
+Device: cuda
+Grid: 12x12 | Nodes: 144, total_dim: 868
+Train: 10000, Val: 1000, Test: 1000
+Label conversion gate (alphabet='full'): clean over 12000 instances, 0 UnrepresentablePatternError
+Compiled-artifact gate: layer feasible sets == steps_12_trimmed_compiled.json (0.4s)
+Auxiliary losses off: beta_ce, gamma_focal, lambda_edge, lambda_len, lambda_pair
+
+======================================================================
+CONDITION: crl_in_training
+  epochs=1, runs=1, lr=0.0005, grid=12x12
+  train-time CRL (WarcraftMaskedLoss): True (λ_neg=1.0) | eval-time CRL: True
+  aux: edge=0.0 pair=0.0 len=0.0 beta_ce=0.0 focal_gamma=0.0
+  CSV: results/smoke_steps_12/crl_in_training/crl_in_training_1runs.csv
+======================================================================
+
+--- Run 1/1 (seed=42) ---
+  Train:   0%|          | 0/79 [00:00<?, ?it/s]  Train:   1%|▏         | 1/79 [00:00<00:41,  1.88it/s]  Train:   5%|▌         | 4/79 [00:00<00:09,  7.50it/s]  Train:   9%|▉         | 7/79 [00:00<00:05, 12.01it/s]  Train:  13%|█▎        | 10/79 [00:00<00:04, 15.50it/s]  Train:  16%|█▋        | 13/79 [00:01<00:03, 18.11it/s]  Train:  20%|██        | 16/79 [00:01<00:03, 20.05it/s]  Train:  24%|██▍       | 19/79 [00:01<00:02, 21.60it/s]  Train:  28%|██▊       | 22/79 [00:01<00:02, 22.68it/s]  Train:  32%|███▏      | 25/79 [00:01<00:02, 23.50it/s]  Train:  35%|███▌      | 28/79 [00:01<00:02, 24.03it/s]  Train:  39%|███▉      | 31/79 [00:01<00:01, 24.42it/s]  Train:  43%|████▎     | 34/79 [00:01<00:01, 24.69it/s]  Train:  47%|████▋     | 37/79 [00:01<00:01, 25.08it/s]  Train:  51%|█████     | 40/79 [00:02<00:01, 25.16it/s]  Train:  54%|█████▍    | 43/79 [00:02<00:01, 25.35it/s]  Train:  58%|█████▊    | 46/79 [00:02<00:01, 25.67it/s]  Train:  62%|██████▏   | 49/79 [00:02<00:01, 26.19it/s]  Train:  66%|██████▌   | 52/79 [00:02<00:01, 26.63it/s]  Train:  70%|██████▉   | 55/79 [00:02<00:00, 26.86it/s]  Train:  73%|███████▎  | 58/79 [00:02<00:00, 25.73it/s]  Train:  77%|███████▋  | 61/79 [00:02<00:00, 26.29it/s]  Train:  81%|████████  | 64/79 [00:02<00:00, 26.77it/s]  Train:  85%|████████▍ | 67/79 [00:03<00:00, 27.14it/s]  Train:  89%|████████▊ | 70/79 [00:03<00:00, 27.36it/s]  Train:  92%|█████████▏| 73/79 [00:03<00:00, 27.56it/s]  Train:  96%|█████████▌| 76/79 [00:03<00:00, 27.67it/s]  Train: 100%|██████████| 79/79 [00:03<00:00, 26.61it/s]                                                          Eval:   0%|          | 0/8 [00:00<?, ?it/s]  Eval:  12%|█▎        | 1/8 [00:00<00:01,  6.15it/s]  Eval:  25%|██▌       | 2/8 [00:00<00:00,  6.09it/s]  Eval:  38%|███▊      | 3/8 [00:00<00:00,  7.32it/s]  Eval:  50%|█████     | 4/8 [00:00<00:00,  6.63it/s]  Eval:  62%|██████▎   | 5/8 [00:00<00:00,  7.47it/s]  Eval:  75%|███████▌  | 6/8 [00:00<00:00,  6.80it/s]  Eval:  88%|████████▊ | 7/8 [00:00<00:00,  7.53it/s]  Eval: 100%|██████████| 8/8 [00:01<00:00,  6.92it/s]                                                       Ep   1 | TrLoss: 0.6140 | VLoss: 0.4836 | Ex/Ham/Con:   5.2/ 90.6/100.0 | Raw Ex/Ham/Con:   0.0/ 93.4/  0.0 | L2: 2.1542 | ArgΔ: 0.111 | Unq R/P:  164/ 644 (top-1 P:   8.8%) | Pos: 0.3278 | Neg: 0.2862 | LR: 5.00e-06 | 6.2s
+  Eval:   0%|          | 0/8 [00:00<?, ?it/s]  Eval:  12%|█▎        | 1/8 [00:00<00:01,  6.52it/s]  Eval:  25%|██▌       | 2/8 [00:00<00:00,  8.06it/s]  Eval:  38%|███▊      | 3/8 [00:00<00:00,  7.91it/s]  Eval:  50%|█████     | 4/8 [00:00<00:00,  8.53it/s]  Eval:  62%|██████▎   | 5/8 [00:00<00:00,  7.29it/s]  Eval:  75%|███████▌  | 6/8 [00:00<00:00,  7.97it/s]  Eval:  88%|████████▊ | 7/8 [00:00<00:00,  7.10it/s]                                                       Test | Ex/Ham/Con:   4.3/ 90.6/100.0 | Raw:   0.1/ 93.4/  0.2 | L2: 2.1769
+
+Results → results/smoke_steps_12/crl_in_training/crl_in_training_1runs.csv

@@ -25,7 +25,7 @@ class ResNet18NodeCategorical(nn.Module):
 
     def __init__(self, var_ranges, grid_size, processing_order='row',
                  constraint_mode='monotone', artifact=None, alphabet='full',
-                 max_rounds=20, certify=False):
+                 max_rounds=20, certify=False, steps_artifact=None):
         super().__init__()
         self.var_ranges = var_ranges
         self.total_dim = sum(var_ranges)
@@ -49,6 +49,7 @@ class ResNet18NodeCategorical(nn.Module):
             from steps_layer import StepsProjectionLayer
             self.constraint_layer = StepsProjectionLayer(
                 grid_size=grid_size, alphabet=alphabet, certify=certify,
+                compiled_artifact=steps_artifact,
             )
         else:
             from lazy_exact_layer import build_constraint_layer

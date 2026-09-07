@@ -44,6 +44,11 @@ def main() -> None:
     p.add_argument("--out", type=Path, default=None)
     p.add_argument("--log", type=Path, default=None)
     p.add_argument("--cap", type=int, default=None)
+    p.add_argument("--no-verbose-pass", action="store_true",
+                   help="Skip the second, instrumented compile. It exists only "
+                        "to count resolvents per step and costs a full extra "
+                        "compile plus a log proportional to the clause count, "
+                        "which is prohibitive at 30x30.")
     args = p.parse_args()
 
     out = args.out or args.dsl.with_name(args.dsl.stem + "_compiled.json")
@@ -74,18 +79,28 @@ def main() -> None:
     elapsed = time.time() - t0
     print(f"quiet compile_s={elapsed:.2f}", flush=True)
 
-    with open(log, "w") as fh:
-        t_v = time.time()
-        with redirect_stdout(_Tee(fh)):
-            compile_constraints(parse_constraints(text), verbose=True, cap=args.cap)
-        verbose_elapsed = time.time() - t_v
+    if args.no_verbose_pass:
+        # The per-step resolvent tally is only observable from the instrumented
+        # run. Report it as unknown rather than inferring it from pile sizes,
+        # which subsumption makes non-comparable. The independent evidence that
+        # the artifact is correct is StepsWalkDecoder.feasible_matches_artifact.
+        verbose_elapsed = None
+        steps = []
+        resolvents = None
+    else:
+        with open(log, "w") as fh:
+            t_v = time.time()
+            with redirect_stdout(_Tee(fh)):
+                compile_constraints(parse_constraints(text), verbose=True,
+                                    cap=args.cap)
+            verbose_elapsed = time.time() - t_v
 
-    steps = [
-        (int(m.group(1)), m.group(2), int(m.group(3)), int(m.group(4)))
-        for m in (_STEP_RE.match(line) for line in log.read_text().splitlines())
-        if m
-    ]
-    resolvents = sum(s[3] for s in steps)
+        steps = [
+            (int(m.group(1)), m.group(2), int(m.group(3)), int(m.group(4)))
+            for m in (_STEP_RE.match(line) for line in log.read_text().splitlines())
+            if m
+        ]
+        resolvents = sum(s[3] for s in steps)
 
     out.write_text(json.dumps(to_json(cc)))
     summary = {
@@ -97,7 +112,8 @@ def main() -> None:
         "resolvents": resolvents,
         "steps_with_resolvents": [s[:2] + (s[3],) for s in steps if s[3]],
         "compile_s": round(elapsed, 2),
-        "compile_s_verbose": round(verbose_elapsed, 2),
+        "compile_s_verbose": (round(verbose_elapsed, 2)
+                              if verbose_elapsed is not None else None),
         "artifact": str(out),
         "artifact_mb": round(out.stat().st_size / 1e6, 3),
         "artifact_stream_mb": round(stream.stat().st_size / 1e6, 3),

@@ -381,7 +381,7 @@ def evaluate(model, loader, edges, node_info, node_order, var_ranges, device,
 
 def run_condition(condition, args, device, train_loader, val_loader, test_loader,
                   edges, node_info, node_order, var_ranges, num_edges, N,
-                  edge_matrix=None, M_u=None, M_v=None):
+                  edge_matrix=None, M_u=None, M_v=None, steps_artifact=None):
     # `crl_in_training_eval_off` keeps CaRL active during training (via masked
     # loss + optional λ_l2_edit self-distillation) but disables the constraint
     # layer at val/test, so the per-epoch metrics track raw-backbone behaviour.
@@ -438,6 +438,7 @@ def run_condition(condition, args, device, train_loader, val_loader, test_loader
                 alphabet=args.alphabet,
                 artifact=args.artifact,
                 max_rounds=args.max_rounds,
+                steps_artifact=steps_artifact,
             ).to(device)
             optimizer = torch.optim.Adam(model.parameters(), lr=args.lr,
                                          weight_decay=args.weight_decay)
@@ -639,10 +640,13 @@ def main():
                              "'row' is the original row-major sweep; 'diagonal' "
                              "sweeps anti-diagonals (i+j ascending) with top-down "
                              "tiebreak. Both are valid topological orders.")
-    parser.add_argument("--constraint-mode", type=str, default="monotone",
+    parser.add_argument("--constraint-mode", type=str, default="steps",
                         choices=["monotone", "lazy_exact", "steps"],
                         help="Projection layer. 'monotone' is the original "
-                             "down/right flow sweep (the default, unchanged); "
+                             "down/right flow sweep, retained only for "
+                             "reproducing the superseded results; it cannot "
+                             "represent non-monotone paths and must be asked "
+                             "for explicitly. "
                              "'lazy_exact' is the compiled degree clauses plus "
                              "ring elimination; 'steps' is the sequential "
                              "min-edit projection over the trimmed steps "
@@ -650,11 +654,20 @@ def main():
     parser.add_argument("--artifact", type=str, default=None,
                         help="Constraint artifact path for --constraint-mode "
                              "lazy_exact; ignored by the other modes.")
+    parser.add_argument("--steps-artifact", type=str, default=None,
+                        help="Compiled steps artifact checked at startup under "
+                             "--constraint-mode steps. Defaults to "
+                             "constraints/warcraft/steps_artifacts/"
+                             "steps_<N>_trimmed_compiled.json.")
+    parser.add_argument("--skip-steps-gate", action="store_true",
+                        help="Skip the cross-check of the loaded artifact "
+                             "against the steps encoding. The artifact is still "
+                             "loaded and enforced; only the check is dropped.")
     parser.add_argument("--max-rounds", type=int, default=20,
                         help="Ring-repair round cap for --constraint-mode "
                              "lazy_exact. The steps layer has no repair loop: "
                              "loop erasure is a single deterministic pass.")
-    parser.add_argument("--alphabet", type=str, default="monotone",
+    parser.add_argument("--alphabet", type=str, default="full",
                         choices=["monotone", "full"],
                         help="Node category alphabet. 'monotone' represents only "
                              "down/right traversal and rejects non-monotone "
@@ -686,6 +699,60 @@ def main():
     print(f"Label conversion gate (alphabet={args.alphabet!r}): clean over "
           f"{len(train_ds) + len(val_ds) + len(test_ds)} instances, "
           f"0 UnrepresentablePatternError")
+
+    if args.alphabet == "monotone" or args.constraint_mode == "monotone":
+        print("!" * 72)
+        print("WARNING: monotone selected. The monotone alphabet represents only")
+        print("down/right traversal and the monotone sweep is a single forward pass")
+        print("valid only on the R/D DAG. This is the superseded encoding and does")
+        print("not represent every 4-connected path. Use --alphabet full")
+        print("--constraint-mode steps for the corrected setting.")
+        print("!" * 72)
+
+    # The steps layer walks the compiled clauses themselves, so the artifact is
+    # required, not optional. --skip-steps-gate drops only the independent
+    # cross-check against the generator, never the load.
+    steps_artifact = None
+    if args.constraint_mode == "steps":
+        steps_artifact = Path(args.steps_artifact) if args.steps_artifact else (
+            _ROOT / "constraints" / "warcraft" / "steps_artifacts"
+            / f"steps_{N}_trimmed_compiled.json"
+        )
+        if not steps_artifact.exists():
+            raise FileNotFoundError(
+                f"steps mode enforces the compiled artifact {steps_artifact}, "
+                f"which does not exist. Build it with "
+                f"tasks/warcraft/build_steps_artifacts.py --size {N} then "
+                f"tasks/warcraft/compile_steps_encoding.py on the emitted DSL."
+            )
+        print(f"Steps constraints loaded from {steps_artifact.name}")
+
+        if not args.skip_steps_gate:
+            from steps_walk import StepsWalkDecoder
+            t_gate = time.time()
+            gen = StepsWalkDecoder(N)
+            afx = StepsWalkDecoder(N, compiled_artifact=steps_artifact)
+            if gen.enc.domains != afx.enc.domains:
+                raise RuntimeError(
+                    f"{steps_artifact} declares different per-tick domains than "
+                    f"the steps encoding for a {N}x{N} grid; refusing to train."
+                )
+            bad = [
+                (i, u)
+                for i in range(1, gen.enc.horizon + 1)
+                for u in gen.enc.domains[i - 1]
+                if tuple(sorted(gen.feasible(i, u)))
+                != tuple(sorted(afx.feasible(i, u)))
+            ]
+            if bad:
+                raise RuntimeError(
+                    f"{len(bad)} feasible sets derived from {steps_artifact.name} "
+                    f"disagree with the steps encoding (first: tick {bad[0][0]}, "
+                    f"cell {bad[0][1]}); refusing to train."
+                )
+            print(f"Compiled-artifact gate: all "
+                  f"{sum(len(d) for d in gen.enc.domains[:-1])} feasible sets "
+                  f"agree with the encoding ({time.time() - t_gate:.1f}s)")
 
     dropped = {k: getattr(args, k) for k in
                ("beta_ce", "gamma_focal", "lambda_edge", "lambda_pair", "lambda_len")
@@ -724,7 +791,8 @@ def main():
     for cond in conditions:
         run_condition(cond, args, device, train_loader, val_loader, test_loader,
                       edges, node_info, node_order, var_ranges, num_edges, N,
-                      edge_matrix=edge_matrix, M_u=M_u, M_v=M_v)
+                      edge_matrix=edge_matrix, M_u=M_u, M_v=M_v,
+                      steps_artifact=steps_artifact)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,14 @@
+{
+  "grid": 12,
+  "split": "test",
+  "boards": 1000,
+  "gt_non_monotone": 57,
+  "gt_non_monotone_pct": 5.7,
+  "alphabet_monotone_dim": 628,
+  "alphabet_full_dim": 868,
+  "driven_by": "compiled_artifact",
+  "passthrough_exact_all": 100.0,
+  "passthrough_exact_on_non_monotone": 100.0,
+  "layer_emitted_non_monotone": 57,
+  "PASS": true
+}

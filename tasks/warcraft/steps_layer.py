@@ -53,7 +53,8 @@ class StepsProjectionLayer(nn.Module):
     """
 
     def __init__(self, grid_size=12, alphabet="full", eps=1e-3,
-                 bridge="time-aware", forbid_reversal=True, certify=False):
+                 bridge="time-aware", forbid_reversal=True, certify=False,
+                 compiled_artifact=None):
         super().__init__()
         self.grid_size = grid_size
         self.eps = eps
@@ -66,7 +67,9 @@ class StepsProjectionLayer(nn.Module):
             else PlainBroadcastBridge(grid_size, alphabet=alphabet)
         )
         self.edge_bridge = CategoricalEdgeBridge(grid_size, alphabet=alphabet)
-        self.decoder = StepsWalkDecoder(grid_size, eps=eps)
+        self.decoder = StepsWalkDecoder(grid_size, eps=eps,
+                                        compiled_artifact=compiled_artifact)
+        self.from_artifact = self.decoder.from_artifact
 
         self.var_ranges = self.score_bridge.var_ranges
         self.total_dim = self.score_bridge.total_dim

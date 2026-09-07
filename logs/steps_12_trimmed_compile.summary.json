@@ -1,5 +1,5 @@
 {
-  "dsl": "examples/steps_artifacts/steps_12_trimmed.txt",
+  "dsl": "constraints/warcraft/steps_artifacts/steps_12_trimmed.txt",
   "input_size_mb": 2.001,
   "vars": 144,
   "clauses_emitted": 8844,
@@ -8,7 +8,7 @@
   "steps_with_resolvents": [],
   "compile_s": 21.72,
   "compile_s_verbose": 24.27,
-  "artifact": "examples/steps_artifacts/steps_12_trimmed_compiled.json",
+  "artifact": "constraints/warcraft/steps_artifacts/steps_12_trimmed_compiled.json",
   "artifact_mb": 2.614,
   "artifact_stream_mb": 1.975
 }
