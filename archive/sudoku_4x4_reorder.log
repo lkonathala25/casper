@@ -1,0 +1,269 @@
+# ordering source=min-degree: y_1 y_7 y_10 y_16 y_2 y_9 y_3 y_4 y_5 y_6 y_8 y_11 y_12 y_13 y_14 y_15
+# compile: n_vars=16 input_clauses=272 post_taut=272 post_subsumption=272 preproc_sub_elim=0 preproc_sub_elapsed_s=0.016 domains=[4] cap=per_var_domain algo=grouped+fwdsub
+# ordering: y_15 y_14 y_13 y_12 y_11 y_8 y_6 y_5 y_4 y_3 y_9 y_2 y_16 y_10 y_7 y_1
+# starting step=15 var=y_1 pi_in=40 pi_current=272 cap=4
+#   step=15 var=y_1 grouped pi_bar=40 distinct_value_sets=8 avg_group_size=5.0
+#   step=15 var=y_1 pattern-size=1 candidates=8 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=15 var=y_1 pattern-size=2 candidates=28 new_minimal=10 cumulative_minimal=10 elapsed_s=0.000
+#   step=15 var=y_1 pattern-size=3 candidates=56 new_minimal=0 cumulative_minimal=10 elapsed_s=0.000
+#   step=15 var=y_1 pattern-size=4 candidates=70 new_minimal=1 cumulative_minimal=11 elapsed_s=0.000
+#   step=15 var=y_1 pattern 1/11 size=2 expansion=21 cumulative_kept=0
+#   step=15 var=y_1 pattern 2/11 size=2 expansion=21 cumulative_kept=12
+#   step=15 var=y_1 pattern 3/11 size=2 expansion=21 cumulative_kept=24
+#   step=15 var=y_1 pattern 4/11 size=2 expansion=21 cumulative_kept=36
+#   step=15 var=y_1 pattern 5/11 size=2 expansion=9 cumulative_kept=48
+#   step=15 var=y_1 pattern 6/11 size=2 expansion=9 cumulative_kept=57
+#   step=15 var=y_1 pattern 7/11 size=2 expansion=9 cumulative_kept=66
+#   step=15 var=y_1 pattern 8/11 size=2 expansion=9 cumulative_kept=75
+#   step=15 var=y_1 pattern 9/11 size=2 expansion=9 cumulative_kept=84
+#   step=15 var=y_1 pattern 10/11 size=2 expansion=9 cumulative_kept=93
+#   step=15 var=y_1 pattern 11/11 size=4 expansion=2401 cumulative_kept=102
+step=15 var=y_1 pi_in=40 n_minimal_J=11 n_resolvents_raw=1608 n_resolvents_kept=654 max_J_size=4 pi_out_before_sub=886 pi_out_after_sub=886 sub_elim=0 sub_elapsed_s=0.192 n_distinct_sets=8 n_taut=666 fwd_sub_amb=0 fwd_sub_intra=288 prefix_taut=91 lookahead_taut=0 prefix_sub=0 pruned_leaves=931 dup=0 expand_elapsed_s=0.039 elapsed_s=0.232
+# starting step=14 var=y_7 pi_in=40 pi_current=886 cap=4
+#   step=14 var=y_7 grouped pi_bar=40 distinct_value_sets=8 avg_group_size=5.0
+#   step=14 var=y_7 pattern-size=1 candidates=8 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=14 var=y_7 pattern-size=2 candidates=28 new_minimal=10 cumulative_minimal=10 elapsed_s=0.000
+#   step=14 var=y_7 pattern-size=3 candidates=56 new_minimal=0 cumulative_minimal=10 elapsed_s=0.000
+#   step=14 var=y_7 pattern-size=4 candidates=70 new_minimal=1 cumulative_minimal=11 elapsed_s=0.000
+#   step=14 var=y_7 pattern 1/11 size=2 expansion=21 cumulative_kept=0
+#   step=14 var=y_7 pattern 2/11 size=2 expansion=21 cumulative_kept=12
+#   step=14 var=y_7 pattern 3/11 size=2 expansion=21 cumulative_kept=24
+#   step=14 var=y_7 pattern 4/11 size=2 expansion=21 cumulative_kept=36
+#   step=14 var=y_7 pattern 5/11 size=2 expansion=9 cumulative_kept=48
+#   step=14 var=y_7 pattern 6/11 size=2 expansion=9 cumulative_kept=57
+#   step=14 var=y_7 pattern 7/11 size=2 expansion=9 cumulative_kept=66
+#   step=14 var=y_7 pattern 8/11 size=2 expansion=9 cumulative_kept=75
+#   step=14 var=y_7 pattern 9/11 size=2 expansion=9 cumulative_kept=84
+#   step=14 var=y_7 pattern 10/11 size=2 expansion=9 cumulative_kept=93
+#   step=14 var=y_7 pattern 11/11 size=4 expansion=2401 cumulative_kept=102
+step=14 var=y_7 pi_in=40 n_minimal_J=11 n_resolvents_raw=1608 n_resolvents_kept=630 max_J_size=4 pi_out_before_sub=1476 pi_out_after_sub=1476 sub_elim=0 sub_elapsed_s=0.564 n_distinct_sets=8 n_taut=666 fwd_sub_amb=0 fwd_sub_intra=288 prefix_taut=91 lookahead_taut=0 prefix_sub=0 pruned_leaves=931 dup=24 expand_elapsed_s=0.061 elapsed_s=0.628
+# starting step=13 var=y_10 pi_in=40 pi_current=1476 cap=4
+#   step=13 var=y_10 grouped pi_bar=40 distinct_value_sets=8 avg_group_size=5.0
+#   step=13 var=y_10 pattern-size=1 candidates=8 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=13 var=y_10 pattern-size=2 candidates=28 new_minimal=10 cumulative_minimal=10 elapsed_s=0.000
+#   step=13 var=y_10 pattern-size=3 candidates=56 new_minimal=0 cumulative_minimal=10 elapsed_s=0.000
+#   step=13 var=y_10 pattern-size=4 candidates=70 new_minimal=1 cumulative_minimal=11 elapsed_s=0.000
+#   step=13 var=y_10 pattern 1/11 size=2 expansion=21 cumulative_kept=0
+#   step=13 var=y_10 pattern 2/11 size=2 expansion=21 cumulative_kept=12
+#   step=13 var=y_10 pattern 3/11 size=2 expansion=21 cumulative_kept=24
+#   step=13 var=y_10 pattern 4/11 size=2 expansion=21 cumulative_kept=36
+#   step=13 var=y_10 pattern 5/11 size=2 expansion=9 cumulative_kept=48
+#   step=13 var=y_10 pattern 6/11 size=2 expansion=9 cumulative_kept=57
+#   step=13 var=y_10 pattern 7/11 size=2 expansion=9 cumulative_kept=66
+#   step=13 var=y_10 pattern 8/11 size=2 expansion=9 cumulative_kept=75
+#   step=13 var=y_10 pattern 9/11 size=2 expansion=9 cumulative_kept=84
+#   step=13 var=y_10 pattern 10/11 size=2 expansion=9 cumulative_kept=93
+#   step=13 var=y_10 pattern 11/11 size=4 expansion=2401 cumulative_kept=102
+step=13 var=y_10 pi_in=40 n_minimal_J=11 n_resolvents_raw=1608 n_resolvents_kept=630 max_J_size=4 pi_out_before_sub=2066 pi_out_after_sub=2066 sub_elim=0 sub_elapsed_s=1.142 n_distinct_sets=8 n_taut=666 fwd_sub_amb=0 fwd_sub_intra=288 prefix_taut=91 lookahead_taut=0 prefix_sub=0 pruned_leaves=931 dup=24 expand_elapsed_s=0.072 elapsed_s=1.218
+# starting step=12 var=y_16 pi_in=40 pi_current=2066 cap=4
+#   step=12 var=y_16 grouped pi_bar=40 distinct_value_sets=8 avg_group_size=5.0
+#   step=12 var=y_16 pattern-size=1 candidates=8 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=12 var=y_16 pattern-size=2 candidates=28 new_minimal=10 cumulative_minimal=10 elapsed_s=0.000
+#   step=12 var=y_16 pattern-size=3 candidates=56 new_minimal=0 cumulative_minimal=10 elapsed_s=0.000
+#   step=12 var=y_16 pattern-size=4 candidates=70 new_minimal=1 cumulative_minimal=11 elapsed_s=0.000
+#   step=12 var=y_16 pattern 1/11 size=2 expansion=21 cumulative_kept=0
+#   step=12 var=y_16 pattern 2/11 size=2 expansion=21 cumulative_kept=12
+#   step=12 var=y_16 pattern 3/11 size=2 expansion=21 cumulative_kept=24
+#   step=12 var=y_16 pattern 4/11 size=2 expansion=21 cumulative_kept=36
+#   step=12 var=y_16 pattern 5/11 size=2 expansion=9 cumulative_kept=48
+#   step=12 var=y_16 pattern 6/11 size=2 expansion=9 cumulative_kept=57
+#   step=12 var=y_16 pattern 7/11 size=2 expansion=9 cumulative_kept=66
+#   step=12 var=y_16 pattern 8/11 size=2 expansion=9 cumulative_kept=75
+#   step=12 var=y_16 pattern 9/11 size=2 expansion=9 cumulative_kept=84
+#   step=12 var=y_16 pattern 10/11 size=2 expansion=9 cumulative_kept=93
+#   step=12 var=y_16 pattern 11/11 size=4 expansion=2401 cumulative_kept=102
+step=12 var=y_16 pi_in=40 n_minimal_J=11 n_resolvents_raw=1608 n_resolvents_kept=606 max_J_size=4 pi_out_before_sub=2632 pi_out_after_sub=2632 sub_elim=0 sub_elapsed_s=1.876 n_distinct_sets=8 n_taut=666 fwd_sub_amb=0 fwd_sub_intra=288 prefix_taut=91 lookahead_taut=0 prefix_sub=0 pruned_leaves=931 dup=48 expand_elapsed_s=0.105 elapsed_s=1.987
+# starting step=11 var=y_2 pi_in=734 pi_current=2632 cap=4
+#   step=11 var=y_2 grouped pi_bar=734 distinct_value_sets=14 avg_group_size=52.4
+#   step=11 var=y_2 pattern-size=1 candidates=14 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=11 var=y_2 pattern-size=2 candidates=91 new_minimal=25 cumulative_minimal=25 elapsed_s=0.000
+#   step=11 var=y_2 pattern-size=3 candidates=364 new_minimal=22 cumulative_minimal=47 elapsed_s=0.001
+#   step=11 var=y_2 pattern-size=4 candidates=1001 new_minimal=1 cumulative_minimal=48 elapsed_s=0.002
+#   step=11 var=y_2 pattern 1/48 size=2 expansion=3648 cumulative_kept=0
+#   step=11 var=y_2 pattern 2/48 size=2 expansion=3648 cumulative_kept=405
+#   step=11 var=y_2 pattern 3/48 size=2 expansion=3648 cumulative_kept=810
+#   step=11 var=y_2 pattern 4/48 size=2 expansion=3648 cumulative_kept=1215
+#   step=11 var=y_2 pattern 5/48 size=2 expansion=25 cumulative_kept=1620
+#   step=11 var=y_2 pattern 6/48 size=2 expansion=120 cumulative_kept=1628
+#   step=11 var=y_2 pattern 7/48 size=2 expansion=120 cumulative_kept=1702
+#   step=11 var=y_2 pattern 8/48 size=2 expansion=25 cumulative_kept=1776
+#   step=11 var=y_2 pattern 9/48 size=2 expansion=120 cumulative_kept=1778
+#   step=11 var=y_2 pattern 10/48 size=2 expansion=120 cumulative_kept=1839
+#   step=11 var=y_2 pattern 11/48 size=2 expansion=25 cumulative_kept=1913
+#   step=11 var=y_2 pattern 12/48 size=2 expansion=120 cumulative_kept=1915
+#   step=11 var=y_2 pattern 13/48 size=2 expansion=120 cumulative_kept=1976
+#   step=11 var=y_2 pattern 14/48 size=2 expansion=120 cumulative_kept=2037
+#   step=11 var=y_2 pattern 15/48 size=2 expansion=120 cumulative_kept=2088
+#   step=11 var=y_2 pattern 16/48 size=2 expansion=120 cumulative_kept=2162
+#   step=11 var=y_2 pattern 17/48 size=2 expansion=120 cumulative_kept=2213
+#   step=11 var=y_2 pattern 18/48 size=2 expansion=120 cumulative_kept=2274
+#   step=11 var=y_2 pattern 19/48 size=2 expansion=120 cumulative_kept=2325
+#   step=11 var=y_2 pattern 20/48 size=2 expansion=576 cumulative_kept=2376
+#   step=11 var=y_2 pattern 21/48 size=2 expansion=576 cumulative_kept=2592
+#   step=11 var=y_2 pattern 22/48 size=2 expansion=576 cumulative_kept=2808
+#   step=11 var=y_2 pattern 23/48 size=2 expansion=576 cumulative_kept=3024
+#   step=11 var=y_2 pattern 24/48 size=2 expansion=576 cumulative_kept=3240
+#   step=11 var=y_2 pattern 25/48 size=2 expansion=576 cumulative_kept=3456
+#   step=11 var=y_2 pattern 26/48 size=3 expansion=115520 cumulative_kept=3672
+#   step=11 var=y_2 pattern 27/48 size=3 expansion=115520 cumulative_kept=3828
+#   step=11 var=y_2 pattern 28/48 size=3 expansion=115520 cumulative_kept=3984
+#   step=11 var=y_2 pattern 29/48 size=3 expansion=3800 cumulative_kept=4140
+#   step=11 var=y_2 pattern 30/48 size=3 expansion=3800 cumulative_kept=4193
+#   step=11 var=y_2 pattern 31/48 size=3 expansion=3800 cumulative_kept=4246
+#   step=11 var=y_2 pattern 32/48 size=3 expansion=115520 cumulative_kept=4299
+#   step=11 var=y_2 pattern 33/48 size=3 expansion=115520 cumulative_kept=4455
+#   step=11 var=y_2 pattern 34/48 size=3 expansion=3800 cumulative_kept=4611
+#   step=11 var=y_2 pattern 35/48 size=3 expansion=3800 cumulative_kept=4664
+#   step=11 var=y_2 pattern 36/48 size=3 expansion=3800 cumulative_kept=4717
+#   step=11 var=y_2 pattern 37/48 size=3 expansion=115520 cumulative_kept=4770
+#   step=11 var=y_2 pattern 38/48 size=3 expansion=3800 cumulative_kept=4926
+#   step=11 var=y_2 pattern 39/48 size=3 expansion=3800 cumulative_kept=4979
+#   step=11 var=y_2 pattern 40/48 size=3 expansion=3800 cumulative_kept=5032
+#   step=11 var=y_2 pattern 41/48 size=3 expansion=3800 cumulative_kept=5085
+#   step=11 var=y_2 pattern 42/48 size=3 expansion=3800 cumulative_kept=5138
+#   step=11 var=y_2 pattern 43/48 size=3 expansion=3800 cumulative_kept=5191
+#   step=11 var=y_2 pattern 44/48 size=3 expansion=125 cumulative_kept=5244
+#   step=11 var=y_2 pattern 45/48 size=3 expansion=125 cumulative_kept=5274
+#   step=11 var=y_2 pattern 46/48 size=3 expansion=125 cumulative_kept=5304
+#   step=11 var=y_2 pattern 47/48 size=3 expansion=125 cumulative_kept=5334
+#   step=11 var=y_2 pattern 48/48 size=4 expansion=533794816 cumulative_kept=5364 mode=pairwise
+#   step=11 var=y_2 stage-1a done raw=23104 intermediates=676 taut=14953 dup=0 sub=7475 elapsed_s=0.416
+#   step=11 var=y_2 stage-1b done raw=23104 intermediates=676 taut=14953 dup=0 sub=7475 elapsed_s=0.425
+#     step=11 var=y_2 expand progress raw=200000 kept=5578 taut=121761 dup=912 sub_amb=22046 sub_intra=49703 prefix_taut=91350 lookahead_taut=0 prefix_sub=42666 pruned_leaves=670536 rate=8209/s
+#     step=11 var=y_2 expand progress raw=400000 kept=6115 taut=273436 dup=972 sub_amb=47419 sub_intra=72058 prefix_taut=91350 lookahead_taut=0 prefix_sub=42666 pruned_leaves=670536 rate=27207/s
+#   step=11 var=y_2 stage-2 done raw=456976 intermediates_01=676 intermediates_23=676 cumulative_kept=6276 elapsed_s=15.320
+step=11 var=y_2 pi_in=734 n_minimal_J=48 n_resolvents_raw=545223 n_resolvents_kept=6276 max_J_size=4 pi_out_before_sub=8174 pi_out_after_sub=5824 sub_elim=2350 sub_elapsed_s=11.170 n_distinct_sets=14 n_taut=392451 fwd_sub_amb=61160 fwd_sub_intra=84364 prefix_taut=91350 lookahead_taut=0 prefix_sub=42666 pruned_leaves=670536 dup=972 expand_elapsed_s=35.751 elapsed_s=46.938
+# starting step=10 var=y_9 pi_in=3634 pi_current=5824 cap=4
+#   step=10 var=y_9 grouped pi_bar=3634 distinct_value_sets=14 avg_group_size=259.6
+#   step=10 var=y_9 pattern-size=1 candidates=14 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=10 var=y_9 pattern-size=2 candidates=91 new_minimal=25 cumulative_minimal=25 elapsed_s=0.000
+#   step=10 var=y_9 pattern-size=3 candidates=364 new_minimal=22 cumulative_minimal=47 elapsed_s=0.001
+#   step=10 var=y_9 pattern-size=4 candidates=1001 new_minimal=1 cumulative_minimal=48 elapsed_s=0.002
+#   step=10 var=y_9 pattern 1/48 size=2 expansion=172956 cumulative_kept=0
+#   step=10 var=y_9 pattern 2/48 size=2 expansion=172956 cumulative_kept=1951
+#     step=10 var=y_9 expand progress raw=200000 kept=2417 taut=115441 dup=726 sub_amb=63718 sub_intra=17698 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 rate=24862/s
+#   step=10 var=y_9 pattern 3/48 size=2 expansion=172956 cumulative_kept=3708
+#     step=10 var=y_9 expand progress raw=400000 kept=4310 taut=230811 dup=1462 sub_amb=126282 sub_intra=37135 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 rate=16017/s
+#   step=10 var=y_9 pattern 4/48 size=2 expansion=172956 cumulative_kept=5275
+#     step=10 var=y_9 expand progress raw=600000 kept=6017 taut=348281 dup=2286 sub_amb=185280 sub_intra=58136 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 rate=12526/s
+#   step=10 var=y_9 pattern 5/48 size=2 expansion=2601 cumulative_kept=6656
+#   step=10 var=y_9 pattern 6/48 size=2 expansion=21726 cumulative_kept=6864
+#   step=10 var=y_9 pattern 7/48 size=2 expansion=21726 cumulative_kept=7293
+#   step=10 var=y_9 pattern 8/48 size=2 expansion=2601 cumulative_kept=7722
+#   step=10 var=y_9 pattern 9/48 size=2 expansion=21726 cumulative_kept=7852
+#   step=10 var=y_9 pattern 10/48 size=2 expansion=21726 cumulative_kept=8204
+#   step=10 var=y_9 pattern 11/48 size=2 expansion=2601 cumulative_kept=8633
+#   step=10 var=y_9 pattern 12/48 size=2 expansion=21726 cumulative_kept=8695
+#     step=10 var=y_9 expand progress raw=800000 kept=9035 taut=457455 dup=2940 sub_amb=235743 sub_intra=94827 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 rate=7437/s
+#   step=10 var=y_9 pattern 13/48 size=2 expansion=21726 cumulative_kept=9047
+#   step=10 var=y_9 pattern 14/48 size=2 expansion=21726 cumulative_kept=9399
+#   step=10 var=y_9 pattern 15/48 size=2 expansion=21726 cumulative_kept=9684
+#   step=10 var=y_9 pattern 16/48 size=2 expansion=21726 cumulative_kept=10113
+#   step=10 var=y_9 pattern 17/48 size=2 expansion=21726 cumulative_kept=10398
+#   step=10 var=y_9 pattern 18/48 size=2 expansion=21726 cumulative_kept=10750
+#   step=10 var=y_9 pattern 19/48 size=2 expansion=21726 cumulative_kept=11035
+#   step=10 var=y_9 pattern 20/48 size=2 expansion=181476 cumulative_kept=11320
+#     step=10 var=y_9 expand progress raw=1000000 kept=11664 taut=563247 dup=4113 sub_amb=279937 sub_intra=141039 prefix_taut=0 lookahead_taut=0 prefix_sub=64 pruned_leaves=27264 rate=6813/s
+#   step=10 var=y_9 pattern 21/48 size=2 expansion=181476 cumulative_kept=11792
+#   step=10 var=y_9 pattern 22/48 size=2 expansion=181476 cumulative_kept=12264
+#     step=10 var=y_9 expand progress raw=1200000 kept=12608 taut=665266 dup=5425 sub_amb=337720 sub_intra=178981 prefix_taut=0 lookahead_taut=0 prefix_sub=432 pruned_leaves=184032 rate=7406/s
+#   step=10 var=y_9 pattern 23/48 size=2 expansion=181476 cumulative_kept=12736
+#   step=10 var=y_9 pattern 24/48 size=2 expansion=181476 cumulative_kept=13208
+#     step=10 var=y_9 expand progress raw=1400000 kept=13503 taut=767708 dup=6724 sub_amb=395538 sub_intra=216527 prefix_taut=0 lookahead_taut=0 prefix_sub=752 pruned_leaves=320352 rate=6963/s
+#   step=10 var=y_9 pattern 25/48 size=2 expansion=181476 cumulative_kept=13680
+#   step=10 var=y_9 pattern 26/48 size=3 expansion=8406636 cumulative_kept=14152
+#     step=10 var=y_9 expand progress raw=1600000 kept=14276 taut=872470 dup=7844 sub_amb=449822 sub_intra=255588 prefix_taut=232 lookahead_taut=0 prefix_sub=1332 pruned_leaves=493764 rate=6640/s
+#     step=10 var=y_9 expand progress raw=1800000 kept=14336 taut=999399 dup=8071 sub_amb=491315 sub_intra=286879 prefix_taut=28878 lookahead_taut=0 prefix_sub=19149 pruned_leaves=2863377 rate=5803/s
+#     step=10 var=y_9 expand progress raw=2000000 kept=14434 taut=1127651 dup=8272 sub_amb=531901 sub_intra=317742 prefix_taut=78435 lookahead_taut=0 prefix_sub=48104 pruned_leaves=6867489 rate=4581/s
+#   step=10 var=y_9 pattern 27/48 size=3 expansion=8406636 cumulative_kept=14472
+#     step=10 var=y_9 expand progress raw=2200000 kept=14632 taut=1256323 dup=8505 sub_amb=568580 sub_intra=351960 prefix_taut=106853 lookahead_taut=0 prefix_sub=66256 pruned_leaves=9242559 rate=4848/s
+#     step=10 var=y_9 expand progress raw=2400000 kept=14716 taut=1386774 dup=8656 sub_amb=609211 sub_intra=380643 prefix_taut=160716 lookahead_taut=0 prefix_sub=95781 pruned_leaves=13495347 rate=5266/s
+#     step=10 var=y_9 expand progress raw=2600000 kept=14795 taut=1509142 dup=8851 sub_amb=651584 sub_intra=415628 prefix_taut=188331 lookahead_taut=0 prefix_sub=115120 pruned_leaves=15890001 rate=3783/s
+#   step=10 var=y_9 pattern 28/48 size=3 expansion=8406636 cumulative_kept=14795
+#     step=10 var=y_9 expand progress raw=2800000 kept=14977 taut=1637799 dup=9088 sub_amb=691927 sub_intra=446209 prefix_taut=220518 lookahead_taut=0 prefix_sub=134196 pruned_leaves=18504414 rate=5664/s
+#     step=10 var=y_9 expand progress raw=3000000 kept=15077 taut=1762463 dup=9275 sub_amb=733768 sub_intra=479417 prefix_taut=262530 lookahead_taut=0 prefix_sub=161083 pruned_leaves=22018263 rate=4758/s
+#   step=10 var=y_9 pattern 29/48 size=3 expansion=1056006 cumulative_kept=15121
+#     step=10 var=y_9 expand progress raw=3200000 kept=15225 taut=1885790 dup=9574 sub_amb=771415 sub_intra=517996 prefix_taut=296378 lookahead_taut=0 prefix_sub=182425 pruned_leaves=24832953 rate=4483/s
+#   step=10 var=y_9 pattern 30/48 size=3 expansion=1056006 cumulative_kept=15271
+#   step=10 var=y_9 pattern 31/48 size=3 expansion=1056006 cumulative_kept=15421
+#     step=10 var=y_9 expand progress raw=3400000 kept=15513 taut=1997673 dup=10233 sub_amb=809702 sub_intra=566879 prefix_taut=315571 lookahead_taut=0 prefix_sub=199826 pruned_leaves=26699247 rate=4625/s
+#   step=10 var=y_9 pattern 32/48 size=3 expansion=8406636 cumulative_kept=15571
+#     step=10 var=y_9 expand progress raw=3600000 kept=15742 taut=2124296 dup=10557 sub_amb=848436 sub_intra=600969 prefix_taut=343915 lookahead_taut=0 prefix_sub=217492 pruned_leaves=29045757 rate=5402/s
+#     step=10 var=y_9 expand progress raw=3800000 kept=15837 taut=2250231 dup=10716 sub_amb=888663 sub_intra=634553 prefix_taut=386404 lookahead_taut=0 prefix_sub=244116 pruned_leaves=32570520 rate=4611/s
+#   step=10 var=y_9 pattern 33/48 size=3 expansion=8406636 cumulative_kept=15897
+#     step=10 var=y_9 expand progress raw=4000000 kept=16060 taut=2379524 dup=10908 sub_amb=923073 sub_intra=670435 prefix_taut=417089 lookahead_taut=0 prefix_sub=262500 pruned_leaves=35073039 rate=4269/s
+#     step=10 var=y_9 expand progress raw=4200000 kept=16084 taut=2505820 dup=11106 sub_amb=969699 sub_intra=697291 prefix_taut=454842 lookahead_taut=0 prefix_sub=284919 pruned_leaves=38141811 rate=5846/s
+#     step=10 var=y_9 expand progress raw=4400000 kept=16202 taut=2637076 dup=11293 sub_amb=1007424 sub_intra=728005 prefix_taut=501709 lookahead_taut=0 prefix_sub=312395 pruned_leaves=41933304 rate=4105/s
+#   step=10 var=y_9 pattern 34/48 size=3 expansion=1056006 cumulative_kept=16226
+#   step=10 var=y_9 pattern 35/48 size=3 expansion=1056006 cumulative_kept=16376
+#     step=10 var=y_9 expand progress raw=4600000 kept=16409 taut=2749731 dup=11781 sub_amb=1048940 sub_intra=773139 prefix_taut=523760 lookahead_taut=0 prefix_sub=330503 pruned_leaves=43981413 rate=4119/s
+#   step=10 var=y_9 pattern 36/48 size=3 expansion=1056006 cumulative_kept=16526
+#   step=10 var=y_9 pattern 37/48 size=3 expansion=8406636 cumulative_kept=16676
+#     step=10 var=y_9 expand progress raw=4800000 kept=16815 taut=2863134 dup=12417 sub_amb=1085074 sub_intra=822560 prefix_taut=540843 lookahead_taut=0 prefix_sub=346614 pruned_leaves=45674307 rate=4130/s
+#     step=10 var=y_9 expand progress raw=5000000 kept=16866 taut=2990108 dup=12632 sub_amb=1128046 sub_intra=852348 prefix_taut=570004 lookahead_taut=0 prefix_sub=364782 pruned_leaves=48088086 rate=5644/s
+#     step=10 var=y_9 expand progress raw=5200000 kept=16974 taut=3120636 dup=12839 sub_amb=1166075 sub_intra=883476 prefix_taut=620751 lookahead_taut=0 prefix_sub=393880 pruned_leaves=52160181 rate=4147/s
+#   step=10 var=y_9 pattern 38/48 size=3 expansion=1056006 cumulative_kept=17008
+#   step=10 var=y_9 pattern 39/48 size=3 expansion=1056006 cumulative_kept=17158
+#     step=10 var=y_9 expand progress raw=5400000 kept=17180 taut=3236389 dup=13304 sub_amb=1204667 sub_intra=928460 prefix_taut=647020 lookahead_taut=0 prefix_sub=413737 pruned_leaves=54512607 rate=3820/s
+#   step=10 var=y_9 pattern 40/48 size=3 expansion=1056006 cumulative_kept=17308
+#   step=10 var=y_9 pattern 41/48 size=3 expansion=1056006 cumulative_kept=17458
+#     step=10 var=y_9 expand progress raw=5600000 kept=17469 taut=3347957 dup=13946 sub_amb=1241926 sub_intra=978702 prefix_taut=666216 lookahead_taut=0 prefix_sub=431491 pruned_leaves=56397057 rate=4047/s
+#   step=10 var=y_9 pattern 42/48 size=3 expansion=1056006 cumulative_kept=17608
+#     step=10 var=y_9 expand progress raw=5800000 kept=17741 taut=3460874 dup=14550 sub_amb=1279267 sub_intra=1027568 prefix_taut=684988 lookahead_taut=0 prefix_sub=448471 pruned_leaves=58220409 rate=4192/s
+#   step=10 var=y_9 pattern 43/48 size=3 expansion=1056006 cumulative_kept=17758
+#   step=10 var=y_9 pattern 44/48 size=3 expansion=132651 cumulative_kept=17908
+#   step=10 var=y_9 pattern 45/48 size=3 expansion=132651 cumulative_kept=17995
+#   step=10 var=y_9 pattern 46/48 size=3 expansion=132651 cumulative_kept=18082
+#   step=10 var=y_9 pattern 47/48 size=3 expansion=132651 cumulative_kept=18169
+#   step=10 var=y_9 pattern 48/48 size=4 expansion=27170906896 cumulative_kept=18256 mode=pairwise
+#   step=10 var=y_9 stage-1a done raw=164836 intermediates=2808 taut=96438 dup=240 sub=65350 elapsed_s=7.615
+#   step=10 var=y_9 stage-1b done raw=164836 intermediates=2780 taut=96438 dup=240 sub=65378 elapsed_s=7.532
+#     step=10 var=y_9 expand progress raw=6000000 kept=18314 taut=3576815 dup=15628 sub_amb=1318289 sub_intra=1070954 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=3337/s
+#     step=10 var=y_9 expand progress raw=6200000 kept=18338 taut=3727742 dup=15712 sub_amb=1353863 sub_intra=1084345 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=22076/s
+#     step=10 var=y_9 expand progress raw=6400000 kept=18454 taut=3871658 dup=15790 sub_amb=1391442 sub_intra=1102656 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=15631/s
+#     step=10 var=y_9 expand progress raw=6600000 kept=18494 taut=4019772 dup=15857 sub_amb=1422618 sub_intra=1123259 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=16265/s
+#     step=10 var=y_9 expand progress raw=6800000 kept=18514 taut=4167083 dup=15936 sub_amb=1451051 sub_intra=1147416 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=12428/s
+#     step=10 var=y_9 expand progress raw=7000000 kept=18646 taut=4314624 dup=16020 sub_amb=1480365 sub_intra=1170345 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=12521/s
+#     step=10 var=y_9 expand progress raw=7200000 kept=18669 taut=4465812 dup=16076 sub_amb=1511054 sub_intra=1188389 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=16096/s
+#     step=10 var=y_9 expand progress raw=7400000 kept=18688 taut=4611695 dup=16155 sub_amb=1540578 sub_intra=1212884 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=11124/s
+#     step=10 var=y_9 expand progress raw=7600000 kept=18884 taut=4756843 dup=16308 sub_amb=1573001 sub_intra=1234964 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=12081/s
+#     step=10 var=y_9 expand progress raw=7800000 kept=18916 taut=4907937 dup=16448 sub_amb=1601014 sub_intra=1255685 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=15184/s
+#     step=10 var=y_9 expand progress raw=8000000 kept=19016 taut=5053725 dup=16550 sub_amb=1630457 sub_intra=1280252 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=11941/s
+#     step=10 var=y_9 expand progress raw=8200000 kept=19036 taut=5194160 dup=16694 sub_amb=1663463 sub_intra=1306647 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=11938/s
+#     step=10 var=y_9 expand progress raw=8400000 kept=19056 taut=5343818 dup=16743 sub_amb=1691254 sub_intra=1329129 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=13101/s
+#     step=10 var=y_9 expand progress raw=8600000 kept=19188 taut=5487994 dup=16799 sub_amb=1732780 sub_intra=1343239 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=14372/s
+#     step=10 var=y_9 expand progress raw=8800000 kept=19244 taut=5630170 dup=16815 sub_amb=1773521 sub_intra=1360250 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=14408/s
+#     step=10 var=y_9 expand progress raw=9000000 kept=19350 taut=5774695 dup=16935 sub_amb=1811067 sub_intra=1377953 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=18733/s
+#     step=10 var=y_9 expand progress raw=9200000 kept=19396 taut=5921505 dup=16991 sub_amb=1847598 sub_intra=1394510 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=23150/s
+#     step=10 var=y_9 expand progress raw=9400000 kept=19396 taut=6083338 dup=16991 sub_amb=1872526 sub_intra=1407749 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=24551/s
+#     step=10 var=y_9 expand progress raw=9600000 kept=19400 taut=6238004 dup=17008 sub_amb=1902234 sub_intra=1423354 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=21821/s
+#     step=10 var=y_9 expand progress raw=9800000 kept=19492 taut=6349752 dup=17113 sub_amb=1969818 sub_intra=1443825 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=11717/s
+#     step=10 var=y_9 expand progress raw=10000000 kept=19496 taut=6488300 dup=17229 sub_amb=2010620 sub_intra=1464355 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=14296/s
+#     step=10 var=y_9 expand progress raw=10200000 kept=19500 taut=6629194 dup=17317 sub_amb=2046253 sub_intra=1487736 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=15382/s
+#     step=10 var=y_9 expand progress raw=10400000 kept=19504 taut=6770312 dup=17405 sub_amb=2082626 sub_intra=1510153 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=15843/s
+#     step=10 var=y_9 expand progress raw=10600000 kept=19520 taut=6928605 dup=17456 sub_amb=2112476 sub_intra=1521943 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=35557/s
+#     step=10 var=y_9 expand progress raw=10800000 kept=19528 taut=7089652 dup=17535 sub_amb=2136572 sub_intra=1536713 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=27203/s
+#     step=10 var=y_9 expand progress raw=11000000 kept=19536 taut=7253517 dup=17560 sub_amb=2160368 sub_intra=1549019 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=30658/s
+#     step=10 var=y_9 expand progress raw=11200000 kept=19536 taut=7408245 dup=17616 sub_amb=2189911 sub_intra=1564692 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=38789/s
+#     step=10 var=y_9 expand progress raw=11400000 kept=19538 taut=7562972 dup=17667 sub_amb=2218482 sub_intra=1581341 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=36205/s
+#     step=10 var=y_9 expand progress raw=11600000 kept=19552 taut=7717781 dup=17733 sub_amb=2239598 sub_intra=1605336 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=14649/s
+#     step=10 var=y_9 expand progress raw=11800000 kept=19580 taut=7838200 dup=17866 sub_amb=2293567 sub_intra=1630787 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=7754/s
+#     step=10 var=y_9 expand progress raw=12000000 kept=19606 taut=7962845 dup=17952 sub_amb=2345468 sub_intra=1654129 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=10018/s
+#     step=10 var=y_9 expand progress raw=12200000 kept=19620 taut=8094466 dup=18034 sub_amb=2386763 sub_intra=1681117 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=11250/s
+#     step=10 var=y_9 expand progress raw=12400000 kept=19648 taut=8224972 dup=18115 sub_amb=2430648 sub_intra=1706617 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=12126/s
+#     step=10 var=y_9 expand progress raw=12600000 kept=19648 taut=8387237 dup=18126 sub_amb=2449550 sub_intra=1725439 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=18667/s
+#     step=10 var=y_9 expand progress raw=12800000 kept=19648 taut=8548590 dup=18137 sub_amb=2474983 sub_intra=1738642 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=38023/s
+#     step=10 var=y_9 expand progress raw=13000000 kept=19648 taut=8703266 dup=18163 sub_amb=2498410 sub_intra=1760513 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=17341/s
+#     step=10 var=y_9 expand progress raw=13200000 kept=19648 taut=8825105 dup=18208 sub_amb=2550303 sub_intra=1786736 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=9244/s
+#     step=10 var=y_9 expand progress raw=13400000 kept=19648 taut=8955995 dup=18254 sub_amb=2593196 sub_intra=1812907 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=10511/s
+#     step=10 var=y_9 expand progress raw=13600000 kept=19648 taut=9090302 dup=18300 sub_amb=2635619 sub_intra=1836131 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 rate=11972/s
+#   step=10 var=y_9 stage-2 done raw=7806240 intermediates_01=2808 intermediates_23=2780 cumulative_kept=19648 elapsed_s=516.364
+step=10 var=y_9 pi_in=3634 n_minimal_J=48 n_resolvents_raw=13752771 n_resolvents_kept=19648 max_J_size=4 pi_out_before_sub=21838 pi_out_after_sub=6900 sub_elim=14938 sub_elapsed_s=40.463 n_distinct_sets=14 n_taut=9209197 fwd_sub_amb=2656666 fwd_sub_intra=1848926 prefix_taut=699068 lookahead_taut=0 prefix_sub=464288 pruned_leaves=59745156 dup=18334 expand_elapsed_s=1667.982 elapsed_s=1708.504
+# starting step=9 var=y_3 pi_in=3992 pi_current=6900 cap=4
+#   step=9 var=y_3 grouped pi_bar=3992 distinct_value_sets=14 avg_group_size=285.1
+#   step=9 var=y_3 pattern-size=1 candidates=14 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=9 var=y_3 pattern-size=2 candidates=91 new_minimal=25 cumulative_minimal=25 elapsed_s=0.000
+#   step=9 var=y_3 pattern-size=3 candidates=364 new_minimal=22 cumulative_minimal=47 elapsed_s=0.001
+#   step=9 var=y_3 pattern-size=4 candidates=1001 new_minimal=1 cumulative_minimal=48 elapsed_s=0.002
+#   step=9 var=y_3 pattern 1/48 size=2 expansion=150321 cumulative_kept=0
+#   step=9 var=y_3 pattern 2/48 size=2 expansion=150321 cumulative_kept=2297

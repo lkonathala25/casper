@@ -10,8 +10,8 @@ from constraints import Constraints
 from casper_layer import CasperLayer
 
 
-SUDOKU_TXT = Path(__file__).resolve().parents[1] / "examples" / "sudoku_2x2.txt"
-SUDOKU_COMPILED = Path(__file__).resolve().parents[1] / "examples" / "sudoku_2x2_compiled.txt"
+SUDOKU_TXT = Path(__file__).resolve().parents[1] / "constraints" / "sudoku" / "sudoku_2x2.txt"
+SUDOKU_COMPILED = Path(__file__).resolve().parents[1] / "constraints" / "sudoku" / "sudoku_2x2_compiled.txt"
 
 
 SOLUTIONS = {(0, 1, 1, 0), (1, 0, 0, 1)}

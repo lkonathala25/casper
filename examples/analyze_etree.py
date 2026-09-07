@@ -22,7 +22,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "casper"))
 
 from signed_clauses import parse_constraints  # noqa: E402
 from resolution import _primal_adjacency  # noqa: E402

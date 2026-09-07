@@ -6,12 +6,12 @@ from pathlib import Path
 import torch
 import torch.nn as nn
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 # Appended, not prepended: src/ and src_warcraft/ both define constraint_layer,
 # data, model, minedit and train, so putting src/ first silently shadows this
 # package's own modules.
-if str(ROOT / "src") not in sys.path:
-    sys.path.append(str(ROOT / "src"))
+if str(ROOT / "casper") not in sys.path:
+    sys.path.append(str(ROOT / "casper"))
 
 from constraints import Constraints
 from signed_clauses import SignedClause, SignedLiteral

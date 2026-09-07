@@ -1,0 +1,72 @@
+{
+  "per_ckpt": {
+    "best_run0.pt": {
+      "boards": 1000,
+      "certified": 1000,
+      "certified_pct": 100.0,
+      "rounds_histogram": {
+        "1": 978,
+        "2": 22
+      },
+      "boards_certified_round1": 978,
+      "boards_needing_refinement": 22,
+      "refinement_pct": 2.2,
+      "max_rounds_used": 2,
+      "rings_found_round1": 23,
+      "rings_found_total": 23,
+      "mean_edges_flipped_on_refined": 11.636363636363637,
+      "max_edges_flipped": 32,
+      "capped_boards": [],
+      "validity_violations": [],
+      "empty_feasible_sets": 0
+    },
+    "best_run1.pt": {
+      "boards": 1000,
+      "certified": 1000,
+      "certified_pct": 100.0,
+      "rounds_histogram": {
+        "1": 979,
+        "2": 21
+      },
+      "boards_certified_round1": 979,
+      "boards_needing_refinement": 21,
+      "refinement_pct": 2.1,
+      "max_rounds_used": 2,
+      "rings_found_round1": 21,
+      "rings_found_total": 21,
+      "mean_edges_flipped_on_refined": 7.714285714285714,
+      "max_edges_flipped": 16,
+      "capped_boards": [],
+      "validity_violations": [],
+      "empty_feasible_sets": 0
+    },
+    "best_run2.pt": {
+      "boards": 1000,
+      "certified": 1000,
+      "certified_pct": 100.0,
+      "rounds_histogram": {
+        "1": 989,
+        "2": 11
+      },
+      "boards_certified_round1": 989,
+      "boards_needing_refinement": 11,
+      "refinement_pct": 1.1,
+      "max_rounds_used": 2,
+      "rings_found_round1": 11,
+      "rings_found_total": 11,
+      "mean_edges_flipped_on_refined": 12.181818181818182,
+      "max_edges_flipped": 26,
+      "capped_boards": [],
+      "validity_violations": [],
+      "empty_feasible_sets": 0
+    }
+  },
+  "lifetime": {
+    "empty_feasible": 0,
+    "boards": 3000,
+    "capped": 0,
+    "rings_forbidden": 55
+  },
+  "artifact": "/home/lk1325/mnist_neurips/examples/warcraft_artifacts/wc_deg_12_geometric.txt",
+  "max_rounds": 20
+}

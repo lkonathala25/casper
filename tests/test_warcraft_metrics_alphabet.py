@@ -9,7 +9,7 @@ import torch
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# src/ and src_warcraft/ share module names (data, model, minedit, ...). Another
+# tasks/mnist/ and tasks/warcraft/ share module names (data, model, minedit, ...). Another
 # test module may already have imported the src/ versions, so bind the warcraft
 # ones under an isolated sys.path/sys.modules and restore afterwards.
 _COLLIDING = ("data", "model", "minedit", "constraint_layer", "node_categories",
@@ -21,8 +21,8 @@ _COLLIDING = ("data", "model", "minedit", "constraint_layer", "node_categories",
 def _warcraft_first():
     saved_mods = {n: sys.modules.pop(n) for n in _COLLIDING if n in sys.modules}
     saved_path = list(sys.path)
-    sys.path.insert(0, str(ROOT / "src"))
-    sys.path.insert(0, str(ROOT / "src_warcraft"))
+    sys.path.insert(0, str(ROOT / "tasks/warcraft"))
+    sys.path.insert(0, str(ROOT / "tasks" / "warcraft"))
     try:
         yield
     finally:
@@ -131,7 +131,7 @@ def test_monotone_alphabet_still_cannot_score_it():
 
 def test_metrics_cli_exposes_the_alphabet_and_mode():
     out = subprocess.run(
-        [sys.executable, str(ROOT / "src_warcraft" / "compute_metrics.py"), "--help"],
+        [sys.executable, str(ROOT / "tasks" / "warcraft" / "compute_metrics.py"), "--help"],
         capture_output=True, text=True).stdout
     assert "--alphabet" in out
     assert "--constraint-mode" in out
@@ -140,7 +140,7 @@ def test_metrics_cli_exposes_the_alphabet_and_mode():
 def test_lazy_exact_requires_the_full_alphabet():
     """Guard: the restriction must not be re-imposed by a mismatched pairing."""
     r = subprocess.run(
-        [sys.executable, str(ROOT / "src_warcraft" / "compute_metrics.py"),
+        [sys.executable, str(ROOT / "tasks" / "warcraft" / "compute_metrics.py"),
          "--ckpt", "/nonexistent.pt", "--data_dir", "/nonexistent",
          "--grid-size", "12", "--constraint-mode", "lazy_exact",
          "--alphabet", "monotone"],
@@ -152,6 +152,6 @@ def test_lazy_exact_requires_the_full_alphabet():
 def test_all_four_call_sites_accept_an_alphabet():
     for fname in ("compute_metrics.py", "compute_cost_ratio.py",
                   "cost_ratio.py", "train.py"):
-        text = (ROOT / "src_warcraft" / fname).read_text()
+        text = (ROOT / "tasks" / "warcraft" / fname).read_text()
         assert "alphabet=args.alphabet" in text, f"{fname} still hard-codes it"
         assert '"--alphabet"' in text, f"{fname} does not expose --alphabet"

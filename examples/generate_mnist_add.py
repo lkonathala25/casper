@@ -141,7 +141,7 @@ def generate_mnist_add_dsl(n_digits: int) -> str:
         k_1..k_{N-1}         aux carries, domain 2; k_i = carry out of
                              position i (0-indexed MSB-first, LSB = N-1)
 
-    Indexing matches `compute_carry_chain` (src/carry_chain_constraint_layer.py):
+    Indexing matches `compute_carry_chain` (src/carry_chain.py):
     position i pairs digits a_{i+1}, b_{i+1} and produces output digit s_{i+1};
     the carry flows LSB -> MSB; position 0's carry-out is s_0 itself.
 

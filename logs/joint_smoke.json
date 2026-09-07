@@ -1,0 +1,61 @@
+{
+  "rows": [
+    {
+      "k": 1,
+      "valid_27_single": 70.0,
+      "valid_27_iter": 70.0,
+      "valid_joint": 70.0,
+      "exact_joint": 70.0,
+      "deadend_boards_pct": 30.0,
+      "deadend_mean_affected": 21.666666666666668,
+      "resid_joint": 3.6,
+      "secs": 0.5
+    },
+    {
+      "k": 3,
+      "valid_27_single": 40.0,
+      "valid_27_iter": 50.0,
+      "valid_joint": 90.0,
+      "exact_joint": 90.0,
+      "deadend_boards_pct": 10.0,
+      "deadend_mean_affected": 8.0,
+      "resid_joint": 0.8,
+      "secs": 0.5
+    },
+    {
+      "k": 5,
+      "valid_27_single": 10.0,
+      "valid_27_iter": 20.0,
+      "valid_joint": 70.0,
+      "exact_joint": 70.0,
+      "deadend_boards_pct": 30.0,
+      "deadend_mean_affected": 19.666666666666668,
+      "resid_joint": 3.6,
+      "secs": 0.6
+    },
+    {
+      "k": 10,
+      "valid_27_single": 0.0,
+      "valid_27_iter": 0.0,
+      "valid_joint": 30.0,
+      "exact_joint": 20.0,
+      "deadend_boards_pct": 70.0,
+      "deadend_mean_affected": 15.285714285714286,
+      "resid_joint": 8.2,
+      "secs": 0.8
+    },
+    {
+      "k": 15,
+      "valid_27_single": 0.0,
+      "valid_27_iter": 0.0,
+      "valid_joint": 0.0,
+      "exact_joint": 0.0,
+      "deadend_boards_pct": 100.0,
+      "deadend_mean_affected": 12.5,
+      "resid_joint": 9.3,
+      "secs": 0.9
+    }
+  ],
+  "board_seed": 20260731,
+  "corrupt_seed": 12345
+}

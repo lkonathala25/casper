@@ -15,12 +15,12 @@ from signed_clauses import parse_constraints
 from resolution import compile_constraints, enumerate_models, to_dsl
 from compiled_layer import CompiledConstraintLayer
 from mnist_sum_constraint_layer import ConstraintLayer
-from carry_chain_constraint_layer import (
-    CarryChainConstraintLayer,
-    compute_carry_chain,
-)
+from carry_chain import compute_carry_chain
+# Archived oracles: the hard-coded layers the compiled path is checked against.
+from carry_chain_constraint_layer import CarryChainConstraintLayer
 
 EXAMPLES = Path(__file__).resolve().parents[1] / "examples"
+CONSTRAINTS = Path(__file__).resolve().parents[1] / "constraints" / "mnist"
 if str(EXAMPLES) not in sys.path:
     sys.path.insert(0, str(EXAMPLES))
 
@@ -32,11 +32,11 @@ _ARCHIVE = _P(__file__).resolve().parents[1] / "archive" / "mnist_closed_form"
 if str(_ARCHIVE) not in sys.path:
     sys.path.append(str(_ARCHIVE))
 
-SUM_N2 = EXAMPLES / "mnist_sum_n2.txt"
-SUM_N2_COMPILED = EXAMPLES / "mnist_sum_n2_compiled.txt"
-ADD_N1 = EXAMPLES / "mnist_add_n1.txt"
-ADD_N2 = EXAMPLES / "mnist_add_n2.txt"
-ADD_N2_COMPILED = EXAMPLES / "mnist_add_n2_compiled.txt"
+SUM_N2 = CONSTRAINTS / "mnist_sum_n2.txt"
+SUM_N2_COMPILED = CONSTRAINTS / "mnist_sum_n2_compiled.txt"
+ADD_N1 = CONSTRAINTS / "mnist_add_n1.txt"
+ADD_N2 = CONSTRAINTS / "mnist_add_n2.txt"
+ADD_N2_COMPILED = CONSTRAINTS / "mnist_add_n2_compiled.txt"
 
 
 def _random_probs(var_ranges: list[int], B: int) -> torch.Tensor:

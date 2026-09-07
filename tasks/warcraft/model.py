@@ -43,7 +43,7 @@ class ResNet18NodeCategorical(nn.Module):
         elif constraint_mode == 'steps':
             import sys
             from pathlib import Path
-            steps_dir = Path(__file__).resolve().parents[1] / "src_steps"
+            steps_dir = Path(__file__).resolve().parent
             if str(steps_dir) not in sys.path:
                 sys.path.append(str(steps_dir))
             from steps_layer import StepsProjectionLayer

@@ -1,0 +1,5 @@
+step=8 var=y_9: patterns=46 checked=90 skipped_oversize=2 mismatches=0 -> PASS
+step=7 var=y_8: patterns=751 checked=250 skipped_oversize=2 mismatches=0 -> PASS
+step=6 var=y_7: patterns=18061 checked=242 skipped_oversize=0 mismatches=0 -> PASS
+
+RESOLVENT IDENTITY GATE: PASS

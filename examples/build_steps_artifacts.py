@@ -3,8 +3,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT / "src_steps") not in sys.path:
-    sys.path.insert(0, str(ROOT / "src_steps"))
+if str(ROOT / "tasks" / "warcraft") not in sys.path:
+    sys.path.insert(0, str(ROOT / "tasks" / "warcraft"))
 
 from steps_encoding import build_steps_encoding, write_artifacts  # noqa: E402
 
@@ -15,7 +15,7 @@ def main() -> None:
     p.add_argument("--size", type=int, default=12)
     p.add_argument("--untrimmed", action="store_true")
     p.add_argument(
-        "--outdir", type=Path, default=ROOT / "examples" / "steps_artifacts"
+        "--outdir", type=Path, default=ROOT / "constraints" / "warcraft" / "steps_artifacts"
     )
     args = p.parse_args()
 

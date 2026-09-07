@@ -1,0 +1,22 @@
+
+=== N=3  edges=12  raw_clauses=32  width=5 ===
+  DP count            : 14  [0.00s]
+  brute force 2^12   : 14  [0.00s]
+  compile             : status=ok total=92 resolvents=60 [0.1s]
+  walk                : models=14 dead=0 empty=0 prefix_diffs=0 binding_resolvents=0 unsound=0 capped=False [0.0s]
+
+=== N=4  edges=24  raw_clauses=72  width=7 ===
+  DP count            : 322  [0.00s]
+  brute force 2^24   : 322  [4.96s]
+  compile             : status=ok total=500 resolvents=428 [0.1s]
+  walk                : models=322 dead=0 empty=0 prefix_diffs=0 binding_resolvents=0 unsound=0 capped=False [0.0s]
+
+=== N=5  edges=40  raw_clauses=128  width=9 ===
+  DP count            : 23858  [0.02s]
+  compile             : status=ok total=2464 resolvents=2336 [0.5s]
+  walk                : models=23858 dead=0 empty=0 prefix_diffs=0 binding_resolvents=0 unsound=0 capped=False [8.2s]
+
+=== N=6  edges=60  raw_clauses=200  width=11 ===
+  DP count            : 5735478  [0.17s]
+  compile             : status=ok total=11476 resolvents=11276 [4.4s]
+  walk (full, raw)    : models=5735478 dead=0 empty=0 unsound=0/57354 sampled-degree-checked [132.2s]

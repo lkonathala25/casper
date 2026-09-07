@@ -7,16 +7,17 @@ from functional_compiled_layer import FunctionalCompiledConstraintLayer
 
 
 EXAMPLES = Path(__file__).resolve().parents[1] / "examples"
+CONSTRAINTS = Path(__file__).resolve().parents[1] / "constraints" / "mnist"
 
 
 def test_functional_compiled_matches_generic_add_n2():
     torch.manual_seed(7)
     variable_ranges = [10] * 7
     generic = CompiledConstraintLayer(
-        EXAMPLES / "mnist_add_n2_compiled.txt", variable_ranges
+        CONSTRAINTS / "mnist_add_n2_compiled.txt", variable_ranges
     )
     functional = FunctionalCompiledConstraintLayer(
-        EXAMPLES / "mnist_add_n2_compiled.txt", variable_ranges
+        CONSTRAINTS / "mnist_add_n2_compiled.txt", variable_ranges
     )
     probs = torch.cat([
         torch.softmax(torch.randn(16, domain), dim=1)

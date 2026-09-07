@@ -1,0 +1,136 @@
+group size=9 vars=9 clauses=333 cap=None
+# compile: n_vars=9 input_clauses=333 post_taut=333 post_subsumption=333 preproc_sub_elim=0 preproc_sub_elapsed_s=0.005 domains=[9] cap=per_var_domain algo=grouped+fwdsub
+# ordering: y_1 y_2 y_3 y_4 y_5 y_6 y_7 y_8 y_9
+# starting step=8 var=y_9 pi_in=81 pi_current=333 cap=9
+#   step=8 var=y_9 grouped pi_bar=81 distinct_value_sets=18 avg_group_size=4.5
+#   step=8 var=y_9 orbit-enum size=1 live=18 new_minimal=0
+#   step=8 var=y_9 orbit-enum size=2 examined=171 live=36 pruned=72 new_minimal=45 cumulative_minimal=45 elapsed_s=0.000
+#   step=8 var=y_9 orbit-enum size=3 examined=579 live=84 pruned=252 new_minimal=0 cumulative_minimal=45 elapsed_s=0.000
+#   step=8 var=y_9 orbit-enum size=4 examined=1461 live=126 pruned=504 new_minimal=0 cumulative_minimal=45 elapsed_s=0.001
+#   step=8 var=y_9 orbit-enum size=5 examined=2721 live=126 pruned=630 new_minimal=0 cumulative_minimal=45 elapsed_s=0.002
+#   step=8 var=y_9 orbit-enum size=6 examined=3939 live=84 pruned=504 new_minimal=0 cumulative_minimal=45 elapsed_s=0.001
+#   step=8 var=y_9 orbit-enum size=7 examined=4731 live=36 pruned=252 new_minimal=0 cumulative_minimal=45 elapsed_s=0.000
+#   step=8 var=y_9 orbit-enum size=8 examined=5064 live=9 pruned=72 new_minimal=0 cumulative_minimal=45 elapsed_s=0.000
+#   step=8 var=y_9 orbit-enum size=9 examined=5146 live=0 pruned=9 new_minimal=1 cumulative_minimal=46 elapsed_s=0.000
+#   step=8 var=y_9 orbit-expand patterns=46 representatives=3 (15x fewer expansions)
+#   step=8 var=y_9 parallel workers=112 tasks=265
+#   step=8 var=y_9 parallel done kept=1 raw=322561 taut=322560 elapsed_s=0.226
+#   step=8 var=y_9 orbit-expand closure -> 36 resolvents
+step=8 var=y_9 pi_in=81 n_minimal_J=3 n_resolvents_raw=322561 n_resolvents_kept=36 max_J_size=9 pi_out_before_sub=288 pi_out_after_sub=288 sub_elim=0 sub_elapsed_s=0.005 n_distinct_sets=18 n_taut=322560 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=444640 lookahead_taut=40 prefix_sub=0 pruned_leaves=133895176 dup=0 expand_elapsed_s=0.226 elapsed_s=0.243
+# starting step=7 var=y_8 pi_in=99 pi_current=288 cap=9
+#   step=7 var=y_8 grouped pi_bar=99 distinct_value_sets=45 avg_group_size=2.2
+#   step=7 var=y_8 orbit-enum size=1 live=45 new_minimal=0
+#   step=7 var=y_8 orbit-enum size=2 examined=1035 live=360 pruned=252 new_minimal=378 cumulative_minimal=378 elapsed_s=0.001
+#   step=7 var=y_8 orbit-enum size=3 examined=6528 live=84 pruned=2016 new_minimal=372 cumulative_minimal=750 elapsed_s=0.003
+#   step=7 var=y_8 orbit-enum size=4 examined=9678 live=126 pruned=2772 new_minimal=0 cumulative_minimal=750 elapsed_s=0.002
+#   step=7 var=y_8 orbit-enum size=5 examined=14340 live=126 pruned=3780 new_minimal=0 cumulative_minimal=750 elapsed_s=0.002
+#   step=7 var=y_8 orbit-enum size=6 examined=18960 live=84 pruned=3276 new_minimal=0 cumulative_minimal=750 elapsed_s=0.002
+#   step=7 var=y_8 orbit-enum size=7 examined=22020 live=36 pruned=1764 new_minimal=0 cumulative_minimal=750 elapsed_s=0.002
+#   step=7 var=y_8 orbit-enum size=8 examined=23325 live=9 pruned=540 new_minimal=0 cumulative_minimal=750 elapsed_s=0.001
+#   step=7 var=y_8 orbit-enum size=9 examined=23650 live=0 pruned=72 new_minimal=1 cumulative_minimal=751 elapsed_s=0.000
+#   step=7 var=y_8 orbit-expand patterns=751 representatives=5 (150x fewer expansions)
+#   step=7 var=y_8 parallel workers=112 tasks=744
+#   step=7 var=y_8 parallel done kept=2 raw=2 taut=0 elapsed_s=0.136
+#   step=7 var=y_8 orbit-expand closure -> 210 resolvents
+step=7 var=y_8 pi_in=99 n_minimal_J=5 n_resolvents_raw=2 n_resolvents_kept=210 max_J_size=9 pi_out_before_sub=399 pi_out_after_sub=273 sub_elim=126 sub_elapsed_s=0.018 n_distinct_sets=45 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=82110 lookahead_taut=322 prefix_sub=0 pruned_leaves=40353663 dup=0 expand_elapsed_s=0.136 elapsed_s=0.175
+# starting step=6 var=y_7 pi_in=138 pi_current=273 cap=9
+#   step=6 var=y_7 grouped pi_bar=138 distinct_value_sets=93 avg_group_size=1.5
+#   step=6 var=y_7 orbit-enum size=1 live=93 new_minimal=0
+#   step=6 var=y_7 orbit-enum size=2 examined=4371 live=2934 pruned=504 new_minimal=840 cumulative_minimal=840 elapsed_s=0.006
+#   step=6 var=y_7 orbit-enum size=3 examined=90355 live=2352 pruned=35028 new_minimal=15750 cumulative_minimal=16590 elapsed_s=0.049
+#   step=6 var=y_7 orbit-enum size=4 examined=159758 live=126 pruned=26727 new_minimal=1470 cumulative_minimal=18060 elapsed_s=0.032
+#   step=6 var=y_7 orbit-enum size=5 examined=170468 live=126 pruned=10080 new_minimal=0 cumulative_minimal=18060 elapsed_s=0.006
+#   step=6 var=y_7 orbit-enum size=6 examined=181136 live=84 pruned=9324 new_minimal=0 cumulative_minimal=18060 elapsed_s=0.006
+#   step=6 var=y_7 orbit-enum size=7 examined=188228 live=36 pruned=5376 new_minimal=0 cumulative_minimal=18060 elapsed_s=0.004
+#   step=6 var=y_7 orbit-enum size=8 examined=191261 live=9 pruned=1764 new_minimal=0 cumulative_minimal=18060 elapsed_s=0.002
+#   step=6 var=y_7 orbit-enum size=9 examined=192018 live=0 pruned=252 new_minimal=1 cumulative_minimal=18061 elapsed_s=0.001
+#   step=6 var=y_7 orbit-expand patterns=18061 representatives=9 (2007x fewer expansions)
+#   step=6 var=y_7 parallel workers=112 tasks=916
+#   step=6 var=y_7 parallel done kept=3 raw=4 taut=0 elapsed_s=0.141
+#   step=6 var=y_7 orbit-expand closure -> 336 resolvents
+step=6 var=y_7 pi_in=138 n_minimal_J=9 n_resolvents_raw=4 n_resolvents_kept=336 max_J_size=9 pi_out_before_sub=471 pi_out_after_sub=261 sub_elim=210 sub_elapsed_s=0.016 n_distinct_sets=93 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=9720 lookahead_taut=552 prefix_sub=0 pruned_leaves=10077960 dup=0 expand_elapsed_s=0.141 elapsed_s=0.294
+# starting step=5 var=y_6 pi_in=171 pi_current=261 cap=9
+#   step=5 var=y_6 grouped pi_bar=171 distinct_value_sets=135 avg_group_size=1.3
+#   step=5 var=y_6 orbit-enum size=1 live=135 new_minimal=0
+#   step=5 var=y_6 orbit-enum size=2 examined=9180 live=8100 pruned=630 new_minimal=315 cumulative_minimal=315 elapsed_s=0.007
+#   step=5 var=y_6 orbit-enum size=3 examined=357479 live=58800 pruned=176820 new_minimal=86940 cumulative_minimal=87255 elapsed_s=0.200
+#   step=5 var=y_6 orbit-enum size=4 examined=2324638 live=7560 pruned=917990 new_minimal=122220 cumulative_minimal=209475 elapsed_s=0.926
+#   step=5 var=y_6 orbit-enum size=5 examined=2617629 live=126 pruned=136133 new_minimal=3402 cumulative_minimal=212877 elapsed_s=0.144
+#   step=5 var=y_6 orbit-enum size=6 examined=2633589 live=84 pruned=15246 new_minimal=0 cumulative_minimal=212877 elapsed_s=0.009
+#   step=5 var=y_6 orbit-enum size=7 examined=2644209 live=36 pruned=9324 new_minimal=0 cumulative_minimal=212877 elapsed_s=0.006
+#   step=5 var=y_6 orbit-enum size=8 examined=2648754 live=9 pruned=3276 new_minimal=0 cumulative_minimal=212877 elapsed_s=0.003
+#   step=5 var=y_6 orbit-enum size=9 examined=2649889 live=0 pruned=504 new_minimal=1 cumulative_minimal=212878 elapsed_s=0.001
+#   step=5 var=y_6 orbit-expand patterns=212878 representatives=20 (10644x fewer expansions)
+#   step=5 var=y_6 parallel workers=112 tasks=956
+#   step=5 var=y_6 parallel done kept=5 raw=10 taut=0 elapsed_s=0.207
+#   step=5 var=y_6 orbit-expand closure -> 246 resolvents
+step=5 var=y_6 pi_in=171 n_minimal_J=20 n_resolvents_raw=10 n_resolvents_kept=246 max_J_size=9 pi_out_before_sub=336 pi_out_after_sub=216 sub_elim=120 sub_elapsed_s=0.010 n_distinct_sets=135 n_taut=0 fwd_sub_amb=3 fwd_sub_intra=0 prefix_taut=1224 lookahead_taut=802 prefix_sub=0 pruned_leaves=1953946 dup=0 expand_elapsed_s=0.207 elapsed_s=1.907
+# starting step=4 var=y_5 pi_in=162 pi_current=216 cap=9
+#   step=4 var=y_5 grouped pi_bar=162 distinct_value_sets=135 avg_group_size=1.2
+#   step=4 var=y_5 orbit-enum size=1 live=135 new_minimal=0
+#   step=4 var=y_5 orbit-enum size=2 examined=9180 live=8541 pruned=504 new_minimal=0 cumulative_minimal=0 elapsed_s=0.021
+#   step=4 var=y_5 orbit-enum size=3 examined=378675 live=186984 pruned=150696 new_minimal=31815 cumulative_minimal=31815 elapsed_s=0.252
+#   step=4 var=y_5 orbit-enum size=4 examined=6416875 live=276066 pruned=3744917 new_minimal=782460 cumulative_minimal=814275 elapsed_s=3.291
+#   step=4 var=y_5 orbit-enum size=5 examined=14332338 live=13860 pruned=4436216 new_minimal=325080 cumulative_minimal=1139355 elapsed_s=4.156
+#   step=4 var=y_5 orbit-enum size=6 examined=14831490 live=84 pruned=278609 new_minimal=4914 cumulative_minimal=1144269 elapsed_s=0.268
+#   step=4 var=y_5 orbit-enum size=7 examined=14842110 live=36 pruned=10080 new_minimal=0 cumulative_minimal=1144269 elapsed_s=0.007
+#   step=4 var=y_5 orbit-enum size=8 examined=14846655 live=9 pruned=3780 new_minimal=0 cumulative_minimal=1144269 elapsed_s=0.003
+#   step=4 var=y_5 orbit-enum size=9 examined=14847790 live=0 pruned=630 new_minimal=1 cumulative_minimal=1144270 elapsed_s=0.001
+#   step=4 var=y_5 orbit-expand patterns=1144270 representatives=41 (27909x fewer expansions)
+#   step=4 var=y_5 parallel workers=112 tasks=1534
+#   step=4 var=y_5 parallel done kept=2 raw=5 taut=0 elapsed_s=0.381
+#   step=4 var=y_5 orbit-expand closure -> 120 resolvents
+step=4 var=y_5 pi_in=162 n_minimal_J=41 n_resolvents_raw=5 n_resolvents_kept=120 max_J_size=9 pi_out_before_sub=174 pi_out_after_sub=138 sub_elim=36 sub_elapsed_s=0.004 n_distinct_sets=135 n_taut=0 fwd_sub_amb=1 fwd_sub_intra=0 prefix_taut=96 lookahead_taut=1473 prefix_sub=8 pruned_leaves=263673 dup=0 expand_elapsed_s=0.381 elapsed_s=10.874
+# starting step=3 var=y_4 pi_in=111 pi_current=138 cap=9
+#   step=3 var=y_4 grouped pi_bar=111 distinct_value_sets=93 avg_group_size=1.2
+#   step=3 var=y_4 orbit-enum size=1 live=93 new_minimal=0
+#   step=3 var=y_4 orbit-enum size=2 examined=4371 live=4026 pruned=252 new_minimal=0 cumulative_minimal=0 elapsed_s=0.004
+#   step=3 var=y_4 orbit-enum size=3 examined=123679 live=83244 pruned=35784 new_minimal=280 cumulative_minimal=280 elapsed_s=0.106
+#   step=3 var=y_4 orbit-enum size=4 examined=1940578 live=544866 pruned=1144842 new_minimal=113085 cumulative_minimal=113365 elapsed_s=1.304
+#   step=3 var=y_4 orbit-enum size=5 examined=11596841 live=383922 pruned=6875155 new_minimal=899220 cumulative_minimal=1012585 elapsed_s=5.691
+#   step=3 var=y_4 orbit-enum size=6 examined=17978092 live=14952 pruned=4265575 new_minimal=283122 cumulative_minimal=1295707 elapsed_s=3.615
+#   step=3 var=y_4 orbit-enum size=7 examined=18289369 live=36 pruned=206112 new_minimal=4404 cumulative_minimal=1300111 elapsed_s=0.188
+#   step=3 var=y_4 orbit-enum size=8 examined=18292402 live=9 pruned=2772 new_minimal=0 cumulative_minimal=1300111 elapsed_s=0.002
+#   step=3 var=y_4 orbit-enum size=9 examined=18293159 live=0 pruned=504 new_minimal=1 cumulative_minimal=1300112 elapsed_s=0.000
+#   step=3 var=y_4 orbit-expand patterns=1300112 representatives=56 (23216x fewer expansions)
+#   step=3 var=y_4 parallel workers=112 tasks=1614
+#   step=3 var=y_4 parallel done kept=1 raw=1 taut=0 elapsed_s=0.479
+#   step=3 var=y_4 orbit-expand closure -> 36 resolvents
+step=3 var=y_4 pi_in=111 n_minimal_J=56 n_resolvents_raw=1 n_resolvents_kept=36 max_J_size=9 pi_out_before_sub=63 pi_out_after_sub=63 sub_elim=0 sub_elapsed_s=0.001 n_distinct_sets=93 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=1607 prefix_sub=6 pruned_leaves=21053 dup=0 expand_elapsed_s=0.479 elapsed_s=14.396
+# starting step=2 var=y_3 pi_in=54 pi_current=63 cap=9
+#   step=2 var=y_3 grouped pi_bar=54 distinct_value_sets=45 avg_group_size=1.2
+#   step=2 var=y_3 orbit-enum size=1 live=45 new_minimal=0
+#   step=2 var=y_3 orbit-enum size=2 examined=1035 live=918 pruned=72 new_minimal=0 cumulative_minimal=0 elapsed_s=0.001
+#   step=2 var=y_3 orbit-enum size=3 examined=13965 live=9786 pruned=3144 new_minimal=0 cumulative_minimal=0 elapsed_s=0.010
+#   step=2 var=y_3 orbit-enum size=4 examined=114851 live=55881 pruned=45005 new_minimal=0 cumulative_minimal=0 elapsed_s=0.109
+#   step=2 var=y_3 orbit-enum size=5 examined=569258 live=154350 pruned=295332 new_minimal=4725 cumulative_minimal=4725 elapsed_s=0.378
+#   step=2 var=y_3 orbit-enum size=6 examined=1618320 live=121926 pruned=825612 new_minimal=67410 cumulative_minimal=72135 elapsed_s=0.783
+#   step=2 var=y_3 orbit-enum size=7 examined=2381534 live=8928 pruned=593138 new_minimal=54054 cumulative_minimal=126189 elapsed_s=0.535
+#   step=2 var=y_3 orbit-enum size=8 examined=2446611 live=9 pruned=49596 new_minimal=2259 cumulative_minimal=128448 elapsed_s=0.048
+#   step=2 var=y_3 orbit-enum size=9 examined=2446936 live=0 pruned=252 new_minimal=1 cumulative_minimal=128449 elapsed_s=0.000
+#   step=2 var=y_3 orbit-expand patterns=128449 representatives=30 (4282x fewer expansions)
+#   step=2 var=y_3 parallel workers=112 tasks=870
+#   step=2 var=y_3 parallel done kept=0 raw=0 taut=0 elapsed_s=0.224
+#   step=2 var=y_3 orbit-expand closure -> 0 resolvents
+step=2 var=y_3 pi_in=54 n_minimal_J=30 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=9 pi_out_before_sub=9 pi_out_after_sub=9 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=45 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=869 prefix_sub=1 pruned_leaves=870 dup=0 expand_elapsed_s=0.224 elapsed_s=2.354
+# starting step=1 var=y_2 pi_in=9 pi_current=9 cap=9
+#   step=1 var=y_2 grouped pi_bar=9 distinct_value_sets=9 avg_group_size=1.0
+#   step=1 var=y_2 orbit-enum size=1 live=9 new_minimal=0
+#   step=1 var=y_2 orbit-enum size=2 examined=45 live=36 pruned=0 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=1 var=y_2 orbit-enum size=3 examined=129 live=84 pruned=0 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=1 var=y_2 orbit-enum size=4 examined=255 live=126 pruned=0 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=1 var=y_2 orbit-enum size=5 examined=381 live=126 pruned=0 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=1 var=y_2 orbit-enum size=6 examined=465 live=84 pruned=0 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=1 var=y_2 orbit-enum size=7 examined=501 live=36 pruned=0 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=1 var=y_2 orbit-enum size=8 examined=510 live=9 pruned=0 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=1 var=y_2 orbit-enum size=9 examined=511 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=1 var=y_2 orbit-expand patterns=1 representatives=1 (1x fewer expansions)
+#   step=1 var=y_2 parallel workers=112 tasks=1
+#   step=1 var=y_2 parallel done kept=0 raw=0 taut=0 elapsed_s=0.196
+#   step=1 var=y_2 orbit-expand closure -> 0 resolvents
+step=1 var=y_2 pi_in=9 n_minimal_J=1 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=9 pi_out_before_sub=0 pi_out_after_sub=0 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=9 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=1 prefix_sub=0 pruned_leaves=1 dup=0 expand_elapsed_s=0.196 elapsed_s=0.198
+# starting step=0 var=y_1 pi_in=0 pi_current=0 cap=9
+step=0 var=y_1 pi_in=0 n_minimal_J=0 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=0 pi_out_before_sub=0 pi_out_after_sub=0 sub_elim=0 sub_elapsed_s=0.000 elapsed_s=0.000
+compiled in 30.45s
+per-step clause counts: [0, 9, 54, 111, 162, 171, 138, 99, 81]
+wrote /home/lk1325/mnist_neurips/examples/sudoku_group9_compiled.json

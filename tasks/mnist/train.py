@@ -1,3 +1,14 @@
+import sys as _sys
+from pathlib import Path as _Path
+
+# Runnable entry point: put the shared compiler and this task's own directory on
+# the path. Sibling task directories are deliberately not added -- they share
+# module names (data, model, train, minedit).
+_ROOT = _Path(__file__).resolve().parents[2]
+for _d in (_ROOT / "casper", _Path(__file__).resolve().parent, _ROOT / "examples"):
+    if str(_d) not in _sys.path:
+        _sys.path.insert(0, str(_d))
+
 import argparse
 import csv
 import os
@@ -22,7 +33,7 @@ from data import (
     mnist_sum_num_samples,
     mnist_add_num_samples,
 )
-from loss import MaskedLoss, PlainSumLoss
+from loss import PlainSumLoss
 from model import MNISTConstraintNet
 from carry_chain import compute_carry_chain
 
@@ -50,59 +61,83 @@ def _iter_timeout(seconds):
         signal.signal(signal.SIGALRM, prev)
 
 
-def _make_addn_constraint(n_digits):
-    """Build a place-value addition constraint function for two N-digit numbers."""
-    def _addn_constraint(digit_preds):
-        n = n_digits
-        first, second = digit_preds[:n], digit_preds[n:]
-        first_num = sum(d * (10 ** (n - 1 - i)) for i, d in enumerate(first))
-        second_num = sum(d * (10 ** (n - 1 - i)) for i, d in enumerate(second))
-        return first_num + second_num
-    return _addn_constraint
+def n_sum_digits(n_digits):
+    """Answer digits in the balanced decimal sum tree: one per level, plus one."""
+    if n_digits < 2 or n_digits & (n_digits - 1):
+        raise ValueError(f"digit-tree MNIST-Sum needs a power-of-two N, got {n_digits}")
+    return n_digits.bit_length()
+
+
+def sum_to_digits(totals, k):
+    """(B,) integer totals -> (B, k) decimal digits, most significant first."""
+    out = []
+    x = totals
+    for _ in range(k):
+        out.append(x % 10)
+        x = torch.div(x, 10, rounding_mode='floor')
+    return torch.stack(out[::-1], dim=1)
+
+
+def digits_to_sum(digit_preds):
+    """List of k (B,) digit predictions, most significant first -> (B,) integers."""
+    total = torch.zeros_like(digit_preds[0])
+    for d in digit_preds:
+        total = total * 10 + d
+    return total
+
+
+def _sum_targets(digit_labels, sum_label, n_digits, n_vars):
+    """Per-variable targets for MNIST-Sum under either output encoding."""
+    targets = [digit_labels[:, i] for i in range(n_digits)]
+    n_out = n_vars - n_digits
+    if n_out == 1:
+        return targets + [sum_label]
+    digits = sum_to_digits(sum_label, n_out)
+    return targets + [digits[:, j] for j in range(n_out)]
 
 
 def get_config(n_digits, task):
-    """Return (variable_ranges, n_inputs, constraint_fn) for the chosen task."""
+    """Return (variable_ranges, n_inputs) for the chosen task.
+
+    MNIST-Sum's answer is the balanced decimal digit tree's output digits; the
+    flat single-sum-variable encoding needs one clause per combination of all N
+    digits and lives with the archived on-the-fly layers.
+    """
     if task == 'sum':
-        max_sum = 9 * n_digits
-        return [10] * n_digits + [max_sum + 1], n_digits, None
+        return [10] * (n_digits + n_sum_digits(n_digits)), n_digits
     if task == 'add':
         n_inputs = 2 * n_digits
-        n_output_digits = n_digits + 1
-        return [10] * (n_inputs + n_output_digits), n_inputs, _make_addn_constraint(n_digits)
+        return [10] * (n_inputs + n_digits + 1), n_inputs
     raise ValueError(f"Unknown task: {task!r}")
 
 
 def resolve_compiled_file(task, n_digits, explicit=None):
-    """Path to the compiled constraint artifact for (task, n_digits).
+    """Path to the constraint file for (task, n_digits), generating it if absent.
 
-    MNIST-Add's carry-chain DSL is its own compile fixpoint at every N, so a
-    missing artifact is generated rather than compiled. MNIST-Sum's flat
-    encoding gives S a domain of 9N+1 and only N=2 is tractable; larger N needs
-    the digit-tree encoding, which has a different variable layout than
-    get_config() builds, so it is refused here rather than silently downgraded.
+    Both tasks' constraint files are their own compile fixpoints -- every bucket
+    is a deterministic function of earlier variables, so eliminating anything
+    yields only tautologies. They are therefore generated and loaded directly,
+    never compiled.
     """
     if explicit is not None:
         return explicit
 
-    examples = Path(__file__).resolve().parents[1] / "examples"
+    root = Path(__file__).resolve().parents[2]
+    out = root / "constraints" / "mnist"
+    out.mkdir(parents=True, exist_ok=True)
+    sys.path.append(str(root / "examples"))
     if task == 'add':
-        dsl = examples / f"mnist_add_n{n_digits}.txt"
+        dsl = out / f"mnist_add_n{n_digits}.txt"
         if not dsl.exists():
-            sys.path.append(str(examples))
             from generate_mnist_add import generate_mnist_add_dsl
             dsl.write_text(generate_mnist_add_dsl(n_digits))
         return str(dsl)
 
-    artifact = examples / f"mnist_sum_n{n_digits}_compiled.txt"
-    if artifact.exists():
-        return str(artifact)
-    raise SystemExit(
-        f"no compiled artifact for task=sum N={n_digits} "
-        f"({artifact} not found). The flat sum encoding is only tractable at "
-        f"N=2; for larger N use the digit-tree encoding, or pass "
-        f"--projection-backend closed_form to run the archived layer."
-    )
+    dsl = out / f"mnist_sum_digit_tree_n{n_digits}.txt"
+    if not dsl.exists():
+        from generate_mnist_sum_digit_tree import generate_mnist_sum_digit_tree_dsl
+        dsl.write_text(generate_mnist_sum_digit_tree_dsl(n_digits))
+    return str(dsl)
 
 
 def split_logits(logits, variable_ranges):
@@ -129,7 +164,8 @@ def _nan_row(task, n_digits, backend, constraint_mode, run_id, epoch, gpu_mem_mb
 
 
 def train_epoch_sum(model, loader, optimizer, criterion, variable_ranges,
-                    n_digits, device, per_iter_timeout_s):
+                    n_digits, device, per_iter_timeout_s,
+                    apply_constraint=False, lambda_proj=1.0):
     model.train()
     total_loss, total_l2, n_batches = 0.0, 0.0, 0
     total_grad_norm, grad_norm_count = 0.0, 0
@@ -145,8 +181,16 @@ def train_epoch_sum(model, loader, optimizer, criterion, variable_ranges,
             with _iter_timeout(per_iter_timeout_s):
                 logits = model.get_logits(imgs)
                 logit_slices = split_logits(logits, variable_ranges)
-                target_list = [digit_labels[:, i] for i in range(n_digits)] + [sum_label]
+                target_list = _sum_targets(digit_labels, sum_label,
+                                           n_digits, len(variable_ranges))
                 loss, info = criterion(*logit_slices, *target_list)
+
+                if apply_constraint:
+                    probs = torch.cat(
+                        [F.softmax(sl, dim=1) for sl in logit_slices], dim=1)
+                    _proj_probs, proj_info = model.constraint_layer(probs)
+                    loss = loss + lambda_proj * proj_info['projection_loss']
+                    info['mean_l2_edit'] = proj_info['avg_l2_per_sample']
 
                 optimizer.zero_grad()
                 loss.backward()
@@ -183,6 +227,7 @@ def evaluate_sum(model, loader, variable_ranges, n_digits, device, apply_constra
     correct = {f'a{i+1}': 0 for i in range(n_vars)}
     correct['constraint'] = 0
     correct['symbolic_sum'] = 0
+    correct['neural_sum'] = 0
     total = 0
     total_l2 = 0.0
 
@@ -202,20 +247,26 @@ def evaluate_sum(model, loader, variable_ranges, n_digits, device, apply_constra
             proj_slices = split_logits(eval_probs, variable_ranges)
             preds = [s.argmax(dim=1) for s in proj_slices]
 
-            target_list = [digit_labels[:, i] for i in range(n_digits)] + [sum_label]
+            target_list = _sum_targets(digit_labels, sum_label,
+                                       n_digits, len(variable_ranges))
             for i in range(n_vars):
                 correct[f'a{i+1}'] += (preds[i] == target_list[i]).sum().item()
 
-            symbolic_result = sum(preds[:-1])
-            correct['constraint'] += (symbolic_result == preds[-1]).sum().item()
+            # The predicted total: one variable under the flat encoding, or the
+            # decimal digits read back as an integer under the digit tree.
+            predicted_total = (preds[-1] if n_vars - n_digits == 1
+                               else digits_to_sum(preds[n_digits:]))
+            symbolic_result = sum(preds[:n_digits])
+            correct['constraint'] += (symbolic_result == predicted_total).sum().item()
             correct['symbolic_sum'] += (symbolic_result == sum_label).sum().item()
+            correct['neural_sum'] += (predicted_total == sum_label).sum().item()
 
             total_l2 += l2_edit
             total += imgs.shape[0]
 
     return {
         'avg_digit_acc': 100 * sum(correct[f'a{i+1}'] for i in range(n_digits)) / (total * n_digits),
-        'neural_acc': 100 * correct[f'a{n_vars}'] / total,
+        'neural_acc': 100 * correct['neural_sum'] / total,
         'symbolic_acc': 100 * correct['symbolic_sum'] / total,
         'constraint_sat': 100 * correct['constraint'] / total,
         'avg_l2_edit': total_l2 / total,
@@ -342,9 +393,9 @@ def evaluate_add(model, loader, variable_ranges, n_inputs, n_digits_per_num, dev
 
 def run_one(task, n_digits, seed, epochs, lr, batch_size, device,
             train_loader, test_loader, csv_writer, csv_file,
-            projection_backend, solver_time_limit,
             per_iter_timeout_s, max_run_time_s, constraint_mode='train_infer',
-            compiled_file=None):
+            compiled_file=None, projection_backend='closed_form',
+            solver_time_limit=None):
     torch.manual_seed(seed)
     if device.type == 'cuda':
         torch.cuda.manual_seed_all(seed)
@@ -352,33 +403,29 @@ def run_one(task, n_digits, seed, epochs, lr, batch_size, device,
     train_constraint = constraint_mode in ('train_infer', 'train_only')
     infer_constraint = constraint_mode in ('train_infer', 'infer_only')
 
-    variable_ranges, n_inputs, constraint_fn = get_config(n_digits, task)
+    variable_ranges, n_inputs = get_config(n_digits, task)
     n_vars = len(variable_ranges)
 
     model = MNISTConstraintNet(
         task=task,
         variable_ranges=variable_ranges,
         n_inputs=n_inputs,
-        constraint_fn=constraint_fn,
+        compiled_file=compiled_file,
         projection_backend=projection_backend,
         solver_time_limit=solver_time_limit,
-        compiled_file=compiled_file,
     ).to(device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer, T_max=epochs, eta_min=1e-5)
 
+    n_sum_out = len(variable_ranges) - n_inputs if task == 'sum' else 0
     if task == 'sum':
-        if train_constraint:
-            n_sum_categories = variable_ranges[-1]
-            criterion = MaskedLoss(n_sum_categories=n_sum_categories,
-                                   constraint_fn=constraint_fn)
-        else:
-            criterion = PlainSumLoss()
+        criterion = PlainSumLoss()
 
     print(f"\n{'=' * 60}")
-    print(f"task={task}  N={n_digits}  seed={seed}  backend={projection_backend}  "
+    print(f"task={task}  N={n_digits}  seed={seed}  "
+          f"projection={projection_backend}  "
           f"mode={constraint_mode}")
     print(f"epochs={epochs}  lr={lr}  batch_size={batch_size}")
     print(f"{'=' * 60}")
@@ -394,7 +441,8 @@ def run_one(task, n_digits, seed, epochs, lr, batch_size, device,
         if task == 'sum':
             train_info = train_epoch_sum(
                 model, train_loader, optimizer, criterion, variable_ranges,
-                n_digits, device, per_iter_timeout_s)
+                n_digits, device, per_iter_timeout_s,
+                apply_constraint=(train_constraint and n_sum_out > 1))
         else:
             train_info = train_epoch_add(
                 model, train_loader, optimizer, variable_ranges, n_inputs,
@@ -468,19 +516,20 @@ def main():
     parser.add_argument('--lr', type=float, default=None)
     parser.add_argument('--batch-size', type=int, default=None)
     parser.add_argument('--csv', type=str, required=True)
-    parser.add_argument('--projection-backend', type=str, default='compiled',
-                        choices=['compiled', 'closed_form', 'cvxpy'],
-                        help="'compiled' (default) projects against the "
-                             "compiled clause artifact; 'closed_form' and "
-                             "'cvxpy' run the archived on-the-fly layers.")
+    parser.add_argument('--projection-backend', type=str, default='closed_form',
+                        choices=['closed_form', 'cvxpy'],
+                        help="Solver for the MinEdit projection. The constraint "
+                             "set is identical either way; 'cvxpy' solves the "
+                             "same projection as a QP via SCS.")
+    parser.add_argument('--solver-time-limit', type=float, default=None,
+                        help="Per-solve budget for --projection-backend cvxpy.")
     parser.add_argument('--compiled-file', type=str, default=None,
-                        help="Compiled constraint artifact; required by "
-                             "--projection-backend compiled.")
+                        help="Constraint file to load. Defaults to the "
+                             "generated one for (task, N).")
     parser.add_argument('--constraint-mode', type=str, default='train_infer',
                         choices=['train_infer', 'train_only', 'infer_only', 'none'],
                         help='When the constraint is applied: at train+inference, '
                              'train only, inference only, or never (unconstrained).')
-    parser.add_argument('--solver-time-limit', type=float, default=None)
     parser.add_argument('--per-iter-timeout-s', type=float, default=None)
     parser.add_argument('--max-run-time-s', type=float, default=None)
     parser.add_argument('--data-root', type=str, default='./data')
@@ -543,12 +592,10 @@ def main():
             test_loader=test_loader,
             csv_writer=writer,
             csv_file=f,
+            compiled_file=resolve_compiled_file(
+                args.task, args.n_digits, args.compiled_file),
             projection_backend=args.projection_backend,
             solver_time_limit=args.solver_time_limit,
-            compiled_file=(
-                resolve_compiled_file(args.task, args.n_digits, args.compiled_file)
-                if args.projection_backend == 'compiled' else None
-            ),
             per_iter_timeout_s=args.per_iter_timeout_s,
             max_run_time_s=args.max_run_time_s,
             constraint_mode=args.constraint_mode,

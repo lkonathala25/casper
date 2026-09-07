@@ -1,0 +1,52 @@
+{
+  "sizes": {
+    "12": {
+      "monotone": {
+        "total_dim": 628,
+        "n_nodes": 144,
+        "dist": {
+          "2": 4,
+          "3": 40,
+          "5": 100
+        }
+      },
+      "full": {
+        "total_dim": 868,
+        "n_nodes": 144,
+        "dist": {
+          "2": 4,
+          "4": 40,
+          "7": 100
+        }
+      }
+    }
+  },
+  "splits": [
+    {
+      "grid": 12,
+      "split": "test",
+      "n": 1000,
+      "rejected_by_monotone_alphabet": 57,
+      "rejected_pct": 5.7,
+      "full_alphabet_failures": 0,
+      "labels_changed": 57,
+      "labels_changed_pct": 5.7,
+      "changed_equals_rejected": true,
+      "mean_nodes_differing_on_changed": 2.245614035087719,
+      "roundtrip_exact_pct": 100.0
+    },
+    {
+      "grid": 12,
+      "split": "train",
+      "n": 10000,
+      "rejected_by_monotone_alphabet": 566,
+      "rejected_pct": 5.66,
+      "full_alphabet_failures": 0,
+      "labels_changed": 566,
+      "labels_changed_pct": 5.66,
+      "changed_equals_rejected": true,
+      "mean_nodes_differing_on_changed": 2.3003533568904593,
+      "roundtrip_exact_pct": 100.0
+    }
+  ]
+}

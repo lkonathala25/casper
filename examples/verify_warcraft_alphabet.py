@@ -6,7 +6,7 @@ from pathlib import Path
 
 import numpy as np
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src_warcraft"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tasks" / "warcraft"))
 
 from node_categories import (  # noqa: E402
     UnrepresentablePatternError,

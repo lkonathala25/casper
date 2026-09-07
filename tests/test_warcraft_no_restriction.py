@@ -8,7 +8,7 @@ import pytest
 import torch
 
 ROOT = Path(__file__).resolve().parents[1]
-for p in (ROOT / "src_warcraft", ROOT / "src", ROOT / "examples"):
+for p in (ROOT / "tasks" / "warcraft", ROOT / "tasks/warcraft", ROOT / "examples"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
@@ -164,7 +164,7 @@ def test_no_directional_masking_in_the_new_path():
         r"processing_order",
     ]
     for fname in ("lazy_exact_layer.py", "edge_bridge.py"):
-        text = (ROOT / "src_warcraft" / fname).read_text()
+        text = (ROOT / "tasks" / "warcraft" / fname).read_text()
         # The factory names the old mode; that mention is allowed.
         text = text.replace("processing_order=processing_order", "")
         text = text.replace("processing_order='row'", "")
@@ -186,6 +186,6 @@ def test_grep_audit_reports_monotone_confined_to_legacy_module():
     """The directional sweep must live only in the legacy layer module."""
     out = subprocess.run(
         ["grep", "-rln", "--include=*.py", "flow_from_R",
-         str(ROOT / "src_warcraft")],
+         str(ROOT / "tasks" / "warcraft")],
         capture_output=True, text=True).stdout.split()
     assert [Path(p).name for p in out] == ["constraint_layer.py"], out

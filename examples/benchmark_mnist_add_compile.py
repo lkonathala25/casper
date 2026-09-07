@@ -18,16 +18,15 @@ from pathlib import Path
 import torch
 
 ROOT = Path(__file__).resolve().parents[1]
-SRC = ROOT / "src"
+SRC = ROOT / "casper"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 if str(Path(__file__).resolve().parent) not in sys.path:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from carry_chain_constraint_layer import (  # noqa: E402
-    CarryChainConstraintLayer,
-    compute_carry_chain,
-)
+from carry_chain import compute_carry_chain  # noqa: E402
+# Archived oracle: the hard-coded layer the compiled path is checked against.
+from carry_chain_constraint_layer import CarryChainConstraintLayer  # noqa: E402
 from compiled_layer import CompiledConstraintLayer  # noqa: E402
 from functional_compiled_layer import FunctionalCompiledConstraintLayer  # noqa: E402
 from generate_mnist_add import generate_mnist_add_dsl  # noqa: E402

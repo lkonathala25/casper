@@ -1,0 +1,40 @@
+{
+  "args": {
+    "data_dir": "/home/lk1325/mnist_experiment/warcraft_crl/warcraft_shortest_path_oneskin/12x12/preprocessed_4conn",
+    "save_dir": "logs/warcraft_retrain_steps/lambda0/run0",
+    "grid_size": 12,
+    "condition": "crl_in_training",
+    "n_runs": 1,
+    "epochs": 300,
+    "batch_size": 128,
+    "lr": 0.0005,
+    "weight_decay": 0.0,
+    "patience": 30,
+    "num_workers": 4,
+    "skip_weight": 1.0,
+    "path_weight": 1.0,
+    "lambda_neg": 1.0,
+    "beta_ce": 0.0,
+    "lambda_edge": 0.0,
+    "lambda_pair": 0.0,
+    "lambda_len": 0.0,
+    "gamma_focal": 0.0,
+    "lambda_l2_edit": 0.0,
+    "grad_clip": 1.0,
+    "scheduler": "cosine",
+    "seed": 0,
+    "processing_order": "row",
+    "constraint_mode": "steps",
+    "artifact": null,
+    "max_rounds": 20,
+    "alphabet": "full"
+  },
+  "total_dim": 868,
+  "auxiliary_losses_off": [
+    "beta_ce",
+    "gamma_focal",
+    "lambda_edge",
+    "lambda_len",
+    "lambda_pair"
+  ]
+}

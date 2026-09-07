@@ -10,7 +10,9 @@ from minedit import MinEditL2
 class CasperLayer(nn.Module):
     """Algorithm 1 INFER as a differentiable nn.Module."""
 
-    def __init__(self, constraints: Constraints, eps: float = 1e-3):
+    def __init__(self, constraints: Constraints, eps: float = 1e-3,
+                 projection_backend: str = "closed_form",
+                 solver_time_limit: float | None = None):
         super().__init__()
         self.constraints = constraints
         self.var_domains: list[int] = list(constraints.var_domains)
@@ -19,9 +21,27 @@ class CasperLayer(nn.Module):
         self._step_of: dict[int, int] = {v: i for i, v in enumerate(self.ordering)}
         self.eps = eps
 
-        self._minedits: dict[int, MinEditL2] = {}
+        # Which solver computes the MinEdit projection. The constraint set is
+        # identical either way -- only the projection differs, which is what
+        # makes closed_form vs cvxpy a clean single-variable comparison.
+        if projection_backend == "cvxpy":
+            from cvxpy_minedit import CVXPYMinEditL2
+
+            def _make(h):
+                return CVXPYMinEditL2(h, eps=eps,
+                                      solver_time_limit=solver_time_limit)
+        elif projection_backend == "closed_form":
+            def _make(h):
+                return MinEditL2(h, eps=eps)
+        else:
+            raise ValueError(
+                f"projection_backend must be 'closed_form' or 'cvxpy', "
+                f"got {projection_backend!r}")
+        self.projection_backend = projection_backend
+
+        self._minedits: dict = {}
         for h in sorted(set(self.var_domains)):
-            m = MinEditL2(h, eps=eps)
+            m = _make(h)
             self._minedits[h] = m
             self.add_module(f"_minedit_h{h}", m)
 

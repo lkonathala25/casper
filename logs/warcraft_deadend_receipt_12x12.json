@@ -1,0 +1,27 @@
+{
+  "per_ckpt": {
+    "best_run0.pt": {
+      "empty_feasible_sets": 0,
+      "boards_with_empty_feasible": 0,
+      "boards": 1000,
+      "forced_step_pct": 54.19280303030303,
+      "boards_with_rings": 22
+    },
+    "best_run1.pt": {
+      "empty_feasible_sets": 0,
+      "boards_with_empty_feasible": 0,
+      "boards": 1000,
+      "forced_step_pct": 54.192424242424245,
+      "boards_with_rings": 21
+    },
+    "best_run2.pt": {
+      "empty_feasible_sets": 0,
+      "boards_with_empty_feasible": 0,
+      "boards": 1000,
+      "forced_step_pct": 54.191287878787875,
+      "boards_with_rings": 11
+    }
+  },
+  "total_empty_feasible_sets": 0,
+  "artifact": "/home/lk1325/mnist_neurips/examples/warcraft_artifacts/wc_deg_12_geometric.txt"
+}

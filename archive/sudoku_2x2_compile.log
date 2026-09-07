@@ -1,0 +1,23 @@
+# compile: n_vars=4 input_clauses=8 post_taut=8 domains=[2] cap=per_var_domain
+# ordering: y_1 y_2 y_3 y_4
+# starting step=3 var=y_4 pi_in=4 pi_current=8 cap=2
+#   step=3 var=y_4 size=1 starting candidates=4 cumulative_minimal=0
+#   step=3 var=y_4 size=1 done new_minimal=0 elapsed_s=0.000 cumulative_minimal=0
+#   step=3 var=y_4 size=2 starting candidates=6 cumulative_minimal=0
+#   step=3 var=y_4 size=2 done new_minimal=4 elapsed_s=0.000 cumulative_minimal=4
+step=3 var=y_4 pi_in=4 n_minimal_J=4 n_resolvents_raw=4 n_resolvents_kept=2 max_J_size=2 pi_out=6 elapsed_s=0.000
+# starting step=2 var=y_3 pi_in=4 pi_current=6 cap=2
+#   step=2 var=y_3 size=1 starting candidates=4 cumulative_minimal=0
+#   step=2 var=y_3 size=1 done new_minimal=0 elapsed_s=0.000 cumulative_minimal=0
+#   step=2 var=y_3 size=2 starting candidates=6 cumulative_minimal=0
+#   step=2 var=y_3 size=2 done new_minimal=4 elapsed_s=0.000 cumulative_minimal=4
+step=2 var=y_3 pi_in=4 n_minimal_J=4 n_resolvents_raw=4 n_resolvents_kept=0 max_J_size=2 pi_out=2 elapsed_s=0.000
+# starting step=1 var=y_2 pi_in=2 pi_current=2 cap=2
+#   step=1 var=y_2 size=1 starting candidates=2 cumulative_minimal=0
+#   step=1 var=y_2 size=1 done new_minimal=0 elapsed_s=0.000 cumulative_minimal=0
+#   step=1 var=y_2 size=2 starting candidates=1 cumulative_minimal=0
+#   step=1 var=y_2 size=2 done new_minimal=1 elapsed_s=0.000 cumulative_minimal=1
+step=1 var=y_2 pi_in=2 n_minimal_J=1 n_resolvents_raw=1 n_resolvents_kept=0 max_J_size=2 pi_out=0 elapsed_s=0.000
+# starting step=0 var=y_1 pi_in=0 pi_current=0 cap=2
+step=0 var=y_1 pi_in=0 n_minimal_J=0 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=0 pi_out=0 elapsed_s=0.000
+Compiled 10 clause(s) (8 originals + 2 resolvents) -> examples/sudoku_2x2_compiled.txt

@@ -1,0 +1,4 @@
+step=8 patterns=46 kept=36 pi=288 1.15s
+step=7 patterns=751 kept=210 pi=273 0.77s
+step=6 patterns=18061 kept=336 pi=261 33.77s
+step=5 patterns=212878 kept=246 pi=216 2323.01s

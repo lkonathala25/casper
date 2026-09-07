@@ -1,0 +1,37 @@
+{
+  "grid": 12,
+  "total_dim": 868,
+  "boards": 1000,
+  "bridge": "time-aware",
+  "forbid_reversal": true,
+  "gate1_roundtrip": {
+    "boards": 1000,
+    "exact_category_match": 1000,
+    "pct": 100.0,
+    "mismatch_examples": []
+  },
+  "gate2_shape_consistency": {
+    "shape": [
+      16,
+      868
+    ],
+    "shape_ok": true,
+    "nonnegative": true,
+    "min_value": 0.06445498764514923,
+    "per_node_sum_max_abs_dev_from_1": 2.384185791015625e-07,
+    "per_node_sums_ok": true
+  },
+  "gate3_determinism": {
+    "identical": true,
+    "max_abs_diff": 0.0
+  },
+  "gate4_cost": {
+    "batch": 128,
+    "certify": false,
+    "ms_median": 73.92938062548637,
+    "ms_min": 73.73648881912231,
+    "ms_max": 76.39027573168278,
+    "projected_s_per_epoch_79_batches": 5.8404210694134235
+  },
+  "reverse_bridge_fail_loud": true
+}

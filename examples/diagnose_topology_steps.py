@@ -10,7 +10,7 @@ import time
 from contextlib import redirect_stdout
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "casper"))
 
 from profile_compile_log import FIELDS  # noqa: E402
 from resolution import _heuristic_elimination_ordering, compile_constraints  # noqa: E402

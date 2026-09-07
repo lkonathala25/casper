@@ -1,0 +1,34 @@
+lam=0.9 poly b=0 m=50   min_fill    base= 78.80% acc= 78.70% delta= -0.10% fixed= 5.10% broke= 5.20%
+lam=0.9 poly b=0 m=50   high_conf   base= 78.80% acc= 86.70% delta= +7.90% fixed= 8.00% broke= 0.10%
+lam=0.9 poly b=0 m=50   low_conf    base= 78.80% acc= 73.80% delta= -5.00% fixed= 2.90% broke= 7.90%
+lam=0.9 poly b=0 m=50   random      base= 78.80% acc= 79.50% delta= +0.70% fixed= 5.20% broke= 4.50%
+lam=0.9 exp  b=2 m=50   min_fill    base= 78.80% acc= 83.60% delta= +4.80% fixed=10.80% broke= 6.00%
+lam=0.9 exp  b=2 m=50   high_conf   base= 78.80% acc= 92.20% delta=+13.40% fixed=13.80% broke= 0.40%
+lam=0.9 exp  b=2 m=50   low_conf    base= 78.80% acc= 73.20% delta= -5.60% fixed= 7.50% broke=13.10%
+lam=0.9 exp  b=2 m=50   random      base= 78.80% acc= 83.90% delta= +5.10% fixed=11.30% broke= 6.20%
+lam=0.9 poly b=0 m=100  min_fill    base= 79.70% acc= 80.70% delta= +1.00% fixed= 5.30% broke= 4.30%
+lam=0.9 poly b=0 m=100  high_conf   base= 79.70% acc= 86.15% delta= +6.45% fixed= 6.95% broke= 0.50%
+lam=0.9 poly b=0 m=100  low_conf    base= 79.70% acc= 75.10% delta= -4.60% fixed= 3.35% broke= 7.95%
+lam=0.9 poly b=0 m=100  random      base= 79.70% acc= 80.85% delta= +1.15% fixed= 5.10% broke= 3.95%
+lam=0.9 exp  b=2 m=100  min_fill    base= 79.70% acc= 81.70% delta= +2.00% fixed= 9.55% broke= 7.55%
+lam=0.9 exp  b=2 m=100  high_conf   base= 79.70% acc= 92.65% delta=+12.95% fixed=13.50% broke= 0.55%
+lam=0.9 exp  b=2 m=100  low_conf    base= 79.70% acc= 76.15% delta= -3.55% fixed= 7.60% broke=11.15%
+lam=0.9 exp  b=2 m=100  random      base= 79.70% acc= 84.30% delta= +4.60% fixed=10.20% broke= 5.60%
+lam=1.0 poly b=0 m=50   min_fill    base= 57.20% acc= 57.40% delta= +0.20% fixed= 5.60% broke= 5.40%
+lam=1.0 poly b=0 m=50   high_conf   base= 57.20% acc= 64.30% delta= +7.10% fixed= 7.50% broke= 0.40%
+lam=1.0 poly b=0 m=50   low_conf    base= 57.20% acc= 51.00% delta= -6.20% fixed= 4.10% broke=10.30%
+lam=1.0 poly b=0 m=50   random      base= 57.20% acc= 58.60% delta= +1.40% fixed= 6.40% broke= 5.00%
+lam=1.0 exp  b=2 m=50   min_fill    base= 57.20% acc= 61.10% delta= +3.90% fixed=14.50% broke=10.60%
+lam=1.0 exp  b=2 m=50   high_conf   base= 57.20% acc= 75.30% delta=+18.10% fixed=18.80% broke= 0.70%
+lam=1.0 exp  b=2 m=50   low_conf    base= 57.20% acc= 49.10% delta= -8.10% fixed=10.00% broke=18.10%
+lam=1.0 exp  b=2 m=50   random      base= 57.20% acc= 63.00% delta= +5.80% fixed=15.40% broke= 9.60%
+lam=1.0 poly b=0 m=100  min_fill    base= 58.55% acc= 56.15% delta= -2.40% fixed= 5.00% broke= 7.40%
+lam=1.0 poly b=0 m=100  high_conf   base= 58.55% acc= 65.80% delta= +7.25% fixed= 7.90% broke= 0.65%
+lam=1.0 poly b=0 m=100  low_conf    base= 58.55% acc= 53.45% delta= -5.10% fixed= 5.05% broke=10.15%
+lam=1.0 poly b=0 m=100  random      base= 58.55% acc= 58.70% delta= +0.15% fixed= 6.40% broke= 6.25%
+lam=1.0 exp  b=2 m=100  min_fill    base= 58.55% acc= 60.25% delta= +1.70% fixed=12.65% broke=10.95%
+lam=1.0 exp  b=2 m=100  high_conf   base= 58.55% acc= 76.60% delta=+18.05% fixed=18.85% broke= 0.80%
+lam=1.0 exp  b=2 m=100  low_conf    base= 58.55% acc= 50.95% delta= -7.60% fixed= 9.50% broke=17.10%
+lam=1.0 exp  b=2 m=100  random      base= 58.55% acc= 59.35% delta= +0.80% fixed=12.55% broke=11.75%
+Wrote CSV -> ordering_accuracy_uniform.csv
+Wrote Markdown -> ordering_accuracy_uniform.md

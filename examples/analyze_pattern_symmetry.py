@@ -8,7 +8,9 @@ from itertools import permutations
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "src"))
+for _sub in ("casper", "tasks/sudoku"):
+    if str(ROOT / _sub) not in sys.path:
+        sys.path.insert(0, str(ROOT / _sub))
 
 from resolution import (
     _dedup_by_subsumption,

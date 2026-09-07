@@ -1,0 +1,29 @@
+#   s8 orbit-enum size=1 live=18 new_minimal=0
+#   s8 orbit-enum size=2 examined=171 live=108 new_minimal=45 cumulative_minimal=45 elapsed_s=0.000
+#   s8 orbit-enum size=3 examined=867 live=336 new_minimal=0 cumulative_minimal=45 elapsed_s=0.001
+#   s8 orbit-enum size=4 examined=2757 live=630 new_minimal=0 cumulative_minimal=45 elapsed_s=0.002
+#   s8 orbit-enum size=5 examined=6033 live=756 new_minimal=0 cumulative_minimal=45 elapsed_s=0.004
+#   s8 orbit-enum size=6 examined=9771 live=588 new_minimal=0 cumulative_minimal=45 elapsed_s=0.007
+#   s8 orbit-enum size=7 examined=12579 live=288 new_minimal=0 cumulative_minimal=45 elapsed_s=0.005
+#   s8 orbit-enum size=8 examined=13920 live=81 new_minimal=0 cumulative_minimal=45 elapsed_s=0.003
+#   s8 orbit-enum size=9 examined=14290 live=9 new_minimal=1 cumulative_minimal=46 elapsed_s=0.001
+>>> step=8 m=18 patterns=46 enum_time=0.02s
+>>> step=8 eliminated, pi_current=288, step_time=0.32s
+
+#   s7 orbit-enum size=1 live=45 new_minimal=0
+#   s7 orbit-enum size=2 examined=1035 live=612 new_minimal=378 cumulative_minimal=378 elapsed_s=0.001
+#   s7 orbit-enum size=3 examined=10928 live=3864 new_minimal=372 cumulative_minimal=750 elapsed_s=0.009
+#   s7 orbit-enum size=4 examined=62990 live=14616 new_minimal=0 cumulative_minimal=750 elapsed_s=0.058
+#   s7 orbit-enum size=5 examined=232712 live=37674 new_minimal=0 cumulative_minimal=750 elapsed_s=0.218
+#   s7 orbit-enum size=6 examined=612610 live=71148 new_minimal=0 cumulative_minimal=750 elapsed_s=0.571
+#   s7 orbit-enum size=7 examined=1236558 live=102672 new_minimal=0 cumulative_minimal=750 elapsed_s=1.122
+#   s7 orbit-enum size=8 examined=2022047 live=115794 new_minimal=0 cumulative_minimal=750 elapsed_s=1.457
+#   s7 orbit-enum size=9 examined=2800250 live=102960 new_minimal=1 cumulative_minimal=751 elapsed_s=1.598
+>>> step=7 m=45 patterns=751 enum_time=5.05s
+>>> step=7 eliminated, pi_current=273, step_time=5.16s
+
+#   s6 orbit-enum size=1 live=93 new_minimal=0
+#   s6 orbit-enum size=2 examined=4371 live=3438 new_minimal=840 cumulative_minimal=840 elapsed_s=0.003
+#   s6 orbit-enum size=3 examined=111832 live=53256 new_minimal=15750 cumulative_minimal=16590 elapsed_s=0.095
+#   s6 orbit-enum size=4 examined=1441685 live=496545 new_minimal=1470 cumulative_minimal=18060 elapsed_s=1.916
+#   s6 orbit-enum size=5 examined=11771369 live=3322494 new_minimal=0 cumulative_minimal=18060 elapsed_s=17.513

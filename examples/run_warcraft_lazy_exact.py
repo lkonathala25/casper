@@ -14,7 +14,7 @@ from torchvision import models
 
 ROOT = Path(__file__).resolve().parent.parent
 # src_warcraft must win the name collisions (data, model, minedit, ...).
-for p in (ROOT / "src", ROOT / "src_warcraft"):
+for p in (ROOT / "tasks/warcraft", ROOT / "tasks" / "warcraft"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 

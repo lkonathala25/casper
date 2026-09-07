@@ -6,6 +6,7 @@ from signed_clauses import parse_constraints
 
 
 EXAMPLES = Path(__file__).resolve().parents[1] / "examples"
+CONSTRAINTS = Path(__file__).resolve().parents[1] / "constraints" / "mnist"
 sys.path.insert(0, str(EXAMPLES))
 
 from generate_mnist_sum_tree import generate_mnist_sum_tree_dsl  # noqa: E402

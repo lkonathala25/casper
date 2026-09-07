@@ -7,7 +7,7 @@ from constraints import Constraints, compute_levels
 
 
 EXAMPLE1_PATH = Path(__file__).resolve().parents[1] / "examples" / "example1_shapes.txt"
-SUDOKU_TXT = Path(__file__).resolve().parents[1] / "examples" / "sudoku_2x2.txt"
+SUDOKU_TXT = Path(__file__).resolve().parents[1] / "constraints" / "sudoku" / "sudoku_2x2.txt"
 
 
 def test_compute_levels_no_edges_single_level():

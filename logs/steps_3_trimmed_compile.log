@@ -1,0 +1,54 @@
+# compile: n_vars=9 input_clauses=28 post_taut=23 post_subsumption=23 preproc_sub_elim=0 preproc_sub_elapsed_s=0.000 domains=[1, 2, 3, 4, 5] cap=per_var_domain algo=grouped+fwdsub
+# ordering: X_0 X_1 X_2 X_3 X_4 X_5 X_6 X_7 X_8
+# starting step=8 var=X_8 pi_in=0 pi_current=23 cap=1
+step=8 var=X_8 pi_in=0 n_minimal_J=0 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=0 pi_out_before_sub=23 pi_out_after_sub=23 sub_elim=0 sub_elapsed_s=0.000 elapsed_s=0.000
+# starting step=7 var=X_7 pi_in=4 pi_current=23 cap=3
+#   step=7 var=X_7 grouped pi_bar=4 distinct_value_sets=4 avg_group_size=1.0
+#   step=7 var=X_7 orbit-enum size=1 live=4 new_minimal=0
+#   step=7 var=X_7 orbit-enum size=2 examined=10 live=0 pruned=2 new_minimal=4 cumulative_minimal=4 elapsed_s=0.000
+#   step=7 var=X_7 pattern 1/4 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 2/4 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 3/4 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 4/4 size=2 expansion=1 cumulative_kept=0
+step=7 var=X_7 pi_in=4 n_minimal_J=4 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=2 pi_out_before_sub=19 pi_out_after_sub=19 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=4 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=4 prefix_sub=0 pruned_leaves=4 dup=0 expand_elapsed_s=0.000 elapsed_s=0.000
+# starting step=6 var=X_6 pi_in=5 pi_current=19 cap=4
+#   step=6 var=X_6 grouped pi_bar=5 distinct_value_sets=5 avg_group_size=1.0
+#   step=6 var=X_6 orbit-enum size=1 live=5 new_minimal=0
+#   step=6 var=X_6 orbit-enum size=2 examined=15 live=4 pruned=4 new_minimal=2 cumulative_minimal=2 elapsed_s=0.000
+#   step=6 var=X_6 orbit-enum size=3 examined=22 live=0 pruned=4 new_minimal=0 cumulative_minimal=2 elapsed_s=0.000
+#   step=6 var=X_6 pattern 1/2 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 2/2 size=2 expansion=1 cumulative_kept=0
+step=6 var=X_6 pi_in=5 n_minimal_J=2 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=2 pi_out_before_sub=14 pi_out_after_sub=14 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=5 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=2 prefix_sub=0 pruned_leaves=2 dup=0 expand_elapsed_s=0.000 elapsed_s=0.000
+# starting step=5 var=X_5 pi_in=5 pi_current=14 cap=5
+#   step=5 var=X_5 grouped pi_bar=5 distinct_value_sets=5 avg_group_size=1.0
+#   step=5 var=X_5 orbit-enum size=1 live=5 new_minimal=0
+#   step=5 var=X_5 orbit-enum size=2 examined=15 live=2 pruned=3 new_minimal=5 cumulative_minimal=5 elapsed_s=0.000
+#   step=5 var=X_5 orbit-enum size=3 examined=19 live=0 pruned=1 new_minimal=0 cumulative_minimal=5 elapsed_s=0.000
+#   step=5 var=X_5 pattern 1/5 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 2/5 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 3/5 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 4/5 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 5/5 size=2 expansion=1 cumulative_kept=0
+step=5 var=X_5 pi_in=5 n_minimal_J=5 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=2 pi_out_before_sub=9 pi_out_after_sub=9 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=5 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=5 prefix_sub=0 pruned_leaves=5 dup=0 expand_elapsed_s=0.000 elapsed_s=0.000
+# starting step=4 var=X_4 pi_in=4 pi_current=9 cap=5
+#   step=4 var=X_4 grouped pi_bar=4 distinct_value_sets=4 avg_group_size=1.0
+#   step=4 var=X_4 orbit-enum size=1 live=4 new_minimal=0
+#   step=4 var=X_4 orbit-enum size=2 examined=10 live=6 pruned=0 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=4 var=X_4 orbit-enum size=3 examined=14 live=0 pruned=4 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+step=4 var=X_4 pi_in=4 n_minimal_J=0 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=0 pi_out_before_sub=5 pi_out_after_sub=5 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=4 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=0.000 elapsed_s=0.000
+# starting step=3 var=X_3 pi_in=3 pi_current=5 cap=4
+#   step=3 var=X_3 grouped pi_bar=3 distinct_value_sets=3 avg_group_size=1.0
+#   step=3 var=X_3 orbit-enum size=1 live=3 new_minimal=0
+#   step=3 var=X_3 orbit-enum size=2 examined=6 live=2 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=3 var=X_3 orbit-enum size=3 examined=7 live=0 pruned=0 new_minimal=0 cumulative_minimal=1 elapsed_s=0.000
+#   step=3 var=X_3 pattern 1/1 size=2 expansion=1 cumulative_kept=0
+step=3 var=X_3 pi_in=3 n_minimal_J=1 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=2 pi_out_before_sub=2 pi_out_after_sub=2 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=3 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=1 prefix_sub=0 pruned_leaves=1 dup=0 expand_elapsed_s=0.000 elapsed_s=0.000
+# starting step=2 var=X_2 pi_in=2 pi_current=2 cap=4
+#   step=2 var=X_2 grouped pi_bar=2 distinct_value_sets=2 avg_group_size=1.0
+#   step=2 var=X_2 orbit-enum size=1 live=2 new_minimal=0
+#   step=2 var=X_2 orbit-enum size=2 examined=3 live=1 pruned=0 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+step=2 var=X_2 pi_in=2 n_minimal_J=0 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=0 pi_out_before_sub=0 pi_out_after_sub=0 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=2 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=0.000 elapsed_s=0.000
+# starting step=1 var=X_1 pi_in=0 pi_current=0 cap=2
+step=1 var=X_1 pi_in=0 n_minimal_J=0 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=0 pi_out_before_sub=0 pi_out_after_sub=0 sub_elim=0 sub_elapsed_s=0.000 elapsed_s=0.000
+# starting step=0 var=X_0 pi_in=0 pi_current=0 cap=1
+step=0 var=X_0 pi_in=0 n_minimal_J=0 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=0 pi_out_before_sub=0 pi_out_after_sub=0 sub_elim=0 sub_elapsed_s=0.000 elapsed_s=0.000

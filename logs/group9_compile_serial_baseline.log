@@ -1,0 +1,27 @@
+group size=9 vars=9 clauses=333 cap=None
+# compile: n_vars=9 input_clauses=333 post_taut=333 post_subsumption=333 preproc_sub_elim=0 preproc_sub_elapsed_s=0.005 domains=[9] cap=per_var_domain algo=grouped+fwdsub
+# ordering: y_1 y_2 y_3 y_4 y_5 y_6 y_7 y_8 y_9
+# starting step=8 var=y_9 pi_in=81 pi_current=333 cap=9
+#   step=8 var=y_9 grouped pi_bar=81 distinct_value_sets=18 avg_group_size=4.5
+#   step=8 var=y_9 pattern-size=1 candidates=18 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=8 var=y_9 pattern-size=2 candidates=153 new_minimal=45 cumulative_minimal=45 elapsed_s=0.000
+#   step=8 var=y_9 pattern-size=3 candidates=816 new_minimal=0 cumulative_minimal=45 elapsed_s=0.003
+#   step=8 var=y_9 pattern-size=4 candidates=3060 new_minimal=0 cumulative_minimal=45 elapsed_s=0.007
+#   step=8 var=y_9 pattern-size=5 candidates=8568 new_minimal=0 cumulative_minimal=45 elapsed_s=0.015
+#   step=8 var=y_9 pattern-size=6 candidates=18564 new_minimal=0 cumulative_minimal=45 elapsed_s=0.023
+#   step=8 var=y_9 pattern-size=7 candidates=31824 new_minimal=0 cumulative_minimal=45 elapsed_s=0.030
+#   step=8 var=y_9 pattern-size=8 candidates=43758 new_minimal=0 cumulative_minimal=45 elapsed_s=0.033
+#   step=8 var=y_9 pattern-size=9 candidates=48620 new_minimal=1 cumulative_minimal=46 elapsed_s=0.031
+#   step=8 var=y_9 parallel workers=16 tasks=172
+#   step=8 var=y_9 parallel done kept=36 raw=322596 taut=322560 elapsed_s=2.039
+step=8 var=y_9 pi_in=81 n_minimal_J=46 n_resolvents_raw=322596 n_resolvents_kept=36 max_J_size=9 pi_out_before_sub=288 pi_out_after_sub=288 sub_elim=0 sub_elapsed_s=0.005 n_distinct_sets=18 n_taut=322560 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=444640 lookahead_taut=80 prefix_sub=0 pruned_leaves=133895240 dup=0 expand_elapsed_s=2.039 elapsed_s=2.193
+# starting step=7 var=y_8 pi_in=99 pi_current=288 cap=9
+#   step=7 var=y_8 grouped pi_bar=99 distinct_value_sets=45 avg_group_size=2.2
+#   step=7 var=y_8 pattern-size=1 candidates=45 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=7 var=y_8 pattern-size=2 candidates=990 new_minimal=378 cumulative_minimal=378 elapsed_s=0.012
+#   step=7 var=y_8 pattern-size=3 candidates=14190 new_minimal=372 cumulative_minimal=750 elapsed_s=0.365
+#   step=7 var=y_8 pattern-size=4 candidates=148995 new_minimal=0 cumulative_minimal=750 elapsed_s=3.058
+#   step=7 var=y_8 pattern-size=5 candidates=1221759 new_minimal=0 cumulative_minimal=750 elapsed_s=16.942
+#   step=7 var=y_8 pattern-size=6 candidates=8145060 new_minimal=0 cumulative_minimal=750 elapsed_s=87.938
+#   step=7 var=y_8 pattern-size=7 candidates=45379620 new_minimal=0 cumulative_minimal=750 elapsed_s=407.957
+#   step=7 var=y_8 pattern-size=8 candidates=215553195 new_minimal=0 cumulative_minimal=750 elapsed_s=1682.086

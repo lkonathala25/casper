@@ -1,3 +1,14 @@
+import sys as _sys
+from pathlib import Path as _Path
+
+# Runnable entry point: put the shared compiler and this task's own directory on
+# the path. Sibling task directories are deliberately not added -- they share
+# module names (data, model, train, minedit).
+_ROOT = _Path(__file__).resolve().parents[2]
+for _d in (_ROOT / "casper", _Path(__file__).resolve().parent, _ROOT / "examples"):
+    if str(_d) not in _sys.path:
+        _sys.path.insert(0, str(_d))
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

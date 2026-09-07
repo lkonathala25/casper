@@ -35,6 +35,8 @@ class CompiledConstraintLayer(nn.Module):
         compiled_path: str | Path,
         variable_ranges: list[int],
         eps: float = 1e-3,
+        projection_backend: str = "closed_form",
+        solver_time_limit: float | None = None,
     ):
         super().__init__()
         self.constraints = Constraints.from_compiled_dsl(compiled_path)
@@ -50,7 +52,9 @@ class CompiledConstraintLayer(nn.Module):
         self.n_real_vars = n_real
         self.real_total = sum(variable_ranges)
         self.aux_domains: list[int] = domains[n_real:]
-        self.casper = CasperLayer(self.constraints, eps=eps)
+        self.casper = CasperLayer(self.constraints, eps=eps,
+                                  projection_backend=projection_backend,
+                                  solver_time_limit=solver_time_limit)
 
     def forward(self, probs: torch.Tensor) -> tuple[torch.Tensor, dict]:
         B = probs.shape[0]

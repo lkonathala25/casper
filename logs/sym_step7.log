@@ -1,0 +1,17 @@
+advancing to step=7 ...
+  eliminated step=8 var=y_9 -> pi_current=288 (2.0s)
+
+step=7 var=y_8 pi_bar=99 distinct_value_sets=45 cap=4
+enumerated 750 minimal patterns (sizes 1..4) in 3.0s
+
+ size   patterns  canonical forms    ratio
+    2        378                1    378.0x
+    3        372                3    124.0x
+
+TOTAL: 750 patterns -> 4 distinct canonical forms (187.5x compression)
+
+orbit sizes (how many patterns share each canonical form):
+  orbit=    378  value-degree profile=[0, 0, 0, 0, 0, 1, 1, 1, 1]
+  orbit=    252  value-degree profile=[1, 1, 1, 1, 1, 1, 2, 2, 2]
+  orbit=     84  value-degree profile=[0, 0, 0, 0, 0, 0, 2, 2, 2]
+  orbit=     36  value-degree profile=[2, 2, 2, 2, 2, 2, 2, 2, 2]

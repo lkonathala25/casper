@@ -3,18 +3,18 @@ from pathlib import Path
 
 import torch
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 # Appended, not prepended — see the note in lazy_exact_layer.py about the
 # module-name collisions between src/ and src_warcraft/.
-if str(ROOT / "src") not in sys.path:
-    sys.path.append(str(ROOT / "src"))
+if str(ROOT / "tasks/warcraft") not in sys.path:
+    sys.path.append(str(ROOT / "tasks/warcraft"))
 
 from node_categories import build_node_categories, edge_labels_to_node_labels
 
 
 def default_artifact(grid_size):
     """Path to the Family 1 degree-constraint artifact for a grid size."""
-    return ROOT / "examples" / "warcraft_artifacts" / f"wc_deg_{grid_size}_geometric.txt"
+    return ROOT / "constraints" / "warcraft" / "warcraft_artifacts" / f"wc_deg_{grid_size}_geometric.txt"
 
 
 def build_endpoint_matrices(node_info, node_order, total_dim, num_edges):

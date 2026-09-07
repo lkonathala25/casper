@@ -1,0 +1,16 @@
+# Compilation adds nothing: Family 1 (degree constraints) on the Warcraft grid
+
+| N | edges (vars) | raw clauses | resolvents derived by compile | resolvents that ever change a feasible set | feasible sets: raw vs brute force | dead ends (raw clauses) | verification method |
+|---|---|---|---|---|---|---|---|
+| 3 | 12 | 32 | 60 *(0.1 s)* | **0** / 60 | identical — 14 / 14 configs | **0** | exhaustive: 2¹² brute force + full walk (14 models, 0.0 s) |
+| 4 | 24 | 72 | 428 *(0.1 s)* | **0** / 428 | identical — 322 / 322 configs | **0** | exhaustive: 2²⁴ brute force (5.0 s) + full walk (322 models, 0.0 s) |
+| 5 | 40 | 128 | 2 336 *(0.5 s)* | **0** / 2 336 | identical — 23 858 / 23 858 configs | **0** | exhaustive walk (23 858 models, 8.2 s) vs independent transfer-matrix DP; 2⁴⁰ brute force out of reach |
+| 12 | 264 | 968 | compile intractable (2²³ frontier) | compile intractable (2²³ frontier) | not enumerable (≈10⁷⁰ configs) | **0** | live counter: 0 empty feasible sets over 3 000 real board-passes (3 ckpts × 1 000 test boards) |
+
+**Caption / method per row.** N=3, 4: every degree-legal edge set found by exhaustive 2^E enumeration, cross-checked against a full DFS walk of the raw clause set and against an independent transfer-matrix DP; the exact compile completes, and every derived resolvent is checked at every reachable prefix for whether it would restrict S_i(a_<i) beyond the raw clauses. N=5: 2⁴⁰ brute force is out of reach, so the raw walk is enumerated in full (23 858 models, matching the DP oracle exactly) and the same per-prefix, per-resolvent binding check is applied exhaustively over that walk. N=12: neither the compile nor enumeration is reachable — elimination doubles the live clause set every step (968 → 41 468 over 16 of 264 steps, 0.04 s → 114 s per step) against an induced width of 23, so the resolvent columns are a genuine intractability, not a missing measurement; the dead-end column is the permanent in-layer counter on real network outputs instead.
+
+**Reading.** At every size where the compile completes, it derives 60 / 428 / 2 336 resolvents and **not one of them ever changes a feasible set** — the raw clause set already yields exact, dead-end-free S_i(a_<i). Two independent measures agree at zero: the number of reachable prefixes where the raw and compiled feasible sets differ (0 everywhere), and per-resolvent attribution over the same walk (0 resolvents ever bind). Soundness was checked without the clause machinery: every enumerated model was re-verified by direct degree counting (0 unsound at all three sizes).
+
+**Also measured (not tabulated).** N=6 (60 edges, 200 raw clauses, width 11) compiles in 4.4 s to 11 276 resolvents, and its full raw walk enumerates 5 735 478 models in 132 s — exactly the DP oracle count — with 0 dead ends, 0 empty feasible sets and 0 unsound models across 57 354 sampled degree checks. Its raw-vs-compiled resolvent comparison was not completed: that check is O(models × resolvents) and did not finish, so the two resolvent columns are omitted rather than guessed.
+
+Source: `examples/bench_warcraft_compile_evidence.py`; raw data `logs/warcraft_compile_evidence.json`, run log `logs/warcraft_compile_evidence_345.log`.

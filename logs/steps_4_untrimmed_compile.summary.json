@@ -1,0 +1,40 @@
+{
+  "dsl": "examples/steps_artifacts/steps_4_untrimmed.txt",
+  "input_size_mb": 0.015,
+  "vars": 16,
+  "clauses_emitted": 225,
+  "clauses_in": 222,
+  "resolvents": 33,
+  "steps_with_resolvents": [
+    [
+      15,
+      "X_15",
+      13
+    ],
+    [
+      14,
+      "X_14",
+      10
+    ],
+    [
+      13,
+      "X_13",
+      6
+    ],
+    [
+      12,
+      "X_12",
+      3
+    ],
+    [
+      11,
+      "X_11",
+      1
+    ]
+  ],
+  "compile_s": 0.13,
+  "compile_s_verbose": 0.15,
+  "artifact": "examples/steps_artifacts/steps_4_untrimmed_compiled.json",
+  "artifact_mb": 0.019,
+  "artifact_stream_mb": 0.015
+}

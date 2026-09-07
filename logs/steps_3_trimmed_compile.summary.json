@@ -1,0 +1,14 @@
+{
+  "dsl": "examples/steps_artifacts/steps_3_trimmed.txt",
+  "input_size_mb": 0.001,
+  "vars": 9,
+  "clauses_emitted": 28,
+  "clauses_in": 23,
+  "resolvents": 0,
+  "steps_with_resolvents": [],
+  "compile_s": 0.0,
+  "compile_s_verbose": 0.0,
+  "artifact": "examples/steps_artifacts/steps_3_trimmed_compiled.json",
+  "artifact_mb": 0.001,
+  "artifact_stream_mb": 0.001
+}

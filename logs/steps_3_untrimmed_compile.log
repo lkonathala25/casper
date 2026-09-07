@@ -1,0 +1,177 @@
+# compile: n_vars=9 input_clauses=64 post_taut=61 post_subsumption=55 preproc_sub_elim=6 preproc_sub_elapsed_s=0.000 domains=[1, 9] cap=per_var_domain algo=grouped+fwdsub
+# ordering: X_0 X_1 X_2 X_3 X_4 X_5 X_6 X_7 X_8
+# starting step=8 var=X_8 pi_in=6 pi_current=55 cap=1
+#   step=8 var=X_8 grouped pi_bar=6 distinct_value_sets=1 avg_group_size=6.0
+#   step=8 var=X_8 orbit-enum size=1 live=0 new_minimal=1
+#   step=8 var=X_8 pattern 1/1 size=1 expansion=6 cumulative_kept=0
+step=8 var=X_8 pi_in=6 n_minimal_J=1 n_resolvents_raw=6 n_resolvents_kept=6 max_J_size=1 pi_out_before_sub=55 pi_out_after_sub=55 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=1 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=0.000 elapsed_s=0.000
+# starting step=7 var=X_7 pi_in=15 pi_current=55 cap=9
+#   step=7 var=X_7 grouped pi_bar=15 distinct_value_sets=15 avg_group_size=1.0
+#   step=7 var=X_7 orbit-enum size=1 live=15 new_minimal=0
+#   step=7 var=X_7 orbit-enum size=2 examined=120 live=58 pruned=34 new_minimal=13 cumulative_minimal=13 elapsed_s=0.000
+#   step=7 var=X_7 orbit-enum size=3 examined=451 live=82 pruned=165 new_minimal=4 cumulative_minimal=17 elapsed_s=0.000
+#   step=7 var=X_7 orbit-enum size=4 examined=899 live=24 pruned=259 new_minimal=25 cumulative_minimal=42 elapsed_s=0.000
+#   step=7 var=X_7 orbit-enum size=5 examined=1092 live=6 pruned=149 new_minimal=2 cumulative_minimal=44 elapsed_s=0.000
+#   step=7 var=X_7 orbit-enum size=6 examined=1147 live=1 pruned=47 new_minimal=0 cumulative_minimal=44 elapsed_s=0.000
+#   step=7 var=X_7 orbit-enum size=7 examined=1156 live=0 pruned=6 new_minimal=0 cumulative_minimal=44 elapsed_s=0.000
+#   step=7 var=X_7 pattern 1/44 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 2/44 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 3/44 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 4/44 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 5/44 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 6/44 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 7/44 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 8/44 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 9/44 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 10/44 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 11/44 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 12/44 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 13/44 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 14/44 size=3 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 15/44 size=3 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 16/44 size=3 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 17/44 size=3 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 18/44 size=4 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 19/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 20/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 21/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 22/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 23/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 24/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 25/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 26/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 27/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 28/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 29/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 30/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 31/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 32/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 33/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 34/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 35/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 36/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 37/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 38/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 39/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 40/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 41/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 42/44 size=4 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 43/44 size=5 expansion=1 cumulative_kept=1
+#   step=7 var=X_7 pattern 44/44 size=5 expansion=1 cumulative_kept=2
+step=7 var=X_7 pi_in=15 n_minimal_J=44 n_resolvents_raw=3 n_resolvents_kept=3 max_J_size=5 pi_out_before_sub=43 pi_out_after_sub=43 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=15 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=41 prefix_sub=0 pruned_leaves=41 dup=0 expand_elapsed_s=0.001 elapsed_s=0.002
+# starting step=6 var=X_6 pi_in=12 pi_current=43 cap=9
+#   step=6 var=X_6 grouped pi_bar=12 distinct_value_sets=12 avg_group_size=1.0
+#   step=6 var=X_6 orbit-enum size=1 live=12 new_minimal=0
+#   step=6 var=X_6 orbit-enum size=2 examined=78 live=35 pruned=18 new_minimal=13 cumulative_minimal=13 elapsed_s=0.000
+#   step=6 var=X_6 orbit-enum size=3 examined=238 live=33 pruned=59 new_minimal=2 cumulative_minimal=15 elapsed_s=0.000
+#   step=6 var=X_6 orbit-enum size=4 examined=382 live=0 pruned=49 new_minimal=12 cumulative_minimal=27 elapsed_s=0.000
+#   step=6 var=X_6 pattern 1/27 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 2/27 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 3/27 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 4/27 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 5/27 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 6/27 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 7/27 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 8/27 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 9/27 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 10/27 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 11/27 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 12/27 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 13/27 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 14/27 size=3 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 15/27 size=3 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 16/27 size=4 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 17/27 size=4 expansion=1 cumulative_kept=1
+#   step=6 var=X_6 pattern 18/27 size=4 expansion=1 cumulative_kept=1
+#   step=6 var=X_6 pattern 19/27 size=4 expansion=1 cumulative_kept=1
+#   step=6 var=X_6 pattern 20/27 size=4 expansion=1 cumulative_kept=1
+#   step=6 var=X_6 pattern 21/27 size=4 expansion=1 cumulative_kept=1
+#   step=6 var=X_6 pattern 22/27 size=4 expansion=1 cumulative_kept=1
+#   step=6 var=X_6 pattern 23/27 size=4 expansion=1 cumulative_kept=1
+#   step=6 var=X_6 pattern 24/27 size=4 expansion=1 cumulative_kept=1
+#   step=6 var=X_6 pattern 25/27 size=4 expansion=1 cumulative_kept=1
+#   step=6 var=X_6 pattern 26/27 size=4 expansion=1 cumulative_kept=1
+#   step=6 var=X_6 pattern 27/27 size=4 expansion=1 cumulative_kept=1
+step=6 var=X_6 pi_in=12 n_minimal_J=27 n_resolvents_raw=1 n_resolvents_kept=1 max_J_size=4 pi_out_before_sub=32 pi_out_after_sub=32 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=12 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=26 prefix_sub=0 pruned_leaves=26 dup=0 expand_elapsed_s=0.000 elapsed_s=0.001
+# starting step=5 var=X_5 pi_in=10 pi_current=32 cap=9
+#   step=5 var=X_5 grouped pi_bar=10 distinct_value_sets=10 avg_group_size=1.0
+#   step=5 var=X_5 orbit-enum size=1 live=10 new_minimal=0
+#   step=5 var=X_5 orbit-enum size=2 examined=55 live=24 pruned=8 new_minimal=13 cumulative_minimal=13 elapsed_s=0.000
+#   step=5 var=X_5 orbit-enum size=3 examined=143 live=16 pruned=22 new_minimal=0 cumulative_minimal=13 elapsed_s=0.000
+#   step=5 var=X_5 orbit-enum size=4 examined=196 live=0 pruned=11 new_minimal=4 cumulative_minimal=17 elapsed_s=0.000
+#   step=5 var=X_5 pattern 1/17 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 2/17 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 3/17 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 4/17 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 5/17 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 6/17 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 7/17 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 8/17 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 9/17 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 10/17 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 11/17 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 12/17 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 13/17 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 14/17 size=4 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 15/17 size=4 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 16/17 size=4 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 17/17 size=4 expansion=1 cumulative_kept=0
+step=5 var=X_5 pi_in=10 n_minimal_J=17 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=4 pi_out_before_sub=22 pi_out_after_sub=22 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=10 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=17 prefix_sub=0 pruned_leaves=17 dup=0 expand_elapsed_s=0.000 elapsed_s=0.000
+# starting step=4 var=X_4 pi_in=9 pi_current=22 cap=9
+#   step=4 var=X_4 grouped pi_bar=9 distinct_value_sets=9 avg_group_size=1.0
+#   step=4 var=X_4 orbit-enum size=1 live=9 new_minimal=0
+#   step=4 var=X_4 orbit-enum size=2 examined=45 live=21 pruned=2 new_minimal=13 cumulative_minimal=13 elapsed_s=0.000
+#   step=4 var=X_4 orbit-enum size=3 examined=113 live=13 pruned=11 new_minimal=0 cumulative_minimal=13 elapsed_s=0.000
+#   step=4 var=X_4 orbit-enum size=4 examined=149 live=0 pruned=4 new_minimal=3 cumulative_minimal=16 elapsed_s=0.000
+#   step=4 var=X_4 pattern 1/16 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 2/16 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 3/16 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 4/16 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 5/16 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 6/16 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 7/16 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 8/16 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 9/16 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 10/16 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 11/16 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 12/16 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 13/16 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 14/16 size=4 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 15/16 size=4 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 16/16 size=4 expansion=1 cumulative_kept=0
+step=4 var=X_4 pi_in=9 n_minimal_J=16 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=4 pi_out_before_sub=13 pi_out_after_sub=13 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=9 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=16 prefix_sub=0 pruned_leaves=16 dup=0 expand_elapsed_s=0.000 elapsed_s=0.000
+# starting step=3 var=X_3 pi_in=9 pi_current=13 cap=9
+#   step=3 var=X_3 grouped pi_bar=9 distinct_value_sets=9 avg_group_size=1.0
+#   step=3 var=X_3 orbit-enum size=1 live=9 new_minimal=0
+#   step=3 var=X_3 orbit-enum size=2 examined=45 live=21 pruned=2 new_minimal=13 cumulative_minimal=13 elapsed_s=0.000
+#   step=3 var=X_3 orbit-enum size=3 examined=113 live=13 pruned=11 new_minimal=0 cumulative_minimal=13 elapsed_s=0.000
+#   step=3 var=X_3 orbit-enum size=4 examined=149 live=0 pruned=4 new_minimal=3 cumulative_minimal=16 elapsed_s=0.000
+#   step=3 var=X_3 pattern 1/16 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 2/16 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 3/16 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 4/16 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 5/16 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 6/16 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 7/16 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 8/16 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 9/16 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 10/16 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 11/16 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 12/16 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 13/16 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 14/16 size=4 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 15/16 size=4 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 16/16 size=4 expansion=1 cumulative_kept=0
+step=3 var=X_3 pi_in=9 n_minimal_J=16 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=4 pi_out_before_sub=4 pi_out_after_sub=4 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=9 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=16 prefix_sub=0 pruned_leaves=16 dup=0 expand_elapsed_s=0.000 elapsed_s=0.000
+# starting step=2 var=X_2 pi_in=3 pi_current=4 cap=9
+#   step=2 var=X_2 grouped pi_bar=3 distinct_value_sets=3 avg_group_size=1.0
+#   step=2 var=X_2 orbit-enum size=1 live=3 new_minimal=0
+#   step=2 var=X_2 orbit-enum size=2 examined=6 live=3 pruned=0 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=2 var=X_2 orbit-enum size=3 examined=7 live=1 pruned=0 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+step=2 var=X_2 pi_in=3 n_minimal_J=0 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=0 pi_out_before_sub=1 pi_out_after_sub=1 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=3 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=0.000 elapsed_s=0.000
+# starting step=1 var=X_1 pi_in=1 pi_current=1 cap=9
+#   step=1 var=X_1 grouped pi_bar=1 distinct_value_sets=1 avg_group_size=1.0
+#   step=1 var=X_1 orbit-enum size=1 live=1 new_minimal=0
+step=1 var=X_1 pi_in=1 n_minimal_J=0 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=0 pi_out_before_sub=0 pi_out_after_sub=0 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=1 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=0.000 elapsed_s=0.000
+# starting step=0 var=X_0 pi_in=0 pi_current=0 cap=1
+step=0 var=X_0 pi_in=0 n_minimal_J=0 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=0 pi_out_before_sub=0 pi_out_after_sub=0 sub_elim=0 sub_elapsed_s=0.000 elapsed_s=0.000

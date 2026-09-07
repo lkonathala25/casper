@@ -1,0 +1,27 @@
+{
+  "grid": 30,
+  "edges": 1740,
+  "artifact": "/home/lk1325/mnist_neurips/examples/warcraft_artifacts/wc_deg_30_geometric.txt",
+  "variables": 1740,
+  "clauses": 6728,
+  "load_s": 0.16890724934637547,
+  "total_dim": 5944,
+  "bridge_roundtrip": {
+    "n": 100,
+    "edge_cat_edge_ok": 100,
+    "cat_edge_cat_ok": true
+  },
+  "non_monotone_unedited": true,
+  "gt_passthrough": {
+    "n": 1000,
+    "exact": 100.0,
+    "hamming": 100.0
+  },
+  "dead_end_lifetime": {
+    "empty_feasible": 0,
+    "boards": 1001,
+    "capped": 0,
+    "rings_forbidden": 0
+  },
+  "gates_pass": true
+}

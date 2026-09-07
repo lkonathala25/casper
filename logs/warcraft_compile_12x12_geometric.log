@@ -1,0 +1,122 @@
+# compile: n_vars=264 input_clauses=968 post_taut=968 post_subsumption=968 preproc_sub_elim=0 preproc_sub_elapsed_s=0.005 domains=[2] cap=per_var_domain algo=grouped+fwdsub
+# ordering: y_0 y_1 y_2 y_3 y_4 y_5 y_6 y_7 y_8 y_9 y_10 y_132 y_133 y_134 y_135 y_136 y_137 y_138 y_139 y_140 y_141 y_142 y_143 y_11 y_12 y_13 y_14 y_15 y_16 y_17 y_18 y_19 y_20 y_21 y_144 y_145 y_146 y_147 y_148 y_149 y_150 y_151 y_152 y_153 y_154 y_155 y_22 y_23 y_24 y_25 y_26 y_27 y_28 y_29 y_30 y_31 y_32 y_156 y_157 y_158 y_159 y_160 y_161 y_162 y_163 y_164 y_165 y_166 y_167 y_33 y_34 y_35 y_36 y_37 y_38 y_39 y_40 y_41 y_42 y_43 y_168 y_169 y_170 y_171 y_172 y_173 y_174 y_175 y_176 y_177 y_178 y_179 y_44 y_45 y_46 y_47 y_48 y_49 y_50 y_51 y_52 y_53 y_54 y_180 y_181 y_182 y_183 y_184 y_185 y_186 y_187 y_188 y_189 y_190 y_191 y_55 y_56 y_57 y_58 y_59 y_60 y_61 y_62 y_63 y_64 y_65 y_192 y_193 y_194 y_195 y_196 y_197 y_198 y_199 y_200 y_201 y_202 y_203 y_66 y_67 y_68 y_69 y_70 y_71 y_72 y_73 y_74 y_75 y_76 y_204 y_205 y_206 y_207 y_208 y_209 y_210 y_211 y_212 y_213 y_214 y_215 y_77 y_78 y_79 y_80 y_81 y_82 y_83 y_84 y_85 y_86 y_87 y_216 y_217 y_218 y_219 y_220 y_221 y_222 y_223 y_224 y_225 y_226 y_227 y_88 y_89 y_90 y_91 y_92 y_93 y_94 y_95 y_96 y_97 y_98 y_228 y_229 y_230 y_231 y_232 y_233 y_234 y_235 y_236 y_237 y_238 y_239 y_99 y_100 y_101 y_102 y_103 y_104 y_105 y_106 y_107 y_108 y_109 y_240 y_241 y_242 y_243 y_244 y_245 y_246 y_247 y_248 y_249 y_250 y_251 y_110 y_111 y_112 y_113 y_114 y_115 y_116 y_117 y_118 y_119 y_120 y_252 y_253 y_254 y_255 y_256 y_257 y_258 y_259 y_260 y_261 y_262 y_263 y_121 y_122 y_123 y_124 y_125 y_126 y_127 y_128 y_129 y_130 y_131
+# starting step=263 var=y_131 pi_in=6 pi_current=968 cap=2
+#   step=263 var=y_131 grouped pi_bar=6 distinct_value_sets=2 avg_group_size=3.0
+#   step=263 var=y_131 orbit-enum size=1 live=2 new_minimal=0
+#   step=263 var=y_131 orbit-enum size=2 examined=3 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=263 var=y_131 parallel workers=16 tasks=9
+#   step=263 var=y_131 parallel done kept=4 raw=4 taut=0 elapsed_s=0.024
+step=263 var=y_131 pi_in=6 n_minimal_J=1 n_resolvents_raw=4 n_resolvents_kept=4 max_J_size=2 pi_out_before_sub=966 pi_out_after_sub=966 sub_elim=0 sub_elapsed_s=0.004 n_distinct_sets=2 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=5 prefix_sub=0 pruned_leaves=5 dup=0 expand_elapsed_s=0.024 elapsed_s=0.037
+# starting step=262 var=y_130 pi_in=8 pi_current=966 cap=2
+#   step=262 var=y_130 grouped pi_bar=8 distinct_value_sets=2 avg_group_size=4.0
+#   step=262 var=y_130 orbit-enum size=1 live=2 new_minimal=0
+#   step=262 var=y_130 orbit-enum size=2 examined=3 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=262 var=y_130 parallel workers=16 tasks=16
+#   step=262 var=y_130 parallel done kept=8 raw=8 taut=0 elapsed_s=0.022
+step=262 var=y_130 pi_in=8 n_minimal_J=1 n_resolvents_raw=8 n_resolvents_kept=8 max_J_size=2 pi_out_before_sub=966 pi_out_after_sub=966 sub_elim=0 sub_elapsed_s=0.004 n_distinct_sets=2 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=8 prefix_sub=0 pruned_leaves=8 dup=0 expand_elapsed_s=0.022 elapsed_s=0.029
+# starting step=261 var=y_129 pi_in=12 pi_current=966 cap=2
+#   step=261 var=y_129 grouped pi_bar=12 distinct_value_sets=2 avg_group_size=6.0
+#   step=261 var=y_129 orbit-enum size=1 live=2 new_minimal=0
+#   step=261 var=y_129 orbit-enum size=2 examined=3 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=261 var=y_129 parallel workers=16 tasks=36
+#   step=261 var=y_129 parallel done kept=16 raw=16 taut=0 elapsed_s=0.025
+step=261 var=y_129 pi_in=12 n_minimal_J=1 n_resolvents_raw=16 n_resolvents_kept=16 max_J_size=2 pi_out_before_sub=970 pi_out_after_sub=970 sub_elim=0 sub_elapsed_s=0.005 n_distinct_sets=2 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=20 prefix_sub=0 pruned_leaves=20 dup=0 expand_elapsed_s=0.025 elapsed_s=0.033
+# starting step=260 var=y_128 pi_in=20 pi_current=970 cap=2
+#   step=260 var=y_128 grouped pi_bar=20 distinct_value_sets=2 avg_group_size=10.0
+#   step=260 var=y_128 orbit-enum size=1 live=2 new_minimal=0
+#   step=260 var=y_128 orbit-enum size=2 examined=3 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=260 var=y_128 parallel workers=16 tasks=50
+#   step=260 var=y_128 parallel done kept=32 raw=64 taut=32 elapsed_s=0.026
+step=260 var=y_128 pi_in=20 n_minimal_J=1 n_resolvents_raw=64 n_resolvents_kept=32 max_J_size=2 pi_out_before_sub=982 pi_out_after_sub=982 sub_elim=0 sub_elapsed_s=0.005 n_distinct_sets=2 n_taut=32 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=18 prefix_sub=0 pruned_leaves=36 dup=0 expand_elapsed_s=0.026 elapsed_s=0.034
+# starting step=259 var=y_127 pi_in=36 pi_current=982 cap=2
+#   step=259 var=y_127 grouped pi_bar=36 distinct_value_sets=2 avg_group_size=18.0
+#   step=259 var=y_127 orbit-enum size=1 live=2 new_minimal=0
+#   step=259 var=y_127 orbit-enum size=2 examined=3 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=259 var=y_127 parallel workers=16 tasks=72
+#   step=259 var=y_127 parallel done kept=64 raw=208 taut=144 elapsed_s=0.031
+step=259 var=y_127 pi_in=36 n_minimal_J=1 n_resolvents_raw=208 n_resolvents_kept=64 max_J_size=2 pi_out_before_sub=1010 pi_out_after_sub=1010 sub_elim=0 sub_elapsed_s=0.006 n_distinct_sets=2 n_taut=144 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=28 prefix_sub=0 pruned_leaves=116 dup=0 expand_elapsed_s=0.031 elapsed_s=0.041
+# starting step=258 var=y_126 pi_in=68 pi_current=1010 cap=2
+#   step=258 var=y_126 grouped pi_bar=68 distinct_value_sets=2 avg_group_size=34.0
+#   step=258 var=y_126 orbit-enum size=1 live=2 new_minimal=0
+#   step=258 var=y_126 orbit-enum size=2 examined=3 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=258 var=y_126 parallel workers=16 tasks=68
+#   step=258 var=y_126 parallel done kept=128 raw=1156 taut=1028 elapsed_s=0.029
+step=258 var=y_126 pi_in=68 n_minimal_J=1 n_resolvents_raw=1156 n_resolvents_kept=128 max_J_size=2 pi_out_before_sub=1070 pi_out_after_sub=1070 sub_elim=0 sub_elapsed_s=0.010 n_distinct_sets=2 n_taut=1028 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=0.029 elapsed_s=0.043
+# starting step=257 var=y_125 pi_in=132 pi_current=1070 cap=2
+#   step=257 var=y_125 grouped pi_bar=132 distinct_value_sets=2 avg_group_size=66.0
+#   step=257 var=y_125 orbit-enum size=1 live=2 new_minimal=0
+#   step=257 var=y_125 orbit-enum size=2 examined=3 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=257 var=y_125 parallel workers=16 tasks=33
+#   step=257 var=y_125 parallel done kept=256 raw=4356 taut=4100 elapsed_s=0.028
+step=257 var=y_125 pi_in=132 n_minimal_J=1 n_resolvents_raw=4356 n_resolvents_kept=256 max_J_size=2 pi_out_before_sub=1194 pi_out_after_sub=1194 sub_elim=0 sub_elapsed_s=0.023 n_distinct_sets=2 n_taut=4100 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=0.028 elapsed_s=0.056
+# starting step=256 var=y_124 pi_in=260 pi_current=1194 cap=2
+#   step=256 var=y_124 grouped pi_bar=260 distinct_value_sets=2 avg_group_size=130.0
+#   step=256 var=y_124 orbit-enum size=1 live=2 new_minimal=0
+#   step=256 var=y_124 orbit-enum size=2 examined=3 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=256 var=y_124 parallel workers=16 tasks=44
+#   step=256 var=y_124 parallel done kept=512 raw=16900 taut=16388 elapsed_s=0.042
+step=256 var=y_124 pi_in=260 n_minimal_J=1 n_resolvents_raw=16900 n_resolvents_kept=512 max_J_size=2 pi_out_before_sub=1446 pi_out_after_sub=1446 sub_elim=0 sub_elapsed_s=0.074 n_distinct_sets=2 n_taut=16388 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=0.042 elapsed_s=0.122
+# starting step=255 var=y_123 pi_in=516 pi_current=1446 cap=2
+#   step=255 var=y_123 grouped pi_bar=516 distinct_value_sets=2 avg_group_size=258.0
+#   step=255 var=y_123 orbit-enum size=1 live=2 new_minimal=0
+#   step=255 var=y_123 orbit-enum size=2 examined=3 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=255 var=y_123 parallel workers=16 tasks=52
+#   step=255 var=y_123 parallel done kept=1024 raw=66564 taut=65540 elapsed_s=0.110
+step=255 var=y_123 pi_in=516 n_minimal_J=1 n_resolvents_raw=66564 n_resolvents_kept=1024 max_J_size=2 pi_out_before_sub=1954 pi_out_after_sub=1954 sub_elim=0 sub_elapsed_s=0.278 n_distinct_sets=2 n_taut=65540 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=0.110 elapsed_s=0.400
+# starting step=254 var=y_122 pi_in=1028 pi_current=1954 cap=2
+#   step=254 var=y_122 grouped pi_bar=1028 distinct_value_sets=2 avg_group_size=514.0
+#   step=254 var=y_122 orbit-enum size=1 live=2 new_minimal=0
+#   step=254 var=y_122 orbit-enum size=2 examined=3 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=254 var=y_122 parallel workers=16 tasks=58
+#   step=254 var=y_122 parallel done kept=2048 raw=264196 taut=262148 elapsed_s=0.269
+step=254 var=y_122 pi_in=1028 n_minimal_J=1 n_resolvents_raw=264196 n_resolvents_kept=2048 max_J_size=2 pi_out_before_sub=2974 pi_out_after_sub=2974 sub_elim=0 sub_elapsed_s=1.095 n_distinct_sets=2 n_taut=262148 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=0.269 elapsed_s=1.383
+# starting step=253 var=y_121 pi_in=2050 pi_current=2974 cap=2
+#   step=253 var=y_121 grouped pi_bar=2050 distinct_value_sets=2 avg_group_size=1025.0
+#   step=253 var=y_121 orbit-enum size=1 live=2 new_minimal=0
+#   step=253 var=y_121 orbit-enum size=2 examined=3 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=253 var=y_121 parallel workers=16 tasks=61
+#   step=253 var=y_121 parallel done kept=2048 raw=1050625 taut=1048577 elapsed_s=0.327
+step=253 var=y_121 pi_in=2050 n_minimal_J=1 n_resolvents_raw=1050625 n_resolvents_kept=2048 max_J_size=2 pi_out_before_sub=2972 pi_out_after_sub=2972 sub_elim=0 sub_elapsed_s=1.104 n_distinct_sets=2 n_taut=1048577 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=0.327 elapsed_s=1.460
+# starting step=252 var=y_263 pi_in=2052 pi_current=2972 cap=2
+#   step=252 var=y_263 grouped pi_bar=2052 distinct_value_sets=2 avg_group_size=1026.0
+#   step=252 var=y_263 orbit-enum size=1 live=2 new_minimal=0
+#   step=252 var=y_263 orbit-enum size=2 examined=3 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=252 var=y_263 parallel workers=16 tasks=61
+#   step=252 var=y_263 parallel done kept=4096 raw=1052676 taut=1048580 elapsed_s=0.900
+step=252 var=y_263 pi_in=2052 n_minimal_J=1 n_resolvents_raw=1052676 n_resolvents_kept=4096 max_J_size=2 pi_out_before_sub=5016 pi_out_after_sub=5016 sub_elim=0 sub_elapsed_s=0.508 n_distinct_sets=2 n_taut=1048580 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=0.900 elapsed_s=1.444
+# starting step=251 var=y_262 pi_in=4103 pi_current=5016 cap=2
+#   step=251 var=y_262 grouped pi_bar=4103 distinct_value_sets=2 avg_group_size=2051.5
+#   step=251 var=y_262 orbit-enum size=1 live=2 new_minimal=0
+#   step=251 var=y_262 orbit-enum size=2 examined=3 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=251 var=y_262 parallel workers=16 tasks=63
+#   step=251 var=y_262 parallel done kept=7168 raw=4208652 taut=4200460 elapsed_s=3.103
+step=251 var=y_262 pi_in=4103 n_minimal_J=1 n_resolvents_raw=4208652 n_resolvents_kept=7168 max_J_size=2 pi_out_before_sub=8081 pi_out_after_sub=8081 sub_elim=0 sub_elapsed_s=1.172 n_distinct_sets=2 n_taut=4200460 fwd_sub_amb=946 fwd_sub_intra=78 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=3.103 elapsed_s=4.344
+# starting step=250 var=y_261 pi_in=7175 pi_current=8081 cap=2
+#   step=250 var=y_261 grouped pi_bar=7175 distinct_value_sets=2 avg_group_size=3587.5
+#   step=250 var=y_261 orbit-enum size=1 live=2 new_minimal=0
+#   step=250 var=y_261 orbit-enum size=2 examined=3 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=250 var=y_261 parallel workers=16 tasks=63
+#   step=250 var=y_261 parallel done kept=12800 raw=12870156 taut=12854284 elapsed_s=8.322
+step=250 var=y_261 pi_in=7175 n_minimal_J=1 n_resolvents_raw=12870156 n_resolvents_kept=12800 max_J_size=2 pi_out_before_sub=13706 pi_out_after_sub=13706 sub_elim=0 sub_elapsed_s=3.227 n_distinct_sets=2 n_taut=12854284 fwd_sub_amb=2806 fwd_sub_intra=266 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=8.322 elapsed_s=11.686
+# starting step=249 var=y_260 pi_in=12807 pi_current=13706 cap=2
+#   step=249 var=y_260 grouped pi_bar=12807 distinct_value_sets=2 avg_group_size=6403.5
+#   step=249 var=y_260 orbit-enum size=1 live=2 new_minimal=0
+#   step=249 var=y_260 orbit-enum size=2 examined=3 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=249 var=y_260 parallel workers=16 tasks=64
+#   step=249 var=y_260 parallel done kept=22784 raw=41004812 taut=40976908 elapsed_s=24.652
+step=249 var=y_260 pi_in=12807 n_minimal_J=1 n_resolvents_raw=41004812 n_resolvents_kept=22784 max_J_size=2 pi_out_before_sub=23683 pi_out_after_sub=23683 sub_elim=0 sub_elapsed_s=9.988 n_distinct_sets=2 n_taut=40976908 fwd_sub_amb=4712 fwd_sub_intra=408 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=24.652 elapsed_s=34.931
+# starting step=248 var=y_259 pi_in=22791 pi_current=23683 cap=2
+#   step=248 var=y_259 grouped pi_bar=22791 distinct_value_sets=2 avg_group_size=11395.5
+#   step=248 var=y_259 orbit-enum size=1 live=2 new_minimal=0
+#   step=248 var=y_259 orbit-enum size=2 examined=3 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=248 var=y_259 parallel workers=16 tasks=64
+#   step=248 var=y_259 parallel progress tasks=63/64 (98%) kept=17570 raw=127817715 rate=3035589/s elapsed_s=42
+#   step=248 var=y_259 parallel progress tasks=63/64 (98%) kept=17570 raw=127817715 rate=1772620/s elapsed_s=72
+#   step=248 var=y_259 parallel done kept=40576 raw=129857420 taut=129807628 elapsed_s=75.016
+step=248 var=y_259 pi_in=22791 n_minimal_J=1 n_resolvents_raw=129857420 n_resolvents_kept=40576 max_J_size=2 pi_out_before_sub=41468 pi_out_after_sub=41468 sub_elim=0 sub_elapsed_s=38.504 n_distinct_sets=2 n_taut=129807628 fwd_sub_amb=8533 fwd_sub_intra=683 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=75.016 elapsed_s=114.075
+# starting step=247 var=y_258 pi_in=40583 pi_current=41468 cap=2
+#   step=247 var=y_258 grouped pi_bar=40583 distinct_value_sets=2 avg_group_size=20291.5
+#   step=247 var=y_258 orbit-enum size=1 live=2 new_minimal=0
+#   step=247 var=y_258 orbit-enum size=2 examined=3 live=0 pruned=0 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=247 var=y_258 parallel workers=16 tasks=64
+#   step=247 var=y_258 parallel progress tasks=36/64 (56%) kept=17753 raw=232291368 rate=7692746/s elapsed_s=30

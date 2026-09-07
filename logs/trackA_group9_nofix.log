@@ -1,0 +1,248 @@
+group size=9 vars=9 clauses=333 cap=None
+# compile: n_vars=9 input_clauses=333 post_taut=333 post_subsumption=333 preproc_sub_elim=0 preproc_sub_elapsed_s=0.005 domains=[9] cap=per_var_domain algo=grouped+fwdsub
+# ordering: y_1 y_2 y_3 y_4 y_5 y_6 y_7 y_8 y_9
+# starting step=8 var=y_9 pi_in=81 pi_current=333 cap=9
+#   step=8 var=y_9 grouped pi_bar=81 distinct_value_sets=18 avg_group_size=4.5
+#   step=8 var=y_9 orbit-enum size=1 live=18 new_minimal=0
+#   step=8 var=y_9 orbit-enum size=2 examined=171 live=36 pruned=72 new_minimal=45 cumulative_minimal=45 elapsed_s=0.000
+#   step=8 var=y_9 orbit-enum size=3 examined=579 live=84 pruned=252 new_minimal=0 cumulative_minimal=45 elapsed_s=0.000
+#   step=8 var=y_9 orbit-enum size=4 examined=1461 live=126 pruned=504 new_minimal=0 cumulative_minimal=45 elapsed_s=0.001
+#   step=8 var=y_9 orbit-enum size=5 examined=2721 live=126 pruned=630 new_minimal=0 cumulative_minimal=45 elapsed_s=0.003
+#   step=8 var=y_9 orbit-enum size=6 examined=3939 live=84 pruned=504 new_minimal=0 cumulative_minimal=45 elapsed_s=0.001
+#   step=8 var=y_9 orbit-enum size=7 examined=4731 live=36 pruned=252 new_minimal=0 cumulative_minimal=45 elapsed_s=0.000
+#   step=8 var=y_9 orbit-enum size=8 examined=5064 live=9 pruned=72 new_minimal=0 cumulative_minimal=45 elapsed_s=0.000
+#   step=8 var=y_9 orbit-enum size=9 examined=5146 live=0 pruned=9 new_minimal=1 cumulative_minimal=46 elapsed_s=0.000
+#   step=8 var=y_9 parallel workers=112 tasks=364
+#   step=8 var=y_9 parallel done kept=36 raw=322596 taut=322560 elapsed_s=0.245
+step=8 var=y_9 pi_in=81 n_minimal_J=46 n_resolvents_raw=322596 n_resolvents_kept=36 max_J_size=9 pi_out_before_sub=288 pi_out_after_sub=288 sub_elim=0 sub_elapsed_s=0.007 n_distinct_sets=18 n_taut=322560 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=444640 lookahead_taut=104 prefix_sub=0 pruned_leaves=133895240 dup=0 expand_elapsed_s=0.245 elapsed_s=0.265
+# starting step=7 var=y_8 pi_in=99 pi_current=288 cap=9
+#   step=7 var=y_8 grouped pi_bar=99 distinct_value_sets=45 avg_group_size=2.2
+#   step=7 var=y_8 orbit-enum size=1 live=45 new_minimal=0
+#   step=7 var=y_8 orbit-enum size=2 examined=1035 live=360 pruned=252 new_minimal=378 cumulative_minimal=378 elapsed_s=0.001
+#   step=7 var=y_8 orbit-enum size=3 examined=6862 live=84 pruned=2016 new_minimal=372 cumulative_minimal=750 elapsed_s=0.004
+#   step=7 var=y_8 orbit-enum size=4 examined=10012 live=126 pruned=2772 new_minimal=0 cumulative_minimal=750 elapsed_s=0.003
+#   step=7 var=y_8 orbit-enum size=5 examined=14674 live=126 pruned=3780 new_minimal=0 cumulative_minimal=750 elapsed_s=0.004
+#   step=7 var=y_8 orbit-enum size=6 examined=19294 live=84 pruned=3276 new_minimal=0 cumulative_minimal=750 elapsed_s=0.004
+#   step=7 var=y_8 orbit-enum size=7 examined=22354 live=36 pruned=1764 new_minimal=0 cumulative_minimal=750 elapsed_s=0.003
+#   step=7 var=y_8 orbit-enum size=8 examined=23659 live=9 pruned=540 new_minimal=0 cumulative_minimal=750 elapsed_s=0.001
+#   step=7 var=y_8 orbit-enum size=9 examined=23984 live=0 pruned=72 new_minimal=1 cumulative_minimal=751 elapsed_s=0.000
+#   step=7 var=y_8 parallel workers=112 tasks=4676
+#   step=7 var=y_8 parallel done kept=210 raw=462 taut=0 elapsed_s=0.313
+step=7 var=y_8 pi_in=99 n_minimal_J=751 n_resolvents_raw=462 n_resolvents_kept=210 max_J_size=9 pi_out_before_sub=399 pi_out_after_sub=273 sub_elim=126 sub_elapsed_s=0.016 n_distinct_sets=45 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=82110 lookahead_taut=3794 prefix_sub=0 pruned_leaves=40357135 dup=0 expand_elapsed_s=0.313 elapsed_s=0.358
+# starting step=6 var=y_7 pi_in=138 pi_current=273 cap=9
+#   step=6 var=y_7 grouped pi_bar=138 distinct_value_sets=93 avg_group_size=1.5
+#   step=6 var=y_7 orbit-enum size=1 live=93 new_minimal=0
+#   step=6 var=y_7 orbit-enum size=2 examined=4371 live=2934 pruned=504 new_minimal=840 cumulative_minimal=840 elapsed_s=0.004
+#   step=6 var=y_7 orbit-enum size=3 examined=90473 live=2352 pruned=35028 new_minimal=15750 cumulative_minimal=16590 elapsed_s=0.046
+#   step=6 var=y_7 orbit-enum size=4 examined=160969 live=126 pruned=26989 new_minimal=1470 cumulative_minimal=18060 elapsed_s=0.033
+#   step=6 var=y_7 orbit-enum size=5 examined=171679 live=126 pruned=10080 new_minimal=0 cumulative_minimal=18060 elapsed_s=0.006
+#   step=6 var=y_7 orbit-enum size=6 examined=182347 live=84 pruned=9324 new_minimal=0 cumulative_minimal=18060 elapsed_s=0.006
+#   step=6 var=y_7 orbit-enum size=7 examined=189439 live=36 pruned=5376 new_minimal=0 cumulative_minimal=18060 elapsed_s=0.004
+#   step=6 var=y_7 orbit-enum size=8 examined=192472 live=9 pruned=1764 new_minimal=0 cumulative_minimal=18060 elapsed_s=0.002
+#   step=6 var=y_7 orbit-enum size=9 examined=193229 live=0 pruned=252 new_minimal=1 cumulative_minimal=18061 elapsed_s=0.000
+#   step=6 var=y_7 parallel workers=112 tasks=75198
+#   step=6 var=y_7 parallel done kept=336 raw=14826 taut=0 elapsed_s=3.923
+step=6 var=y_7 pi_in=138 n_minimal_J=18061 n_resolvents_raw=14826 n_resolvents_kept=336 max_J_size=9 pi_out_before_sub=471 pi_out_after_sub=261 sub_elim=210 sub_elapsed_s=0.031 n_distinct_sets=93 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=9720 lookahead_taut=60012 prefix_sub=0 pruned_leaves=10137420 dup=0 expand_elapsed_s=3.923 elapsed_s=4.140
+# starting step=5 var=y_6 pi_in=171 pi_current=261 cap=9
+#   step=5 var=y_6 grouped pi_bar=171 distinct_value_sets=135 avg_group_size=1.3
+#   step=5 var=y_6 orbit-enum size=1 live=135 new_minimal=0
+#   step=5 var=y_6 orbit-enum size=2 examined=9180 live=8100 pruned=630 new_minimal=315 cumulative_minimal=315 elapsed_s=0.013
+#   step=5 var=y_6 orbit-enum size=3 examined=357663 live=58800 pruned=176820 new_minimal=86940 cumulative_minimal=87255 elapsed_s=0.223
+#   step=5 var=y_6 orbit-enum size=4 examined=2304173 live=7560 pruned=908293 new_minimal=122220 cumulative_minimal=209475 elapsed_s=0.939
+#   step=5 var=y_6 orbit-enum size=5 examined=2608799 live=126 pruned=140749 new_minimal=3402 cumulative_minimal=212877 elapsed_s=0.154
+#   step=5 var=y_6 orbit-enum size=6 examined=2624759 live=84 pruned=15246 new_minimal=0 cumulative_minimal=212877 elapsed_s=0.010
+#   step=5 var=y_6 orbit-enum size=7 examined=2635379 live=36 pruned=9324 new_minimal=0 cumulative_minimal=212877 elapsed_s=0.006
+#   step=5 var=y_6 orbit-enum size=8 examined=2639924 live=9 pruned=3276 new_minimal=0 cumulative_minimal=212877 elapsed_s=0.003
+#   step=5 var=y_6 orbit-enum size=9 examined=2641059 live=0 pruned=504 new_minimal=1 cumulative_minimal=212878 elapsed_s=0.001
+#   step=5 var=y_6 parallel workers=112 tasks=731616
+#   step=5 var=y_6 parallel progress tasks=69336/731616 (9%) kept=119 raw=51675 rate=1722/s elapsed_s=30
+#   step=5 var=y_6 parallel progress tasks=140171/731616 (19%) kept=120 raw=77175 rate=1286/s elapsed_s=60
+#   step=5 var=y_6 parallel progress tasks=210440/731616 (29%) kept=120 raw=77175 rate=857/s elapsed_s=90
+#   step=5 var=y_6 parallel progress tasks=280466/731616 (38%) kept=120 raw=77175 rate=643/s elapsed_s=120
+#   step=5 var=y_6 parallel progress tasks=371437/731616 (51%) kept=120 raw=77175 rate=514/s elapsed_s=150
+#   step=5 var=y_6 parallel progress tasks=464988/731616 (64%) kept=120 raw=123528 rate=686/s elapsed_s=180
+#   step=5 var=y_6 parallel progress tasks=561812/731616 (77%) kept=120 raw=150255 rate=715/s elapsed_s=210
+#   step=5 var=y_6 parallel progress tasks=661232/731616 (90%) kept=120 raw=150255 rate=626/s elapsed_s=240
+#   step=5 var=y_6 parallel done kept=246 raw=150381 taut=0 elapsed_s=263.231
+step=5 var=y_6 pi_in=171 n_minimal_J=212878 n_resolvents_raw=150381 n_resolvents_kept=246 max_J_size=9 pi_out_before_sub=336 pi_out_after_sub=216 sub_elim=120 sub_elapsed_s=0.010 n_distinct_sets=135 n_taut=0 fwd_sub_amb=60795 fwd_sub_intra=0 prefix_taut=1224 lookahead_taut=581091 prefix_sub=0 pruned_leaves=2565485 dup=0 expand_elapsed_s=263.231 elapsed_s=265.653
+# starting step=4 var=y_5 pi_in=162 pi_current=216 cap=9
+#   step=4 var=y_5 grouped pi_bar=162 distinct_value_sets=135 avg_group_size=1.2
+#   step=4 var=y_5 orbit-enum size=1 live=135 new_minimal=0
+#   step=4 var=y_5 orbit-enum size=2 examined=9180 live=8541 pruned=504 new_minimal=0 cumulative_minimal=0 elapsed_s=0.007
+#   step=4 var=y_5 orbit-enum size=3 examined=378675 live=186984 pruned=150696 new_minimal=31815 cumulative_minimal=31815 elapsed_s=0.283
+#   step=4 var=y_5 orbit-enum size=4 examined=6378630 live=276066 pruned=3700796 new_minimal=782460 cumulative_minimal=814275 elapsed_s=3.350
+#   step=4 var=y_5 orbit-enum size=5 examined=14449024 live=13860 pruned=4472425 new_minimal=325080 cumulative_minimal=1139355 elapsed_s=4.237
+#   step=4 var=y_5 orbit-enum size=6 examined=14985378 live=84 pruned=297103 new_minimal=4914 cumulative_minimal=1144269 elapsed_s=0.294
+#   step=4 var=y_5 orbit-enum size=7 examined=14995998 live=36 pruned=10080 new_minimal=0 cumulative_minimal=1144269 elapsed_s=0.007
+#   step=4 var=y_5 orbit-enum size=8 examined=15000543 live=9 pruned=3780 new_minimal=0 cumulative_minimal=1144269 elapsed_s=0.003
+#   step=4 var=y_5 orbit-enum size=9 examined=15001678 live=0 pruned=630 new_minimal=1 cumulative_minimal=1144270 elapsed_s=0.001
+#   step=4 var=y_5 parallel workers=112 tasks=3487184
+#   step=4 var=y_5 parallel progress tasks=16652/3487184 (0%) kept=0 raw=1276 rate=43/s elapsed_s=30
+#   step=4 var=y_5 parallel progress tasks=34508/3487184 (1%) kept=0 raw=2621 rate=44/s elapsed_s=60
+#   step=4 var=y_5 parallel progress tasks=52494/3487184 (2%) kept=0 raw=2621 rate=29/s elapsed_s=90
+#   step=4 var=y_5 parallel progress tasks=70870/3487184 (2%) kept=0 raw=2621 rate=22/s elapsed_s=120
+#   step=4 var=y_5 parallel progress tasks=89392/3487184 (3%) kept=0 raw=2621 rate=17/s elapsed_s=150
+#   step=4 var=y_5 parallel progress tasks=107854/3487184 (3%) kept=0 raw=2621 rate=15/s elapsed_s=180
+#   step=4 var=y_5 parallel progress tasks=126457/3487184 (4%) kept=0 raw=2621 rate=12/s elapsed_s=210
+#   step=4 var=y_5 parallel progress tasks=144976/3487184 (4%) kept=0 raw=2621 rate=11/s elapsed_s=240
+#   step=4 var=y_5 parallel progress tasks=163494/3487184 (5%) kept=0 raw=2621 rate=10/s elapsed_s=270
+#   step=4 var=y_5 parallel progress tasks=182006/3487184 (5%) kept=0 raw=2621 rate=9/s elapsed_s=300
+#   step=4 var=y_5 parallel progress tasks=199834/3487184 (6%) kept=0 raw=2621 rate=8/s elapsed_s=330
+#   step=4 var=y_5 parallel progress tasks=217003/3487184 (6%) kept=0 raw=2621 rate=7/s elapsed_s=360
+#   step=4 var=y_5 parallel progress tasks=234250/3487184 (7%) kept=0 raw=2621 rate=7/s elapsed_s=390
+#   step=4 var=y_5 parallel progress tasks=251671/3487184 (7%) kept=0 raw=2621 rate=6/s elapsed_s=420
+#   step=4 var=y_5 parallel progress tasks=269054/3487184 (8%) kept=0 raw=2621 rate=6/s elapsed_s=450
+#   step=4 var=y_5 parallel progress tasks=286507/3487184 (8%) kept=0 raw=2621 rate=5/s elapsed_s=480
+#   step=4 var=y_5 parallel progress tasks=303839/3487184 (9%) kept=0 raw=2621 rate=5/s elapsed_s=510
+#   step=4 var=y_5 parallel progress tasks=321233/3487184 (9%) kept=0 raw=2621 rate=5/s elapsed_s=540
+#   step=4 var=y_5 parallel progress tasks=338618/3487184 (10%) kept=0 raw=2621 rate=5/s elapsed_s=570
+#   step=4 var=y_5 parallel progress tasks=356005/3487184 (10%) kept=0 raw=2621 rate=4/s elapsed_s=600
+#   step=4 var=y_5 parallel progress tasks=373715/3487184 (11%) kept=0 raw=2621 rate=4/s elapsed_s=630
+#   step=4 var=y_5 parallel progress tasks=391218/3487184 (11%) kept=0 raw=2621 rate=4/s elapsed_s=660
+#   step=4 var=y_5 parallel progress tasks=409273/3487184 (12%) kept=0 raw=2621 rate=4/s elapsed_s=690
+#   step=4 var=y_5 parallel progress tasks=427406/3487184 (12%) kept=0 raw=2621 rate=4/s elapsed_s=720
+#   step=4 var=y_5 parallel progress tasks=445286/3487184 (13%) kept=0 raw=2621 rate=3/s elapsed_s=750
+#   step=4 var=y_5 parallel progress tasks=463088/3487184 (13%) kept=0 raw=2621 rate=3/s elapsed_s=780
+#   step=4 var=y_5 parallel progress tasks=481006/3487184 (14%) kept=0 raw=2621 rate=3/s elapsed_s=810
+#   step=4 var=y_5 parallel progress tasks=498564/3487184 (14%) kept=0 raw=2621 rate=3/s elapsed_s=840
+#   step=4 var=y_5 parallel progress tasks=516358/3487184 (15%) kept=5 raw=3214 rate=4/s elapsed_s=870
+#   step=4 var=y_5 parallel progress tasks=534156/3487184 (15%) kept=8 raw=4891 rate=5/s elapsed_s=900
+#   step=4 var=y_5 parallel progress tasks=552024/3487184 (16%) kept=9 raw=6624 rate=7/s elapsed_s=930
+#   step=4 var=y_5 parallel progress tasks=570027/3487184 (16%) kept=15 raw=8901 rate=9/s elapsed_s=960
+#   step=4 var=y_5 parallel progress tasks=588181/3487184 (17%) kept=16 raw=10989 rate=11/s elapsed_s=990
+#   step=4 var=y_5 parallel progress tasks=607173/3487184 (17%) kept=18 raw=12805 rate=13/s elapsed_s=1020
+#   step=4 var=y_5 parallel progress tasks=626164/3487184 (18%) kept=19 raw=14721 rate=14/s elapsed_s=1050
+#   step=4 var=y_5 parallel progress tasks=645127/3487184 (18%) kept=23 raw=16997 rate=16/s elapsed_s=1080
+#   step=4 var=y_5 parallel progress tasks=664094/3487184 (19%) kept=24 raw=19242 rate=17/s elapsed_s=1110
+#   step=4 var=y_5 parallel progress tasks=683101/3487184 (20%) kept=24 raw=21832 rate=19/s elapsed_s=1140
+#   step=4 var=y_5 parallel progress tasks=702106/3487184 (20%) kept=24 raw=23806 rate=20/s elapsed_s=1170
+#   step=4 var=y_5 parallel progress tasks=721097/3487184 (21%) kept=25 raw=26121 rate=22/s elapsed_s=1200
+#   step=4 var=y_5 parallel progress tasks=740084/3487184 (21%) kept=25 raw=28195 rate=23/s elapsed_s=1230
+#   step=4 var=y_5 parallel progress tasks=759057/3487184 (22%) kept=25 raw=30262 rate=24/s elapsed_s=1260
+#   step=4 var=y_5 parallel progress tasks=777982/3487184 (22%) kept=25 raw=31715 rate=25/s elapsed_s=1290
+#   step=4 var=y_5 parallel progress tasks=796971/3487184 (23%) kept=25 raw=33486 rate=25/s elapsed_s=1320
+#   step=4 var=y_5 parallel progress tasks=815949/3487184 (23%) kept=26 raw=35695 rate=26/s elapsed_s=1350
+#   step=4 var=y_5 parallel progress tasks=834944/3487184 (24%) kept=26 raw=37657 rate=27/s elapsed_s=1380
+#   step=4 var=y_5 parallel progress tasks=853907/3487184 (24%) kept=29 raw=40062 rate=28/s elapsed_s=1410
+#   step=4 var=y_5 parallel progress tasks=872879/3487184 (25%) kept=31 raw=42162 rate=29/s elapsed_s=1440
+#   step=4 var=y_5 parallel progress tasks=891840/3487184 (26%) kept=31 raw=44469 rate=30/s elapsed_s=1470
+#   step=4 var=y_5 parallel progress tasks=910833/3487184 (26%) kept=31 raw=46201 rate=31/s elapsed_s=1500
+#   step=4 var=y_5 parallel progress tasks=929819/3487184 (27%) kept=31 raw=47868 rate=31/s elapsed_s=1531
+#   step=4 var=y_5 parallel progress tasks=948795/3487184 (27%) kept=31 raw=50620 rate=32/s elapsed_s=1561
+#   step=4 var=y_5 parallel progress tasks=967787/3487184 (28%) kept=33 raw=53033 rate=33/s elapsed_s=1591
+#   step=4 var=y_5 parallel progress tasks=986830/3487184 (28%) kept=33 raw=55057 rate=34/s elapsed_s=1621
+#   step=4 var=y_5 parallel progress tasks=1005797/3487184 (29%) kept=34 raw=56994 rate=35/s elapsed_s=1651
+#   step=4 var=y_5 parallel progress tasks=1024781/3487184 (29%) kept=35 raw=58898 rate=35/s elapsed_s=1681
+#   step=4 var=y_5 parallel progress tasks=1043735/3487184 (30%) kept=35 raw=60777 rate=36/s elapsed_s=1711
+#   step=4 var=y_5 parallel progress tasks=1062543/3487184 (30%) kept=35 raw=62918 rate=36/s elapsed_s=1741
+#   step=4 var=y_5 parallel progress tasks=1080962/3487184 (31%) kept=35 raw=64984 rate=37/s elapsed_s=1771
+#   step=4 var=y_5 parallel progress tasks=1098624/3487184 (32%) kept=35 raw=66764 rate=37/s elapsed_s=1801
+#   step=4 var=y_5 parallel progress tasks=1116296/3487184 (32%) kept=35 raw=68113 rate=37/s elapsed_s=1831
+#   step=4 var=y_5 parallel progress tasks=1133929/3487184 (33%) kept=35 raw=69827 rate=38/s elapsed_s=1861
+#   step=4 var=y_5 parallel progress tasks=1151485/3487184 (33%) kept=36 raw=71868 rate=38/s elapsed_s=1891
+#   step=4 var=y_5 parallel progress tasks=1169126/3487184 (34%) kept=36 raw=74062 rate=39/s elapsed_s=1921
+#   step=4 var=y_5 parallel progress tasks=1186729/3487184 (34%) kept=36 raw=75470 rate=39/s elapsed_s=1951
+#   step=4 var=y_5 parallel progress tasks=1204253/3487184 (35%) kept=36 raw=75470 rate=38/s elapsed_s=1981
+#   step=4 var=y_5 parallel progress tasks=1221921/3487184 (35%) kept=36 raw=75470 rate=38/s elapsed_s=2011
+#   step=4 var=y_5 parallel progress tasks=1239570/3487184 (36%) kept=36 raw=75470 rate=37/s elapsed_s=2041
+#   step=4 var=y_5 parallel progress tasks=1257138/3487184 (36%) kept=36 raw=75470 rate=36/s elapsed_s=2071
+#   step=4 var=y_5 parallel progress tasks=1274730/3487184 (37%) kept=36 raw=75470 rate=36/s elapsed_s=2101
+#   step=4 var=y_5 parallel progress tasks=1292374/3487184 (37%) kept=36 raw=75470 rate=35/s elapsed_s=2131
+#   step=4 var=y_5 parallel progress tasks=1309944/3487184 (38%) kept=36 raw=75470 rate=35/s elapsed_s=2161
+#   step=4 var=y_5 parallel progress tasks=1327370/3487184 (38%) kept=36 raw=75470 rate=34/s elapsed_s=2191
+#   step=4 var=y_5 parallel progress tasks=1344558/3487184 (39%) kept=36 raw=75470 rate=34/s elapsed_s=2221
+#   step=4 var=y_5 parallel progress tasks=1361784/3487184 (39%) kept=36 raw=75470 rate=34/s elapsed_s=2251
+#   step=4 var=y_5 parallel progress tasks=1378973/3487184 (40%) kept=36 raw=75470 rate=33/s elapsed_s=2281
+#   step=4 var=y_5 parallel progress tasks=1396106/3487184 (40%) kept=36 raw=75470 rate=33/s elapsed_s=2311
+#   step=4 var=y_5 parallel progress tasks=1413434/3487184 (41%) kept=36 raw=75470 rate=32/s elapsed_s=2341
+#   step=4 var=y_5 parallel progress tasks=1430357/3487184 (41%) kept=36 raw=75470 rate=32/s elapsed_s=2371
+#   step=4 var=y_5 parallel progress tasks=1446857/3487184 (41%) kept=36 raw=75470 rate=31/s elapsed_s=2401
+#   step=4 var=y_5 parallel progress tasks=1463595/3487184 (42%) kept=36 raw=75470 rate=31/s elapsed_s=2431
+#   step=4 var=y_5 parallel progress tasks=1480459/3487184 (42%) kept=36 raw=75470 rate=31/s elapsed_s=2461
+#   step=4 var=y_5 parallel progress tasks=1497677/3487184 (43%) kept=36 raw=75470 rate=30/s elapsed_s=2491
+#   step=4 var=y_5 parallel progress tasks=1515113/3487184 (43%) kept=36 raw=75470 rate=30/s elapsed_s=2521
+#   step=4 var=y_5 parallel progress tasks=1532315/3487184 (44%) kept=36 raw=75470 rate=30/s elapsed_s=2551
+#   step=4 var=y_5 parallel progress tasks=1549437/3487184 (44%) kept=36 raw=75470 rate=29/s elapsed_s=2581
+#   step=4 var=y_5 parallel progress tasks=1566483/3487184 (45%) kept=36 raw=75470 rate=29/s elapsed_s=2611
+#   step=4 var=y_5 parallel progress tasks=1584118/3487184 (45%) kept=36 raw=75470 rate=29/s elapsed_s=2641
+#   step=4 var=y_5 parallel progress tasks=1602164/3487184 (46%) kept=36 raw=75470 rate=28/s elapsed_s=2671
+#   step=4 var=y_5 parallel progress tasks=1620139/3487184 (46%) kept=36 raw=75470 rate=28/s elapsed_s=2701
+#   step=4 var=y_5 parallel progress tasks=1638682/3487184 (47%) kept=36 raw=75470 rate=28/s elapsed_s=2731
+#   step=4 var=y_5 parallel progress tasks=1656998/3487184 (48%) kept=36 raw=75470 rate=27/s elapsed_s=2761
+#   step=4 var=y_5 parallel progress tasks=1675407/3487184 (48%) kept=36 raw=75470 rate=27/s elapsed_s=2791
+#   step=4 var=y_5 parallel progress tasks=1693791/3487184 (49%) kept=36 raw=75470 rate=27/s elapsed_s=2821
+#   step=4 var=y_5 parallel progress tasks=1712245/3487184 (49%) kept=36 raw=75470 rate=26/s elapsed_s=2851
+#   step=4 var=y_5 parallel progress tasks=1730604/3487184 (50%) kept=36 raw=75470 rate=26/s elapsed_s=2881
+#   step=4 var=y_5 parallel progress tasks=1748907/3487184 (50%) kept=36 raw=75470 rate=26/s elapsed_s=2911
+#   step=4 var=y_5 parallel progress tasks=1767231/3487184 (51%) kept=36 raw=75470 rate=26/s elapsed_s=2941
+#   step=4 var=y_5 parallel progress tasks=1785446/3487184 (51%) kept=36 raw=75470 rate=25/s elapsed_s=2971
+#   step=4 var=y_5 parallel progress tasks=1803586/3487184 (52%) kept=36 raw=75470 rate=25/s elapsed_s=3001
+#   step=4 var=y_5 parallel progress tasks=1821554/3487184 (52%) kept=36 raw=75470 rate=25/s elapsed_s=3031
+#   step=4 var=y_5 parallel progress tasks=1838774/3487184 (53%) kept=36 raw=75470 rate=25/s elapsed_s=3061
+#   step=4 var=y_5 parallel progress tasks=1855242/3487184 (53%) kept=36 raw=75470 rate=24/s elapsed_s=3091
+#   step=4 var=y_5 parallel progress tasks=1871550/3487184 (54%) kept=36 raw=75470 rate=24/s elapsed_s=3121
+#   step=4 var=y_5 parallel progress tasks=1888292/3487184 (54%) kept=36 raw=75470 rate=24/s elapsed_s=3151
+#   step=4 var=y_5 parallel progress tasks=1905125/3487184 (55%) kept=36 raw=75470 rate=24/s elapsed_s=3181
+#   step=4 var=y_5 parallel progress tasks=1921695/3487184 (55%) kept=36 raw=75470 rate=24/s elapsed_s=3211
+#   step=4 var=y_5 parallel progress tasks=1938017/3487184 (56%) kept=36 raw=75470 rate=23/s elapsed_s=3241
+#   step=4 var=y_5 parallel progress tasks=1954281/3487184 (56%) kept=36 raw=75470 rate=23/s elapsed_s=3271
+#   step=4 var=y_5 parallel progress tasks=1970393/3487184 (57%) kept=36 raw=75470 rate=23/s elapsed_s=3301
+#   step=4 var=y_5 parallel progress tasks=1986614/3487184 (57%) kept=36 raw=75470 rate=23/s elapsed_s=3331
+#   step=4 var=y_5 parallel progress tasks=2002822/3487184 (57%) kept=36 raw=75470 rate=22/s elapsed_s=3361
+#   step=4 var=y_5 parallel progress tasks=2018910/3487184 (58%) kept=36 raw=75470 rate=22/s elapsed_s=3391
+#   step=4 var=y_5 parallel progress tasks=2035114/3487184 (58%) kept=36 raw=75470 rate=22/s elapsed_s=3421
+#   step=4 var=y_5 parallel progress tasks=2051177/3487184 (59%) kept=36 raw=75470 rate=22/s elapsed_s=3451
+#   step=4 var=y_5 parallel progress tasks=2067545/3487184 (59%) kept=36 raw=75470 rate=22/s elapsed_s=3481
+#   step=4 var=y_5 parallel progress tasks=2083918/3487184 (60%) kept=36 raw=75470 rate=21/s elapsed_s=3511
+#   step=4 var=y_5 parallel progress tasks=2100287/3487184 (60%) kept=36 raw=75470 rate=21/s elapsed_s=3541
+#   step=4 var=y_5 parallel progress tasks=2117275/3487184 (61%) kept=36 raw=75470 rate=21/s elapsed_s=3571
+#   step=4 var=y_5 parallel progress tasks=2133859/3487184 (61%) kept=36 raw=75470 rate=21/s elapsed_s=3601
+#   step=4 var=y_5 parallel progress tasks=2150048/3487184 (62%) kept=36 raw=75470 rate=21/s elapsed_s=3631
+#   step=4 var=y_5 parallel progress tasks=2166495/3487184 (62%) kept=36 raw=75470 rate=21/s elapsed_s=3661
+#   step=4 var=y_5 parallel progress tasks=2183108/3487184 (63%) kept=36 raw=75470 rate=20/s elapsed_s=3691
+#   step=4 var=y_5 parallel progress tasks=2199696/3487184 (63%) kept=36 raw=75470 rate=20/s elapsed_s=3721
+#   step=4 var=y_5 parallel progress tasks=2216308/3487184 (64%) kept=36 raw=75470 rate=20/s elapsed_s=3751
+#   step=4 var=y_5 parallel progress tasks=2232890/3487184 (64%) kept=36 raw=75470 rate=20/s elapsed_s=3781
+#   step=4 var=y_5 parallel progress tasks=2249576/3487184 (65%) kept=36 raw=75470 rate=20/s elapsed_s=3811
+#   step=4 var=y_5 parallel progress tasks=2266196/3487184 (65%) kept=36 raw=75470 rate=20/s elapsed_s=3841
+#   step=4 var=y_5 parallel progress tasks=2283107/3487184 (65%) kept=36 raw=75470 rate=19/s elapsed_s=3871
+#   step=4 var=y_5 parallel progress tasks=2300434/3487184 (66%) kept=36 raw=75470 rate=19/s elapsed_s=3901
+#   step=4 var=y_5 parallel progress tasks=2317839/3487184 (66%) kept=36 raw=75470 rate=19/s elapsed_s=3931
+#   step=4 var=y_5 parallel progress tasks=2335288/3487184 (67%) kept=36 raw=75470 rate=19/s elapsed_s=3961
+#   step=4 var=y_5 parallel progress tasks=2352882/3487184 (67%) kept=36 raw=75470 rate=19/s elapsed_s=3991
+#   step=4 var=y_5 parallel progress tasks=2370359/3487184 (68%) kept=36 raw=75470 rate=19/s elapsed_s=4021
+#   step=4 var=y_5 parallel progress tasks=2387777/3487184 (68%) kept=36 raw=75470 rate=19/s elapsed_s=4051
+#   step=4 var=y_5 parallel progress tasks=2405139/3487184 (69%) kept=36 raw=75470 rate=18/s elapsed_s=4081
+#   step=4 var=y_5 parallel progress tasks=2422499/3487184 (69%) kept=36 raw=75470 rate=18/s elapsed_s=4111
+#   step=4 var=y_5 parallel progress tasks=2439965/3487184 (70%) kept=36 raw=75470 rate=18/s elapsed_s=4141
+#   step=4 var=y_5 parallel progress tasks=2457467/3487184 (70%) kept=36 raw=75470 rate=18/s elapsed_s=4171
+#   step=4 var=y_5 parallel progress tasks=2474766/3487184 (71%) kept=36 raw=75470 rate=18/s elapsed_s=4201
+#   step=4 var=y_5 parallel progress tasks=2492160/3487184 (71%) kept=36 raw=75470 rate=18/s elapsed_s=4231
+#   step=4 var=y_5 parallel progress tasks=2509459/3487184 (72%) kept=36 raw=75470 rate=18/s elapsed_s=4261
+#   step=4 var=y_5 parallel progress tasks=2526883/3487184 (72%) kept=36 raw=75470 rate=18/s elapsed_s=4291
+#   step=4 var=y_5 parallel progress tasks=2544215/3487184 (73%) kept=36 raw=75470 rate=17/s elapsed_s=4321
+#   step=4 var=y_5 parallel progress tasks=2561526/3487184 (73%) kept=36 raw=75470 rate=17/s elapsed_s=4351
+#   step=4 var=y_5 parallel progress tasks=2579135/3487184 (74%) kept=36 raw=75470 rate=17/s elapsed_s=4381
+#   step=4 var=y_5 parallel progress tasks=2596625/3487184 (74%) kept=36 raw=75470 rate=17/s elapsed_s=4411
+#   step=4 var=y_5 parallel progress tasks=2614148/3487184 (75%) kept=36 raw=75470 rate=17/s elapsed_s=4441
+#   step=4 var=y_5 parallel progress tasks=2631684/3487184 (75%) kept=36 raw=75470 rate=17/s elapsed_s=4471
+#   step=4 var=y_5 parallel progress tasks=2649200/3487184 (76%) kept=36 raw=75470 rate=17/s elapsed_s=4501
+#   step=4 var=y_5 parallel progress tasks=2666710/3487184 (76%) kept=36 raw=75470 rate=17/s elapsed_s=4531
+#   step=4 var=y_5 parallel progress tasks=2684097/3487184 (77%) kept=36 raw=75470 rate=17/s elapsed_s=4561
+#   step=4 var=y_5 parallel progress tasks=2701701/3487184 (77%) kept=36 raw=75470 rate=16/s elapsed_s=4591
+#   step=4 var=y_5 parallel progress tasks=2719189/3487184 (78%) kept=36 raw=75470 rate=16/s elapsed_s=4621
+#   step=4 var=y_5 parallel progress tasks=2736656/3487184 (78%) kept=36 raw=75470 rate=16/s elapsed_s=4651
+#   step=4 var=y_5 parallel progress tasks=2754275/3487184 (79%) kept=36 raw=75470 rate=16/s elapsed_s=4681
+#   step=4 var=y_5 parallel progress tasks=2771814/3487184 (79%) kept=36 raw=75470 rate=16/s elapsed_s=4711
+#   step=4 var=y_5 parallel progress tasks=2789318/3487184 (80%) kept=36 raw=75470 rate=16/s elapsed_s=4741
+#   step=4 var=y_5 parallel progress tasks=2806764/3487184 (80%) kept=36 raw=75470 rate=16/s elapsed_s=4771
+#   step=4 var=y_5 parallel progress tasks=2824367/3487184 (81%) kept=36 raw=75470 rate=16/s elapsed_s=4801
+#   step=4 var=y_5 parallel progress tasks=2841944/3487184 (81%) kept=36 raw=75470 rate=16/s elapsed_s=4831
+#   step=4 var=y_5 parallel progress tasks=2859626/3487184 (82%) kept=36 raw=80196 rate=16/s elapsed_s=4861
+#   step=4 var=y_5 parallel progress tasks=2877192/3487184 (83%) kept=36 raw=86224 rate=18/s elapsed_s=4891
+#   step=4 var=y_5 parallel progress tasks=2894562/3487184 (83%) kept=36 raw=92058 rate=19/s elapsed_s=4921
+#   step=4 var=y_5 parallel progress tasks=2911993/3487184 (84%) kept=36 raw=97736 rate=20/s elapsed_s=4951
+#   step=4 var=y_5 parallel progress tasks=2929432/3487184 (84%) kept=36 raw=103537 rate=21/s elapsed_s=4981
+#   step=4 var=y_5 parallel progress tasks=2946852/3487184 (85%) kept=36 raw=109724 rate=22/s elapsed_s=5011
+#   step=4 var=y_5 parallel progress tasks=2964343/3487184 (85%) kept=36 raw=115189 rate=23/s elapsed_s=5041
+#   step=4 var=y_5 parallel progress tasks=2981978/3487184 (86%) kept=36 raw=117233 rate=23/s elapsed_s=5071

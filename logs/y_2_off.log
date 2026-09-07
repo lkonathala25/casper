@@ -1,0 +1,62 @@
+# bench var=y_2 pi_bar=734 reorder=False cap=4
+#   bench var=y_2 grouped pi_bar=734 distinct_value_sets=14 avg_group_size=52.4
+#   bench var=y_2 pattern-size=1 candidates=14 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   bench var=y_2 pattern-size=2 candidates=91 new_minimal=25 cumulative_minimal=25 elapsed_s=0.000
+#   bench var=y_2 pattern-size=3 candidates=364 new_minimal=22 cumulative_minimal=47 elapsed_s=0.001
+#   bench var=y_2 pattern-size=4 candidates=1001 new_minimal=1 cumulative_minimal=48 elapsed_s=0.002
+#   bench var=y_2 pattern 1/48 size=2 expansion=3648 cumulative_kept=0
+#   bench var=y_2 pattern 2/48 size=2 expansion=3648 cumulative_kept=1518
+#   bench var=y_2 pattern 3/48 size=2 expansion=3648 cumulative_kept=3008
+#   bench var=y_2 pattern 4/48 size=2 expansion=3648 cumulative_kept=4470
+#   bench var=y_2 pattern 5/48 size=2 expansion=25 cumulative_kept=5904
+#   bench var=y_2 pattern 6/48 size=2 expansion=120 cumulative_kept=5912
+#   bench var=y_2 pattern 7/48 size=2 expansion=120 cumulative_kept=6007
+#   bench var=y_2 pattern 8/48 size=2 expansion=25 cumulative_kept=6102
+#   bench var=y_2 pattern 9/48 size=2 expansion=120 cumulative_kept=6104
+#   bench var=y_2 pattern 10/48 size=2 expansion=120 cumulative_kept=6180
+#   bench var=y_2 pattern 11/48 size=2 expansion=25 cumulative_kept=6275
+#   bench var=y_2 pattern 12/48 size=2 expansion=120 cumulative_kept=6277
+#   bench var=y_2 pattern 13/48 size=2 expansion=120 cumulative_kept=6353
+#   bench var=y_2 pattern 14/48 size=2 expansion=120 cumulative_kept=6429
+#   bench var=y_2 pattern 15/48 size=2 expansion=120 cumulative_kept=6491
+#   bench var=y_2 pattern 16/48 size=2 expansion=120 cumulative_kept=6586
+#   bench var=y_2 pattern 17/48 size=2 expansion=120 cumulative_kept=6648
+#   bench var=y_2 pattern 18/48 size=2 expansion=120 cumulative_kept=6724
+#   bench var=y_2 pattern 19/48 size=2 expansion=120 cumulative_kept=6786
+#   bench var=y_2 pattern 20/48 size=2 expansion=576 cumulative_kept=6848
+#   bench var=y_2 pattern 21/48 size=2 expansion=576 cumulative_kept=7064
+#   bench var=y_2 pattern 22/48 size=2 expansion=576 cumulative_kept=7280
+#   bench var=y_2 pattern 23/48 size=2 expansion=576 cumulative_kept=7496
+#   bench var=y_2 pattern 24/48 size=2 expansion=576 cumulative_kept=7712
+#   bench var=y_2 pattern 25/48 size=2 expansion=576 cumulative_kept=7928
+#   bench var=y_2 pattern 26/48 size=3 expansion=115520 cumulative_kept=8144
+#   bench var=y_2 pattern 27/48 size=3 expansion=115520 cumulative_kept=8401
+#   bench var=y_2 pattern 28/48 size=3 expansion=115520 cumulative_kept=8658
+#   bench var=y_2 pattern 29/48 size=3 expansion=3800 cumulative_kept=8915
+#   bench var=y_2 pattern 30/48 size=3 expansion=3800 cumulative_kept=8984
+#   bench var=y_2 pattern 31/48 size=3 expansion=3800 cumulative_kept=9053
+#   bench var=y_2 pattern 32/48 size=3 expansion=115520 cumulative_kept=9122
+#   bench var=y_2 pattern 33/48 size=3 expansion=115520 cumulative_kept=9379
+#   bench var=y_2 pattern 34/48 size=3 expansion=3800 cumulative_kept=9636
+#   bench var=y_2 pattern 35/48 size=3 expansion=3800 cumulative_kept=9705
+#   bench var=y_2 pattern 36/48 size=3 expansion=3800 cumulative_kept=9774
+#   bench var=y_2 pattern 37/48 size=3 expansion=115520 cumulative_kept=9843
+#   bench var=y_2 pattern 38/48 size=3 expansion=3800 cumulative_kept=10100
+#   bench var=y_2 pattern 39/48 size=3 expansion=3800 cumulative_kept=10169
+#   bench var=y_2 pattern 40/48 size=3 expansion=3800 cumulative_kept=10238
+#   bench var=y_2 pattern 41/48 size=3 expansion=3800 cumulative_kept=10307
+#   bench var=y_2 pattern 42/48 size=3 expansion=3800 cumulative_kept=10376
+#   bench var=y_2 pattern 43/48 size=3 expansion=3800 cumulative_kept=10445
+#   bench var=y_2 pattern 44/48 size=3 expansion=125 cumulative_kept=10514
+#   bench var=y_2 pattern 45/48 size=3 expansion=125 cumulative_kept=10556
+#   bench var=y_2 pattern 46/48 size=3 expansion=125 cumulative_kept=10598
+#   bench var=y_2 pattern 47/48 size=3 expansion=125 cumulative_kept=10640
+#   bench var=y_2 pattern 48/48 size=4 expansion=533794816 cumulative_kept=10682 mode=pairwise
+#   bench var=y_2 stage-1a done raw=23104 intermediates=1497 taut=14953 dup=8 sub=6646 elapsed_s=0.317
+#   bench var=y_2 stage-1b done raw=23104 intermediates=1497 taut=14953 dup=8 sub=6646 elapsed_s=0.325
+#     bench var=y_2 expand progress raw=200000 kept=11118 taut=70810 dup=1090 sub_amb=0 sub_intra=116982 prefix_taut=91350 lookahead_taut=0 prefix_sub=23424 pruned_leaves=574326 rate=2964/s
+#     bench var=y_2 expand progress raw=400000 kept=12425 taut=234102 dup=1495 sub_amb=0 sub_intra=151978 prefix_taut=91350 lookahead_taut=0 prefix_sub=23424 pruned_leaves=574326 rate=20856/s
+#     bench var=y_2 expand progress raw=600000 kept=13521 taut=400108 dup=1917 sub_amb=0 sub_intra=184454 prefix_taut=91350 lookahead_taut=0 prefix_sub=23424 pruned_leaves=574326 rate=25685/s
+#     bench var=y_2 expand progress raw=800000 kept=14810 taut=562952 dup=2420 sub_amb=0 sub_intra=219818 prefix_taut=91350 lookahead_taut=0 prefix_sub=23424 pruned_leaves=574326 rate=22145/s
+#     bench var=y_2 expand progress raw=1000000 kept=16637 taut=725215 dup=2760 sub_amb=0 sub_intra=255388 prefix_taut=91350 lookahead_taut=0 prefix_sub=23424 pruned_leaves=574326 rate=15185/s
+#     bench var=y_2 expand progress raw=1200000 kept=16746 taut=905457 dup=2978 sub_amb=0 sub_intra=274819 prefix_taut=91350 lookahead_taut=0 prefix_sub=23424 pruned_leaves=574326 rate=55981/s

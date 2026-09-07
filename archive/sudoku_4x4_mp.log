@@ -1,0 +1,141 @@
+# ordering source=min-degree: y_1 y_7 y_10 y_16 y_2 y_9 y_3 y_4 y_5 y_6 y_8 y_11 y_12 y_13 y_14 y_15
+# compile: n_vars=16 input_clauses=272 post_taut=272 post_subsumption=272 preproc_sub_elim=0 preproc_sub_elapsed_s=0.016 domains=[4] cap=per_var_domain algo=grouped+fwdsub
+# ordering: y_15 y_14 y_13 y_12 y_11 y_8 y_6 y_5 y_4 y_3 y_9 y_2 y_16 y_10 y_7 y_1
+# starting step=15 var=y_1 pi_in=40 pi_current=272 cap=4
+#   step=15 var=y_1 grouped pi_bar=40 distinct_value_sets=8 avg_group_size=5.0
+#   step=15 var=y_1 pattern-size=1 candidates=8 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=15 var=y_1 pattern-size=2 candidates=28 new_minimal=10 cumulative_minimal=10 elapsed_s=0.000
+#   step=15 var=y_1 pattern-size=3 candidates=56 new_minimal=0 cumulative_minimal=10 elapsed_s=0.000
+#   step=15 var=y_1 pattern-size=4 candidates=70 new_minimal=1 cumulative_minimal=11 elapsed_s=0.000
+#   step=15 var=y_1 parallel workers=64 tasks=53
+#   step=15 var=y_1 parallel done kept=942 raw=1608 taut=666 elapsed_s=0.067
+step=15 var=y_1 pi_in=40 n_minimal_J=11 n_resolvents_raw=1608 n_resolvents_kept=942 max_J_size=4 pi_out_before_sub=1174 pi_out_after_sub=886 sub_elim=288 sub_elapsed_s=0.326 n_distinct_sets=8 n_taut=666 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=91 lookahead_taut=0 prefix_sub=0 pruned_leaves=931 dup=0 expand_elapsed_s=0.067 elapsed_s=0.401
+# starting step=14 var=y_7 pi_in=40 pi_current=886 cap=4
+#   step=14 var=y_7 grouped pi_bar=40 distinct_value_sets=8 avg_group_size=5.0
+#   step=14 var=y_7 pattern-size=1 candidates=8 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=14 var=y_7 pattern-size=2 candidates=28 new_minimal=10 cumulative_minimal=10 elapsed_s=0.000
+#   step=14 var=y_7 pattern-size=3 candidates=56 new_minimal=0 cumulative_minimal=10 elapsed_s=0.000
+#   step=14 var=y_7 pattern-size=4 candidates=70 new_minimal=1 cumulative_minimal=11 elapsed_s=0.000
+#   step=14 var=y_7 parallel workers=64 tasks=53
+#   step=14 var=y_7 parallel done kept=918 raw=1608 taut=666 elapsed_s=0.074
+step=14 var=y_7 pi_in=40 n_minimal_J=11 n_resolvents_raw=1608 n_resolvents_kept=918 max_J_size=4 pi_out_before_sub=1764 pi_out_after_sub=1476 sub_elim=288 sub_elapsed_s=1.017 n_distinct_sets=8 n_taut=666 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=91 lookahead_taut=0 prefix_sub=0 pruned_leaves=931 dup=24 expand_elapsed_s=0.074 elapsed_s=1.097
+# starting step=13 var=y_10 pi_in=40 pi_current=1476 cap=4
+#   step=13 var=y_10 grouped pi_bar=40 distinct_value_sets=8 avg_group_size=5.0
+#   step=13 var=y_10 pattern-size=1 candidates=8 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=13 var=y_10 pattern-size=2 candidates=28 new_minimal=10 cumulative_minimal=10 elapsed_s=0.000
+#   step=13 var=y_10 pattern-size=3 candidates=56 new_minimal=0 cumulative_minimal=10 elapsed_s=0.000
+#   step=13 var=y_10 pattern-size=4 candidates=70 new_minimal=1 cumulative_minimal=11 elapsed_s=0.000
+#   step=13 var=y_10 parallel workers=64 tasks=53
+#   step=13 var=y_10 parallel done kept=918 raw=1608 taut=666 elapsed_s=0.087
+step=13 var=y_10 pi_in=40 n_minimal_J=11 n_resolvents_raw=1608 n_resolvents_kept=918 max_J_size=4 pi_out_before_sub=2354 pi_out_after_sub=2066 sub_elim=288 sub_elapsed_s=2.038 n_distinct_sets=8 n_taut=666 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=91 lookahead_taut=0 prefix_sub=0 pruned_leaves=931 dup=24 expand_elapsed_s=0.087 elapsed_s=2.131
+# starting step=12 var=y_16 pi_in=40 pi_current=2066 cap=4
+#   step=12 var=y_16 grouped pi_bar=40 distinct_value_sets=8 avg_group_size=5.0
+#   step=12 var=y_16 pattern-size=1 candidates=8 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=12 var=y_16 pattern-size=2 candidates=28 new_minimal=10 cumulative_minimal=10 elapsed_s=0.000
+#   step=12 var=y_16 pattern-size=3 candidates=56 new_minimal=0 cumulative_minimal=10 elapsed_s=0.000
+#   step=12 var=y_16 pattern-size=4 candidates=70 new_minimal=1 cumulative_minimal=11 elapsed_s=0.000
+#   step=12 var=y_16 parallel workers=64 tasks=53
+#   step=12 var=y_16 parallel done kept=894 raw=1608 taut=666 elapsed_s=0.100
+step=12 var=y_16 pi_in=40 n_minimal_J=11 n_resolvents_raw=1608 n_resolvents_kept=894 max_J_size=4 pi_out_before_sub=2920 pi_out_after_sub=2632 sub_elim=288 sub_elapsed_s=3.349 n_distinct_sets=8 n_taut=666 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=91 lookahead_taut=0 prefix_sub=0 pruned_leaves=931 dup=48 expand_elapsed_s=0.100 elapsed_s=3.458
+# starting step=11 var=y_2 pi_in=734 pi_current=2632 cap=4
+#   step=11 var=y_2 grouped pi_bar=734 distinct_value_sets=14 avg_group_size=52.4
+#   step=11 var=y_2 pattern-size=1 candidates=14 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=11 var=y_2 pattern-size=2 candidates=91 new_minimal=25 cumulative_minimal=25 elapsed_s=0.000
+#   step=11 var=y_2 pattern-size=3 candidates=364 new_minimal=22 cumulative_minimal=47 elapsed_s=0.001
+#   step=11 var=y_2 pattern-size=4 candidates=1001 new_minimal=1 cumulative_minimal=48 elapsed_s=0.002
+#   step=11 var=y_2 parallel workers=64 tasks=3735
+#   step=11 var=y_2 parallel done kept=40560 raw=754229 taut=559935 elapsed_s=10.231
+step=11 var=y_2 pi_in=734 n_minimal_J=48 n_resolvents_raw=754229 n_resolvents_kept=40560 max_J_size=4 pi_out_before_sub=42458 pi_out_after_sub=5824 sub_elim=36634 sub_elapsed_s=42.743 n_distinct_sets=14 n_taut=559935 fwd_sub_amb=122938 fwd_sub_intra=27102 prefix_taut=95280 lookahead_taut=8238 prefix_sub=39048 pruned_leaves=659598 dup=2734 expand_elapsed_s=10.231 elapsed_s=53.135
+# starting step=10 var=y_9 pi_in=3634 pi_current=5824 cap=4
+#   step=10 var=y_9 grouped pi_bar=3634 distinct_value_sets=14 avg_group_size=259.6
+#   step=10 var=y_9 pattern-size=1 candidates=14 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=10 var=y_9 pattern-size=2 candidates=91 new_minimal=25 cumulative_minimal=25 elapsed_s=0.000
+#   step=10 var=y_9 pattern-size=3 candidates=364 new_minimal=22 cumulative_minimal=47 elapsed_s=0.001
+#   step=10 var=y_9 pattern-size=4 candidates=1001 new_minimal=1 cumulative_minimal=48 elapsed_s=0.002
+#   step=10 var=y_9 parallel workers=64 tasks=6916
+#   step=10 var=y_9 parallel done kept=227294 raw=25320460 taut=17153779 elapsed_s=297.453
+step=10 var=y_9 pi_in=3634 n_minimal_J=48 n_resolvents_raw=25320460 n_resolvents_kept=227294 max_J_size=4 pi_out_before_sub=229484 pi_out_after_sub=6900 sub_elim=222584 sub_elapsed_s=266.933 n_distinct_sets=14 n_taut=17153779 fwd_sub_amb=6185906 fwd_sub_intra=1605798 prefix_taut=3734716 lookahead_taut=638183 prefix_sub=2263524 pruned_leaves=56539707 dup=75533 expand_elapsed_s=297.453 elapsed_s=566.013
+# starting step=9 var=y_3 pi_in=3992 pi_current=6900 cap=4
+#   step=9 var=y_3 grouped pi_bar=3992 distinct_value_sets=14 avg_group_size=285.1
+#   step=9 var=y_3 pattern-size=1 candidates=14 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=9 var=y_3 pattern-size=2 candidates=91 new_minimal=25 cumulative_minimal=25 elapsed_s=0.000
+#   step=9 var=y_3 pattern-size=3 candidates=364 new_minimal=22 cumulative_minimal=47 elapsed_s=0.001
+#   step=9 var=y_3 pattern-size=4 candidates=1001 new_minimal=1 cumulative_minimal=48 elapsed_s=0.002
+#   step=9 var=y_3 parallel workers=64 tasks=6338
+#   step=9 var=y_3 parallel done kept=187618 raw=15892749 taut=9005912 elapsed_s=204.911
+step=9 var=y_3 pi_in=3992 n_minimal_J=48 n_resolvents_raw=15892749 n_resolvents_kept=187618 max_J_size=4 pi_out_before_sub=190526 pi_out_after_sub=26120 sub_elim=164406 sub_elapsed_s=1427.565 n_distinct_sets=14 n_taut=9005912 fwd_sub_amb=6089926 fwd_sub_intra=551545 prefix_taut=5975216 lookahead_taut=1941584 prefix_sub=7374448 pruned_leaves=85801960 dup=25764 expand_elapsed_s=204.911 elapsed_s=1634.345
+# starting step=8 var=y_4 pi_in=21824 pi_current=26120 cap=4
+#   step=8 var=y_4 grouped pi_bar=21824 distinct_value_sets=14 avg_group_size=1558.9
+#   step=8 var=y_4 pattern-size=1 candidates=14 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=8 var=y_4 pattern-size=2 candidates=91 new_minimal=25 cumulative_minimal=25 elapsed_s=0.000
+#   step=8 var=y_4 pattern-size=3 candidates=364 new_minimal=22 cumulative_minimal=47 elapsed_s=0.001
+#   step=8 var=y_4 pattern-size=4 candidates=1001 new_minimal=1 cumulative_minimal=48 elapsed_s=0.002
+#   step=8 var=y_4 parallel workers=64 tasks=9666
+#   step=8 var=y_4 parallel done kept=508746 raw=597423401 taut=391345478 elapsed_s=6734.201
+step=8 var=y_4 pi_in=21824 n_minimal_J=48 n_resolvents_raw=597423401 n_resolvents_kept=508746 max_J_size=4 pi_out_before_sub=513042 pi_out_after_sub=15432 sub_elim=497610 sub_elapsed_s=1782.059 n_distinct_sets=14 n_taut=391345478 fwd_sub_amb=187282029 fwd_sub_intra=16937638 prefix_taut=1600808234 lookahead_taut=354207005 prefix_sub=825062914 pruned_leaves=16176146041 dup=698414 expand_elapsed_s=6734.201 elapsed_s=8525.661
+# starting step=7 var=y_5 pi_in=13516 pi_current=15432 cap=4
+#   step=7 var=y_5 grouped pi_bar=13516 distinct_value_sets=14 avg_group_size=965.4
+#   step=7 var=y_5 pattern-size=1 candidates=14 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=7 var=y_5 pattern-size=2 candidates=91 new_minimal=25 cumulative_minimal=25 elapsed_s=0.000
+#   step=7 var=y_5 pattern-size=3 candidates=364 new_minimal=22 cumulative_minimal=47 elapsed_s=0.001
+#   step=7 var=y_5 pattern-size=4 candidates=1001 new_minimal=1 cumulative_minimal=48 elapsed_s=0.002
+#   step=7 var=y_5 parallel workers=64 tasks=10597
+#   step=7 var=y_5 parallel done kept=128858 raw=446842400 taut=309368665 elapsed_s=4140.094
+step=7 var=y_5 pi_in=13516 n_minimal_J=48 n_resolvents_raw=446842400 n_resolvents_kept=128858 max_J_size=4 pi_out_before_sub=130774 pi_out_after_sub=3806 sub_elim=126968 sub_elapsed_s=85.680 n_distinct_sets=14 n_taut=309368665 fwd_sub_amb=131136720 fwd_sub_intra=5853533 prefix_taut=1438285317 lookahead_taut=211824308 prefix_sub=814325606 pruned_leaves=16336008770 dup=172982 expand_elapsed_s=4140.094 elapsed_s=4229.737
+# starting step=6 var=y_6 pi_in=3484 pi_current=3806 cap=4
+#   step=6 var=y_6 grouped pi_bar=3484 distinct_value_sets=14 avg_group_size=248.9
+#   step=6 var=y_6 pattern-size=1 candidates=14 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=6 var=y_6 pattern-size=2 candidates=91 new_minimal=25 cumulative_minimal=25 elapsed_s=0.000
+#   step=6 var=y_6 pattern-size=3 candidates=364 new_minimal=22 cumulative_minimal=47 elapsed_s=0.001
+#   step=6 var=y_6 pattern-size=4 candidates=1001 new_minimal=1 cumulative_minimal=48 elapsed_s=0.002
+#   step=6 var=y_6 parallel workers=64 tasks=7732
+#   step=6 var=y_6 parallel done kept=1257 raw=5133198 taut=2870611 elapsed_s=34.366
+step=6 var=y_6 pi_in=3484 n_minimal_J=48 n_resolvents_raw=5133198 n_resolvents_kept=1257 max_J_size=4 pi_out_before_sub=1579 pi_out_after_sub=334 sub_elim=1245 sub_elapsed_s=0.107 n_distinct_sets=14 n_taut=2870611 fwd_sub_amb=2229743 fwd_sub_intra=25923 prefix_taut=92856779 lookahead_taut=41742771 prefix_sub=44322460 pruned_leaves=519893968 dup=1952 expand_elapsed_s=34.366 elapsed_s=35.426
+# starting step=5 var=y_8 pi_in=234 pi_current=334 cap=4
+#   step=5 var=y_8 grouped pi_bar=234 distinct_value_sets=14 avg_group_size=16.7
+#   step=5 var=y_8 pattern-size=1 candidates=14 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=5 var=y_8 pattern-size=2 candidates=91 new_minimal=25 cumulative_minimal=25 elapsed_s=0.000
+#   step=5 var=y_8 pattern-size=3 candidates=364 new_minimal=22 cumulative_minimal=47 elapsed_s=0.001
+#   step=5 var=y_8 pattern-size=4 candidates=1001 new_minimal=1 cumulative_minimal=48 elapsed_s=0.002
+#   step=5 var=y_8 parallel workers=64 tasks=876
+#   step=5 var=y_8 parallel done kept=132 raw=8401 taut=4185 elapsed_s=2.292
+step=5 var=y_8 pi_in=234 n_minimal_J=48 n_resolvents_raw=8401 n_resolvents_kept=132 max_J_size=4 pi_out_before_sub=232 pi_out_after_sub=136 sub_elim=96 sub_elapsed_s=0.014 n_distinct_sets=14 n_taut=4185 fwd_sub_amb=3926 fwd_sub_intra=34 prefix_taut=45287 lookahead_taut=21196 prefix_sub=20066 pruned_leaves=292019 dup=40 expand_elapsed_s=2.292 elapsed_s=2.321
+# starting step=4 var=y_11 pi_in=98 pi_current=136 cap=4
+#   step=4 var=y_11 grouped pi_bar=98 distinct_value_sets=14 avg_group_size=7.0
+#   step=4 var=y_11 pattern-size=1 candidates=14 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=4 var=y_11 pattern-size=2 candidates=91 new_minimal=25 cumulative_minimal=25 elapsed_s=0.000
+#   step=4 var=y_11 pattern-size=3 candidates=364 new_minimal=22 cumulative_minimal=47 elapsed_s=0.001
+#   step=4 var=y_11 pattern-size=4 candidates=1001 new_minimal=1 cumulative_minimal=48 elapsed_s=0.002
+#   step=4 var=y_11 parallel workers=64 tasks=288
+#   step=4 var=y_11 parallel done kept=174 raw=2925 taut=932 elapsed_s=2.213
+step=4 var=y_11 pi_in=98 n_minimal_J=48 n_resolvents_raw=2925 n_resolvents_kept=174 max_J_size=4 pi_out_before_sub=212 pi_out_after_sub=116 sub_elim=96 sub_elapsed_s=0.008 n_distinct_sets=14 n_taut=932 fwd_sub_amb=1651 fwd_sub_intra=68 prefix_taut=990 lookahead_taut=1169 prefix_sub=744 pruned_leaves=5061 dup=12 expand_elapsed_s=2.213 elapsed_s=2.226
+# starting step=3 var=y_12 pi_in=98 pi_current=116 cap=4
+#   step=3 var=y_12 grouped pi_bar=98 distinct_value_sets=10 avg_group_size=9.8
+#   step=3 var=y_12 pattern-size=1 candidates=10 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=3 var=y_12 pattern-size=2 candidates=45 new_minimal=3 cumulative_minimal=3 elapsed_s=0.000
+#   step=3 var=y_12 pattern-size=3 candidates=120 new_minimal=22 cumulative_minimal=25 elapsed_s=0.000
+#   step=3 var=y_12 pattern-size=4 candidates=210 new_minimal=1 cumulative_minimal=26 elapsed_s=0.000
+#   step=3 var=y_12 parallel workers=64 tasks=229
+#   step=3 var=y_12 parallel done kept=0 raw=363 taut=279 elapsed_s=2.216
+step=3 var=y_12 pi_in=98 n_minimal_J=26 n_resolvents_raw=363 n_resolvents_kept=0 max_J_size=4 pi_out_before_sub=18 pi_out_after_sub=18 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=10 n_taut=279 fwd_sub_amb=84 fwd_sub_intra=0 prefix_taut=4009 lookahead_taut=2208 prefix_sub=1794 pruned_leaves=25260 dup=0 expand_elapsed_s=2.216 elapsed_s=2.219
+# starting step=2 var=y_13 pi_in=14 pi_current=18 cap=4
+#   step=2 var=y_13 grouped pi_bar=14 distinct_value_sets=10 avg_group_size=1.4
+#   step=2 var=y_13 pattern-size=1 candidates=10 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=2 var=y_13 pattern-size=2 candidates=45 new_minimal=3 cumulative_minimal=3 elapsed_s=0.000
+#   step=2 var=y_13 pattern-size=3 candidates=120 new_minimal=22 cumulative_minimal=25 elapsed_s=0.000
+#   step=2 var=y_13 pattern-size=4 candidates=210 new_minimal=1 cumulative_minimal=26 elapsed_s=0.000
+#   step=2 var=y_13 parallel workers=64 tasks=45
+#   step=2 var=y_13 parallel done kept=0 raw=0 taut=0 elapsed_s=2.207
+step=2 var=y_13 pi_in=14 n_minimal_J=26 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=4 pi_out_before_sub=4 pi_out_after_sub=4 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=10 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=6 lookahead_taut=39 prefix_sub=4 pruned_leaves=71 dup=0 expand_elapsed_s=2.207 elapsed_s=2.209
+# starting step=1 var=y_14 pi_in=4 pi_current=4 cap=4
+#   step=1 var=y_14 grouped pi_bar=4 distinct_value_sets=4 avg_group_size=1.0
+#   step=1 var=y_14 pattern-size=1 candidates=4 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=1 var=y_14 pattern-size=2 candidates=6 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=1 var=y_14 pattern-size=3 candidates=4 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=1 var=y_14 pattern-size=4 candidates=1 new_minimal=1 cumulative_minimal=1 elapsed_s=0.000
+#   step=1 var=y_14 parallel workers=64 tasks=1
+#   step=1 var=y_14 parallel done kept=0 raw=0 taut=0 elapsed_s=2.214
+step=1 var=y_14 pi_in=4 n_minimal_J=1 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=4 pi_out_before_sub=0 pi_out_after_sub=0 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=4 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=1 prefix_sub=0 pruned_leaves=1 dup=0 expand_elapsed_s=2.214 elapsed_s=2.215
+# starting step=0 var=y_15 pi_in=0 pi_current=0 cap=4
+step=0 var=y_15 pi_in=0 n_minimal_J=0 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=0 pi_out_before_sub=0 pi_out_after_sub=0 sub_elim=0 sub_elapsed_s=0.000 elapsed_s=0.000
+Compiled 47792 clause(s) (272 originals + 47520 resolvents) -> examples/sudoku_4x4_mp_compiled.txt

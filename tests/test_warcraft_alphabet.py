@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-SRC_WARCRAFT = Path(__file__).resolve().parents[1] / "src_warcraft"
+SRC_WARCRAFT = Path(__file__).resolve().parents[1] / "tasks" / "warcraft"
 if str(SRC_WARCRAFT) not in sys.path:
     sys.path.insert(0, str(SRC_WARCRAFT))
 

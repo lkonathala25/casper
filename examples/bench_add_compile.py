@@ -7,7 +7,7 @@ import sys
 import time
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "casper"))
 
 from constraints import Constraints  # noqa: E402
 from resolution import compile_constraints, to_dsl  # noqa: E402

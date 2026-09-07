@@ -1,0 +1,8 @@
+step=8 var=y_9: |pi|=333 |pi_bar|=81  value-closed(pi)=True  var-closed(pi)=True  value-closed(pi_bar)=True
+  patterns step=8: patterns=46 sampled_checks=92 image-not-a-pattern=0
+step=7 var=y_8: |pi|=288 |pi_bar|=99  value-closed(pi)=True  var-closed(pi)=True  value-closed(pi_bar)=True
+  patterns step=7: patterns=751 sampled_checks=502 image-not-a-pattern=0
+step=6 var=y_7: |pi|=273 |pi_bar|=138  value-closed(pi)=True  var-closed(pi)=True  value-closed(pi_bar)=True
+  patterns step=6: patterns=18061 sampled_checks=402 image-not-a-pattern=0
+step=5 var=y_6: |pi|=261 |pi_bar|=171  value-closed(pi)=True  var-closed(pi)=True  value-closed(pi_bar)=True
+  patterns step=5: patterns=212878 sampled_checks=402 image-not-a-pattern=0

@@ -1,0 +1,103 @@
+{
+  "rows": [
+    {
+      "k": 1,
+      "valid_joint": 66.66666666666667,
+      "valid_kpass": 100.0,
+      "exact_kpass": 100.0,
+      "cert_pct": 100.0,
+      "mean_rounds_to_cert": 2.0,
+      "dead_final_mean": 0.0,
+      "plateau_pct": 0.0,
+      "weak_rule_wrong": 0,
+      "rounds_used": 2,
+      "edits_curve": [
+        1.0,
+        0.0
+      ],
+      "secs": 0.1
+    },
+    {
+      "k": 3,
+      "valid_joint": 66.66666666666667,
+      "valid_kpass": 83.33333333333333,
+      "exact_kpass": 83.33333333333333,
+      "cert_pct": 83.33333333333333,
+      "mean_rounds_to_cert": 2.0,
+      "dead_final_mean": 3.0,
+      "plateau_pct": 0.0,
+      "weak_rule_wrong": 1,
+      "rounds_used": 6,
+      "edits_curve": [
+        2.67,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "secs": 0.1
+    },
+    {
+      "k": 5,
+      "valid_joint": 16.666666666666668,
+      "valid_kpass": 100.0,
+      "exact_kpass": 100.0,
+      "cert_pct": 100.0,
+      "mean_rounds_to_cert": 2.0,
+      "dead_final_mean": 0.0,
+      "plateau_pct": 0.0,
+      "weak_rule_wrong": 0,
+      "rounds_used": 2,
+      "edits_curve": [
+        5.0,
+        0.0
+      ],
+      "secs": 0.1
+    },
+    {
+      "k": 10,
+      "valid_joint": 16.666666666666668,
+      "valid_kpass": 33.333333333333336,
+      "exact_kpass": 33.333333333333336,
+      "cert_pct": 33.333333333333336,
+      "mean_rounds_to_cert": 2.0,
+      "dead_final_mean": 21.5,
+      "plateau_pct": 0.0,
+      "weak_rule_wrong": 4,
+      "rounds_used": 6,
+      "edits_curve": [
+        8.17,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "secs": 0.1
+    },
+    {
+      "k": 15,
+      "valid_joint": 0.0,
+      "valid_kpass": 16.666666666666668,
+      "exact_kpass": 16.666666666666668,
+      "cert_pct": 16.666666666666668,
+      "mean_rounds_to_cert": 2.0,
+      "dead_final_mean": 23.5,
+      "plateau_pct": 0.0,
+      "weak_rule_wrong": 5,
+      "rounds_used": 6,
+      "edits_curve": [
+        12.5,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "secs": 0.1
+    }
+  ],
+  "board_seed": 20260731,
+  "corrupt_seed": 12345
+}

@@ -1,0 +1,22 @@
+artifact  : /home/lk1325/mnist_neurips/examples/sudoku_group9_compiled.json
+seeds     : board=20260731 corrupt=12345
+joint mode: one row-major sweep, S = domain \ (row U col U box)
+
+  k= 1  27-pass 63% / 77%   joint 89%   (6.9s)
+  k= 3  27-pass 18% / 30%   joint 53%   (10.0s)
+  k= 5  27-pass 9% / 14%   joint 39%   (11.6s)
+  k=10  27-pass 0% / 2%   joint 22%   (13.7s)
+  k=15  27-pass 0% / 0%   joint 5%   (16.2s)
+
+  k  27-single%  27-iter%   JOINT%  exactJ%  DE boards%  DE/affected  residJ
+-----------------------------------------------------------------------------
+  1          63        77       89       84          11        11.36    0.70
+  3          18        30       53       49          47        13.87    4.11
+  5           9        14       39       37          61        17.15    6.91
+ 10           0         2       22       20          78        17.54    9.61
+ 15           0         0        5        5          95        19.56   12.66
+
+PREDICTION CHECK (k=1, expected 85-90% joint):
+  measured joint valid = 89%  -> PASS
+
+wrote /home/lk1325/mnist_neurips/logs/joint_eval.json

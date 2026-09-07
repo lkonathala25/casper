@@ -1,0 +1,1190 @@
+# compile: n_vars=16 input_clauses=225 post_taut=222 post_subsumption=209 preproc_sub_elim=13 preproc_sub_elapsed_s=0.001 domains=[1, 16] cap=per_var_domain algo=grouped+fwdsub
+# ordering: X_0 X_1 X_2 X_3 X_4 X_5 X_6 X_7 X_8 X_9 X_10 X_11 X_12 X_13 X_14 X_15
+# starting step=15 var=X_15 pi_in=13 pi_current=209 cap=1
+#   step=15 var=X_15 grouped pi_bar=13 distinct_value_sets=1 avg_group_size=13.0
+#   step=15 var=X_15 orbit-enum size=1 live=0 new_minimal=1
+#   step=15 var=X_15 pattern 1/1 size=1 expansion=13 cumulative_kept=0
+step=15 var=X_15 pi_in=13 n_minimal_J=1 n_resolvents_raw=13 n_resolvents_kept=13 max_J_size=1 pi_out_before_sub=209 pi_out_after_sub=209 sub_elim=0 sub_elapsed_s=0.001 n_distinct_sets=1 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=0.000 elapsed_s=0.002
+# starting step=14 var=X_14 pi_in=29 pi_current=209 cap=16
+#   step=14 var=X_14 grouped pi_bar=29 distinct_value_sets=29 avg_group_size=1.0
+#   step=14 var=X_14 orbit-enum size=1 live=29 new_minimal=0
+#   step=14 var=X_14 orbit-enum size=2 examined=435 live=184 pruned=157 new_minimal=65 cumulative_minimal=65 elapsed_s=0.000
+#   step=14 var=X_14 orbit-enum size=3 examined=2748 live=464 pruned=1340 new_minimal=14 cumulative_minimal=79 elapsed_s=0.001
+#   step=14 var=X_14 orbit-enum size=4 examined=9368 live=764 pruned=4860 new_minimal=74 cumulative_minimal=153 elapsed_s=0.004
+#   step=14 var=X_14 orbit-enum size=5 examined=22540 live=1302 pruned=11531 new_minimal=4 cumulative_minimal=157 elapsed_s=0.009
+#   step=14 var=X_14 orbit-enum size=6 examined=44973 live=1716 pruned=20446 new_minimal=3 cumulative_minimal=160 elapsed_s=0.015
+#   step=14 var=X_14 orbit-enum size=7 examined=74145 live=1716 pruned=26928 new_minimal=0 cumulative_minimal=160 elapsed_s=0.020
+#   step=14 var=X_14 orbit-enum size=8 examined=102888 live=1287 pruned=26406 new_minimal=0 cumulative_minimal=160 elapsed_s=0.020
+#   step=14 var=X_14 orbit-enum size=9 examined=124195 live=715 pruned=19164 new_minimal=0 cumulative_minimal=160 elapsed_s=0.015
+#   step=14 var=X_14 orbit-enum size=10 examined=135921 live=286 pruned=10096 new_minimal=0 cumulative_minimal=160 elapsed_s=0.008
+#   step=14 var=X_14 orbit-enum size=11 examined=140575 live=78 pruned=3712 new_minimal=0 cumulative_minimal=160 elapsed_s=0.003
+#   step=14 var=X_14 orbit-enum size=12 examined=141836 live=13 pruned=885 new_minimal=0 cumulative_minimal=160 elapsed_s=0.001
+#   step=14 var=X_14 orbit-enum size=13 examined=142045 live=1 pruned=118 new_minimal=0 cumulative_minimal=160 elapsed_s=0.000
+#   step=14 var=X_14 orbit-enum size=14 examined=142061 live=0 pruned=6 new_minimal=0 cumulative_minimal=160 elapsed_s=0.000
+#   step=14 var=X_14 pattern 1/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 2/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 3/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 4/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 5/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 6/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 7/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 8/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 9/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 10/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 11/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 12/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 13/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 14/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 15/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 16/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 17/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 18/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 19/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 20/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 21/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 22/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 23/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 24/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 25/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 26/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 27/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 28/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 29/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 30/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 31/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 32/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 33/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 34/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 35/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 36/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 37/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 38/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 39/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 40/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 41/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 42/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 43/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 44/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 45/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 46/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 47/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 48/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 49/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 50/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 51/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 52/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 53/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 54/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 55/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 56/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 57/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 58/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 59/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 60/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 61/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 62/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 63/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 64/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 65/160 size=2 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 66/160 size=3 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 67/160 size=3 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 68/160 size=3 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 69/160 size=3 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 70/160 size=3 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 71/160 size=3 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 72/160 size=3 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 73/160 size=3 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 74/160 size=3 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 75/160 size=3 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 76/160 size=3 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 77/160 size=3 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 78/160 size=3 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 79/160 size=3 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 80/160 size=4 expansion=1 cumulative_kept=0
+#   step=14 var=X_14 pattern 81/160 size=4 expansion=1 cumulative_kept=1
+#   step=14 var=X_14 pattern 82/160 size=4 expansion=1 cumulative_kept=1
+#   step=14 var=X_14 pattern 83/160 size=4 expansion=1 cumulative_kept=1
+#   step=14 var=X_14 pattern 84/160 size=4 expansion=1 cumulative_kept=1
+#   step=14 var=X_14 pattern 85/160 size=4 expansion=1 cumulative_kept=1
+#   step=14 var=X_14 pattern 86/160 size=4 expansion=1 cumulative_kept=1
+#   step=14 var=X_14 pattern 87/160 size=4 expansion=1 cumulative_kept=1
+#   step=14 var=X_14 pattern 88/160 size=4 expansion=1 cumulative_kept=1
+#   step=14 var=X_14 pattern 89/160 size=4 expansion=1 cumulative_kept=1
+#   step=14 var=X_14 pattern 90/160 size=4 expansion=1 cumulative_kept=1
+#   step=14 var=X_14 pattern 91/160 size=4 expansion=1 cumulative_kept=1
+#   step=14 var=X_14 pattern 92/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 93/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 94/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 95/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 96/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 97/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 98/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 99/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 100/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 101/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 102/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 103/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 104/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 105/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 106/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 107/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 108/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 109/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 110/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 111/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 112/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 113/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 114/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 115/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 116/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 117/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 118/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 119/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 120/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 121/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 122/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 123/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 124/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 125/160 size=4 expansion=1 cumulative_kept=2
+#   step=14 var=X_14 pattern 126/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 127/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 128/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 129/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 130/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 131/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 132/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 133/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 134/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 135/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 136/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 137/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 138/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 139/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 140/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 141/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 142/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 143/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 144/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 145/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 146/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 147/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 148/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 149/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 150/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 151/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 152/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 153/160 size=4 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 154/160 size=5 expansion=1 cumulative_kept=3
+#   step=14 var=X_14 pattern 155/160 size=5 expansion=1 cumulative_kept=4
+#   step=14 var=X_14 pattern 156/160 size=5 expansion=1 cumulative_kept=5
+#   step=14 var=X_14 pattern 157/160 size=5 expansion=1 cumulative_kept=6
+#   step=14 var=X_14 pattern 158/160 size=6 expansion=1 cumulative_kept=7
+#   step=14 var=X_14 pattern 159/160 size=6 expansion=1 cumulative_kept=8
+#   step=14 var=X_14 pattern 160/160 size=6 expansion=1 cumulative_kept=9
+step=14 var=X_14 pi_in=29 n_minimal_J=160 n_resolvents_raw=10 n_resolvents_kept=10 max_J_size=6 pi_out_before_sub=190 pi_out_after_sub=190 sub_elim=0 sub_elapsed_s=0.001 n_distinct_sets=29 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=150 prefix_sub=0 pruned_leaves=150 dup=0 expand_elapsed_s=0.003 elapsed_s=0.100
+# starting step=13 var=X_13 pi_in=26 pi_current=190 cap=16
+#   step=13 var=X_13 grouped pi_bar=26 distinct_value_sets=26 avg_group_size=1.0
+#   step=13 var=X_13 orbit-enum size=1 live=26 new_minimal=0
+#   step=13 var=X_13 orbit-enum size=2 examined=351 live=138 pruned=122 new_minimal=65 cumulative_minimal=65 elapsed_s=0.000
+#   step=13 var=X_13 orbit-enum size=3 examined=1900 live=254 pruned=823 new_minimal=10 cumulative_minimal=75 elapsed_s=0.001
+#   step=13 var=X_13 orbit-enum size=4 examined=5120 live=238 pruned=2151 new_minimal=53 cumulative_minimal=128 elapsed_s=0.002
+#   step=13 var=X_13 orbit-enum size=5 examined=9027 live=257 pruned=3424 new_minimal=4 cumulative_minimal=132 elapsed_s=0.002
+#   step=13 var=X_13 orbit-enum size=6 examined=13319 live=210 pruned=3996 new_minimal=1 cumulative_minimal=133 elapsed_s=0.003
+#   step=13 var=X_13 orbit-enum size=7 examined=16799 live=120 pruned=3260 new_minimal=0 cumulative_minimal=133 elapsed_s=0.002
+#   step=13 var=X_13 orbit-enum size=8 examined=18764 live=45 pruned=1795 new_minimal=0 cumulative_minimal=133 elapsed_s=0.001
+#   step=13 var=X_13 orbit-enum size=9 examined=19494 live=10 pruned=629 new_minimal=0 cumulative_minimal=133 elapsed_s=0.000
+#   step=13 var=X_13 orbit-enum size=10 examined=19655 live=1 pruned=124 new_minimal=0 cumulative_minimal=133 elapsed_s=0.000
+#   step=13 var=X_13 orbit-enum size=11 examined=19671 live=0 pruned=10 new_minimal=0 cumulative_minimal=133 elapsed_s=0.000
+#   step=13 var=X_13 pattern 1/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 2/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 3/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 4/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 5/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 6/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 7/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 8/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 9/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 10/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 11/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 12/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 13/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 14/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 15/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 16/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 17/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 18/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 19/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 20/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 21/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 22/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 23/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 24/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 25/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 26/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 27/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 28/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 29/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 30/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 31/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 32/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 33/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 34/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 35/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 36/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 37/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 38/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 39/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 40/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 41/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 42/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 43/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 44/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 45/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 46/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 47/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 48/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 49/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 50/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 51/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 52/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 53/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 54/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 55/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 56/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 57/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 58/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 59/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 60/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 61/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 62/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 63/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 64/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 65/133 size=2 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 66/133 size=3 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 67/133 size=3 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 68/133 size=3 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 69/133 size=3 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 70/133 size=3 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 71/133 size=3 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 72/133 size=3 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 73/133 size=3 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 74/133 size=3 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 75/133 size=3 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 76/133 size=4 expansion=1 cumulative_kept=0
+#   step=13 var=X_13 pattern 77/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 78/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 79/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 80/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 81/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 82/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 83/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 84/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 85/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 86/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 87/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 88/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 89/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 90/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 91/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 92/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 93/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 94/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 95/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 96/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 97/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 98/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 99/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 100/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 101/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 102/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 103/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 104/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 105/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 106/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 107/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 108/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 109/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 110/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 111/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 112/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 113/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 114/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 115/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 116/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 117/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 118/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 119/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 120/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 121/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 122/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 123/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 124/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 125/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 126/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 127/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 128/133 size=4 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 129/133 size=5 expansion=1 cumulative_kept=1
+#   step=13 var=X_13 pattern 130/133 size=5 expansion=1 cumulative_kept=2
+#   step=13 var=X_13 pattern 131/133 size=5 expansion=1 cumulative_kept=3
+#   step=13 var=X_13 pattern 132/133 size=5 expansion=1 cumulative_kept=4
+#   step=13 var=X_13 pattern 133/133 size=6 expansion=1 cumulative_kept=5
+step=13 var=X_13 pi_in=26 n_minimal_J=133 n_resolvents_raw=6 n_resolvents_kept=6 max_J_size=6 pi_out_before_sub=170 pi_out_after_sub=170 sub_elim=0 sub_elapsed_s=0.001 n_distinct_sets=26 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=127 prefix_sub=0 pruned_leaves=127 dup=0 expand_elapsed_s=0.002 elapsed_s=0.016
+# starting step=12 var=X_12 pi_in=22 pi_current=170 cap=16
+#   step=12 var=X_12 grouped pi_bar=22 distinct_value_sets=22 avg_group_size=1.0
+#   step=12 var=X_12 orbit-enum size=1 live=22 new_minimal=0
+#   step=12 var=X_12 orbit-enum size=2 examined=253 live=92 pruned=74 new_minimal=65 cumulative_minimal=65 elapsed_s=0.000
+#   step=12 var=X_12 orbit-enum size=3 examined=1102 live=106 pruned=338 new_minimal=6 cumulative_minimal=71 elapsed_s=0.000
+#   step=12 var=X_12 orbit-enum size=4 examined=2168 live=24 pruned=462 new_minimal=32 cumulative_minimal=103 elapsed_s=0.001
+#   step=12 var=X_12 orbit-enum size=5 examined=2524 live=6 pruned=259 new_minimal=2 cumulative_minimal=105 elapsed_s=0.000
+#   step=12 var=X_12 orbit-enum size=6 examined=2621 live=1 pruned=89 new_minimal=0 cumulative_minimal=105 elapsed_s=0.000
+#   step=12 var=X_12 orbit-enum size=7 examined=2637 live=0 pruned=13 new_minimal=0 cumulative_minimal=105 elapsed_s=0.000
+#   step=12 var=X_12 pattern 1/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 2/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 3/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 4/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 5/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 6/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 7/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 8/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 9/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 10/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 11/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 12/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 13/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 14/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 15/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 16/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 17/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 18/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 19/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 20/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 21/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 22/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 23/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 24/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 25/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 26/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 27/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 28/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 29/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 30/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 31/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 32/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 33/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 34/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 35/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 36/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 37/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 38/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 39/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 40/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 41/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 42/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 43/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 44/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 45/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 46/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 47/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 48/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 49/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 50/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 51/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 52/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 53/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 54/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 55/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 56/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 57/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 58/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 59/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 60/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 61/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 62/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 63/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 64/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 65/105 size=2 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 66/105 size=3 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 67/105 size=3 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 68/105 size=3 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 69/105 size=3 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 70/105 size=3 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 71/105 size=3 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 72/105 size=4 expansion=1 cumulative_kept=0
+#   step=12 var=X_12 pattern 73/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 74/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 75/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 76/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 77/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 78/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 79/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 80/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 81/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 82/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 83/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 84/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 85/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 86/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 87/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 88/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 89/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 90/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 91/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 92/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 93/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 94/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 95/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 96/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 97/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 98/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 99/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 100/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 101/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 102/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 103/105 size=4 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 104/105 size=5 expansion=1 cumulative_kept=1
+#   step=12 var=X_12 pattern 105/105 size=5 expansion=1 cumulative_kept=2
+step=12 var=X_12 pi_in=22 n_minimal_J=105 n_resolvents_raw=3 n_resolvents_kept=3 max_J_size=5 pi_out_before_sub=151 pi_out_after_sub=151 sub_elim=0 sub_elapsed_s=0.001 n_distinct_sets=22 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=102 prefix_sub=0 pruned_leaves=102 dup=0 expand_elapsed_s=0.002 elapsed_s=0.004
+# starting step=11 var=X_11 pi_in=19 pi_current=151 cap=16
+#   step=11 var=X_11 grouped pi_bar=19 distinct_value_sets=19 avg_group_size=1.0
+#   step=11 var=X_11 orbit-enum size=1 live=19 new_minimal=0
+#   step=11 var=X_11 orbit-enum size=2 examined=190 live=67 pruned=39 new_minimal=65 cumulative_minimal=65 elapsed_s=0.000
+#   step=11 var=X_11 orbit-enum size=3 examined=703 live=53 pruned=122 new_minimal=2 cumulative_minimal=67 elapsed_s=0.000
+#   step=11 var=X_11 orbit-enum size=4 examined=1126 live=0 pruned=79 new_minimal=17 cumulative_minimal=84 elapsed_s=0.000
+#   step=11 var=X_11 pattern 1/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 2/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 3/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 4/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 5/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 6/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 7/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 8/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 9/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 10/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 11/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 12/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 13/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 14/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 15/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 16/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 17/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 18/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 19/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 20/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 21/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 22/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 23/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 24/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 25/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 26/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 27/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 28/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 29/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 30/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 31/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 32/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 33/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 34/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 35/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 36/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 37/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 38/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 39/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 40/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 41/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 42/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 43/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 44/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 45/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 46/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 47/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 48/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 49/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 50/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 51/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 52/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 53/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 54/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 55/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 56/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 57/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 58/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 59/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 60/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 61/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 62/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 63/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 64/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 65/84 size=2 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 66/84 size=3 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 67/84 size=3 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 68/84 size=4 expansion=1 cumulative_kept=0
+#   step=11 var=X_11 pattern 69/84 size=4 expansion=1 cumulative_kept=1
+#   step=11 var=X_11 pattern 70/84 size=4 expansion=1 cumulative_kept=1
+#   step=11 var=X_11 pattern 71/84 size=4 expansion=1 cumulative_kept=1
+#   step=11 var=X_11 pattern 72/84 size=4 expansion=1 cumulative_kept=1
+#   step=11 var=X_11 pattern 73/84 size=4 expansion=1 cumulative_kept=1
+#   step=11 var=X_11 pattern 74/84 size=4 expansion=1 cumulative_kept=1
+#   step=11 var=X_11 pattern 75/84 size=4 expansion=1 cumulative_kept=1
+#   step=11 var=X_11 pattern 76/84 size=4 expansion=1 cumulative_kept=1
+#   step=11 var=X_11 pattern 77/84 size=4 expansion=1 cumulative_kept=1
+#   step=11 var=X_11 pattern 78/84 size=4 expansion=1 cumulative_kept=1
+#   step=11 var=X_11 pattern 79/84 size=4 expansion=1 cumulative_kept=1
+#   step=11 var=X_11 pattern 80/84 size=4 expansion=1 cumulative_kept=1
+#   step=11 var=X_11 pattern 81/84 size=4 expansion=1 cumulative_kept=1
+#   step=11 var=X_11 pattern 82/84 size=4 expansion=1 cumulative_kept=1
+#   step=11 var=X_11 pattern 83/84 size=4 expansion=1 cumulative_kept=1
+#   step=11 var=X_11 pattern 84/84 size=4 expansion=1 cumulative_kept=1
+step=11 var=X_11 pi_in=19 n_minimal_J=84 n_resolvents_raw=1 n_resolvents_kept=1 max_J_size=4 pi_out_before_sub=133 pi_out_after_sub=133 sub_elim=0 sub_elapsed_s=0.001 n_distinct_sets=19 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=83 prefix_sub=0 pruned_leaves=83 dup=0 expand_elapsed_s=0.001 elapsed_s=0.003
+# starting step=10 var=X_10 pi_in=17 pi_current=133 cap=16
+#   step=10 var=X_10 grouped pi_bar=17 distinct_value_sets=17 avg_group_size=1.0
+#   step=10 var=X_10 orbit-enum size=1 live=17 new_minimal=0
+#   step=10 var=X_10 orbit-enum size=2 examined=153 live=56 pruned=15 new_minimal=65 cumulative_minimal=65 elapsed_s=0.000
+#   step=10 var=X_10 orbit-enum size=3 examined=522 live=36 pruned=50 new_minimal=0 cumulative_minimal=65 elapsed_s=0.000
+#   step=10 var=X_10 orbit-enum size=4 examined=747 live=0 pruned=23 new_minimal=9 cumulative_minimal=74 elapsed_s=0.000
+#   step=10 var=X_10 pattern 1/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 2/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 3/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 4/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 5/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 6/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 7/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 8/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 9/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 10/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 11/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 12/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 13/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 14/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 15/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 16/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 17/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 18/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 19/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 20/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 21/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 22/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 23/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 24/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 25/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 26/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 27/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 28/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 29/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 30/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 31/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 32/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 33/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 34/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 35/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 36/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 37/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 38/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 39/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 40/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 41/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 42/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 43/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 44/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 45/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 46/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 47/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 48/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 49/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 50/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 51/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 52/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 53/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 54/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 55/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 56/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 57/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 58/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 59/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 60/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 61/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 62/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 63/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 64/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 65/74 size=2 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 66/74 size=4 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 67/74 size=4 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 68/74 size=4 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 69/74 size=4 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 70/74 size=4 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 71/74 size=4 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 72/74 size=4 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 73/74 size=4 expansion=1 cumulative_kept=0
+#   step=10 var=X_10 pattern 74/74 size=4 expansion=1 cumulative_kept=0
+step=10 var=X_10 pi_in=17 n_minimal_J=74 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=4 pi_out_before_sub=116 pi_out_after_sub=116 sub_elim=0 sub_elapsed_s=0.001 n_distinct_sets=17 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=74 prefix_sub=0 pruned_leaves=74 dup=0 expand_elapsed_s=0.001 elapsed_s=0.003
+# starting step=9 var=X_9 pi_in=16 pi_current=116 cap=16
+#   step=9 var=X_9 grouped pi_bar=16 distinct_value_sets=16 avg_group_size=1.0
+#   step=9 var=X_9 orbit-enum size=1 live=16 new_minimal=0
+#   step=9 var=X_9 orbit-enum size=2 examined=136 live=53 pruned=2 new_minimal=65 cumulative_minimal=65 elapsed_s=0.000
+#   step=9 var=X_9 orbit-enum size=3 examined=465 live=33 pruned=37 new_minimal=0 cumulative_minimal=65 elapsed_s=0.000
+#   step=9 var=X_9 orbit-enum size=4 examined=654 live=0 pruned=16 new_minimal=8 cumulative_minimal=73 elapsed_s=0.000
+#   step=9 var=X_9 pattern 1/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 2/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 3/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 4/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 5/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 6/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 7/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 8/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 9/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 10/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 11/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 12/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 13/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 14/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 15/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 16/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 17/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 18/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 19/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 20/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 21/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 22/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 23/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 24/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 25/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 26/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 27/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 28/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 29/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 30/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 31/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 32/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 33/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 34/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 35/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 36/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 37/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 38/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 39/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 40/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 41/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 42/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 43/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 44/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 45/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 46/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 47/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 48/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 49/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 50/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 51/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 52/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 53/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 54/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 55/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 56/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 57/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 58/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 59/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 60/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 61/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 62/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 63/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 64/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 65/73 size=2 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 66/73 size=4 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 67/73 size=4 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 68/73 size=4 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 69/73 size=4 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 70/73 size=4 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 71/73 size=4 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 72/73 size=4 expansion=1 cumulative_kept=0
+#   step=9 var=X_9 pattern 73/73 size=4 expansion=1 cumulative_kept=0
+step=9 var=X_9 pi_in=16 n_minimal_J=73 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=4 pi_out_before_sub=100 pi_out_after_sub=100 sub_elim=0 sub_elapsed_s=0.001 n_distinct_sets=16 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=73 prefix_sub=0 pruned_leaves=73 dup=0 expand_elapsed_s=0.001 elapsed_s=0.002
+# starting step=8 var=X_8 pi_in=16 pi_current=100 cap=16
+#   step=8 var=X_8 grouped pi_bar=16 distinct_value_sets=16 avg_group_size=1.0
+#   step=8 var=X_8 orbit-enum size=1 live=16 new_minimal=0
+#   step=8 var=X_8 orbit-enum size=2 examined=136 live=53 pruned=2 new_minimal=65 cumulative_minimal=65 elapsed_s=0.000
+#   step=8 var=X_8 orbit-enum size=3 examined=465 live=33 pruned=37 new_minimal=0 cumulative_minimal=65 elapsed_s=0.000
+#   step=8 var=X_8 orbit-enum size=4 examined=654 live=0 pruned=16 new_minimal=8 cumulative_minimal=73 elapsed_s=0.000
+#   step=8 var=X_8 pattern 1/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 2/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 3/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 4/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 5/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 6/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 7/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 8/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 9/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 10/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 11/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 12/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 13/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 14/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 15/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 16/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 17/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 18/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 19/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 20/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 21/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 22/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 23/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 24/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 25/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 26/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 27/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 28/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 29/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 30/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 31/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 32/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 33/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 34/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 35/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 36/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 37/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 38/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 39/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 40/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 41/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 42/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 43/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 44/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 45/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 46/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 47/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 48/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 49/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 50/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 51/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 52/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 53/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 54/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 55/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 56/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 57/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 58/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 59/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 60/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 61/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 62/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 63/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 64/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 65/73 size=2 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 66/73 size=4 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 67/73 size=4 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 68/73 size=4 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 69/73 size=4 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 70/73 size=4 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 71/73 size=4 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 72/73 size=4 expansion=1 cumulative_kept=0
+#   step=8 var=X_8 pattern 73/73 size=4 expansion=1 cumulative_kept=0
+step=8 var=X_8 pi_in=16 n_minimal_J=73 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=4 pi_out_before_sub=84 pi_out_after_sub=84 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=16 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=73 prefix_sub=0 pruned_leaves=73 dup=0 expand_elapsed_s=0.001 elapsed_s=0.002
+# starting step=7 var=X_7 pi_in=16 pi_current=84 cap=16
+#   step=7 var=X_7 grouped pi_bar=16 distinct_value_sets=16 avg_group_size=1.0
+#   step=7 var=X_7 orbit-enum size=1 live=16 new_minimal=0
+#   step=7 var=X_7 orbit-enum size=2 examined=136 live=53 pruned=2 new_minimal=65 cumulative_minimal=65 elapsed_s=0.000
+#   step=7 var=X_7 orbit-enum size=3 examined=465 live=33 pruned=37 new_minimal=0 cumulative_minimal=65 elapsed_s=0.000
+#   step=7 var=X_7 orbit-enum size=4 examined=654 live=0 pruned=16 new_minimal=8 cumulative_minimal=73 elapsed_s=0.000
+#   step=7 var=X_7 pattern 1/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 2/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 3/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 4/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 5/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 6/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 7/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 8/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 9/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 10/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 11/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 12/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 13/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 14/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 15/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 16/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 17/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 18/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 19/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 20/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 21/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 22/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 23/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 24/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 25/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 26/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 27/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 28/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 29/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 30/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 31/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 32/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 33/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 34/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 35/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 36/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 37/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 38/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 39/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 40/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 41/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 42/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 43/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 44/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 45/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 46/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 47/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 48/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 49/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 50/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 51/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 52/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 53/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 54/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 55/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 56/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 57/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 58/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 59/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 60/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 61/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 62/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 63/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 64/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 65/73 size=2 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 66/73 size=4 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 67/73 size=4 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 68/73 size=4 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 69/73 size=4 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 70/73 size=4 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 71/73 size=4 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 72/73 size=4 expansion=1 cumulative_kept=0
+#   step=7 var=X_7 pattern 73/73 size=4 expansion=1 cumulative_kept=0
+step=7 var=X_7 pi_in=16 n_minimal_J=73 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=4 pi_out_before_sub=68 pi_out_after_sub=68 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=16 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=73 prefix_sub=0 pruned_leaves=73 dup=0 expand_elapsed_s=0.001 elapsed_s=0.002
+# starting step=6 var=X_6 pi_in=16 pi_current=68 cap=16
+#   step=6 var=X_6 grouped pi_bar=16 distinct_value_sets=16 avg_group_size=1.0
+#   step=6 var=X_6 orbit-enum size=1 live=16 new_minimal=0
+#   step=6 var=X_6 orbit-enum size=2 examined=136 live=53 pruned=2 new_minimal=65 cumulative_minimal=65 elapsed_s=0.000
+#   step=6 var=X_6 orbit-enum size=3 examined=465 live=33 pruned=37 new_minimal=0 cumulative_minimal=65 elapsed_s=0.000
+#   step=6 var=X_6 orbit-enum size=4 examined=654 live=0 pruned=16 new_minimal=8 cumulative_minimal=73 elapsed_s=0.000
+#   step=6 var=X_6 pattern 1/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 2/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 3/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 4/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 5/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 6/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 7/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 8/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 9/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 10/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 11/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 12/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 13/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 14/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 15/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 16/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 17/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 18/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 19/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 20/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 21/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 22/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 23/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 24/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 25/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 26/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 27/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 28/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 29/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 30/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 31/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 32/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 33/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 34/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 35/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 36/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 37/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 38/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 39/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 40/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 41/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 42/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 43/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 44/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 45/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 46/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 47/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 48/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 49/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 50/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 51/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 52/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 53/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 54/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 55/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 56/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 57/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 58/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 59/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 60/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 61/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 62/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 63/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 64/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 65/73 size=2 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 66/73 size=4 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 67/73 size=4 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 68/73 size=4 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 69/73 size=4 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 70/73 size=4 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 71/73 size=4 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 72/73 size=4 expansion=1 cumulative_kept=0
+#   step=6 var=X_6 pattern 73/73 size=4 expansion=1 cumulative_kept=0
+step=6 var=X_6 pi_in=16 n_minimal_J=73 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=4 pi_out_before_sub=52 pi_out_after_sub=52 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=16 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=73 prefix_sub=0 pruned_leaves=73 dup=0 expand_elapsed_s=0.001 elapsed_s=0.002
+# starting step=5 var=X_5 pi_in=16 pi_current=52 cap=16
+#   step=5 var=X_5 grouped pi_bar=16 distinct_value_sets=16 avg_group_size=1.0
+#   step=5 var=X_5 orbit-enum size=1 live=16 new_minimal=0
+#   step=5 var=X_5 orbit-enum size=2 examined=136 live=53 pruned=2 new_minimal=65 cumulative_minimal=65 elapsed_s=0.000
+#   step=5 var=X_5 orbit-enum size=3 examined=465 live=33 pruned=37 new_minimal=0 cumulative_minimal=65 elapsed_s=0.000
+#   step=5 var=X_5 orbit-enum size=4 examined=654 live=0 pruned=16 new_minimal=8 cumulative_minimal=73 elapsed_s=0.000
+#   step=5 var=X_5 pattern 1/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 2/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 3/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 4/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 5/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 6/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 7/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 8/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 9/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 10/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 11/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 12/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 13/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 14/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 15/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 16/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 17/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 18/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 19/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 20/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 21/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 22/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 23/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 24/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 25/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 26/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 27/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 28/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 29/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 30/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 31/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 32/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 33/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 34/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 35/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 36/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 37/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 38/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 39/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 40/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 41/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 42/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 43/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 44/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 45/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 46/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 47/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 48/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 49/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 50/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 51/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 52/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 53/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 54/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 55/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 56/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 57/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 58/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 59/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 60/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 61/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 62/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 63/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 64/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 65/73 size=2 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 66/73 size=4 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 67/73 size=4 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 68/73 size=4 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 69/73 size=4 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 70/73 size=4 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 71/73 size=4 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 72/73 size=4 expansion=1 cumulative_kept=0
+#   step=5 var=X_5 pattern 73/73 size=4 expansion=1 cumulative_kept=0
+step=5 var=X_5 pi_in=16 n_minimal_J=73 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=4 pi_out_before_sub=36 pi_out_after_sub=36 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=16 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=73 prefix_sub=0 pruned_leaves=73 dup=0 expand_elapsed_s=0.001 elapsed_s=0.002
+# starting step=4 var=X_4 pi_in=16 pi_current=36 cap=16
+#   step=4 var=X_4 grouped pi_bar=16 distinct_value_sets=16 avg_group_size=1.0
+#   step=4 var=X_4 orbit-enum size=1 live=16 new_minimal=0
+#   step=4 var=X_4 orbit-enum size=2 examined=136 live=53 pruned=2 new_minimal=65 cumulative_minimal=65 elapsed_s=0.000
+#   step=4 var=X_4 orbit-enum size=3 examined=465 live=33 pruned=37 new_minimal=0 cumulative_minimal=65 elapsed_s=0.000
+#   step=4 var=X_4 orbit-enum size=4 examined=654 live=0 pruned=16 new_minimal=8 cumulative_minimal=73 elapsed_s=0.000
+#   step=4 var=X_4 pattern 1/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 2/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 3/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 4/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 5/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 6/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 7/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 8/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 9/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 10/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 11/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 12/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 13/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 14/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 15/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 16/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 17/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 18/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 19/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 20/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 21/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 22/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 23/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 24/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 25/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 26/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 27/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 28/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 29/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 30/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 31/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 32/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 33/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 34/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 35/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 36/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 37/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 38/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 39/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 40/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 41/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 42/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 43/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 44/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 45/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 46/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 47/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 48/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 49/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 50/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 51/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 52/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 53/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 54/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 55/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 56/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 57/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 58/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 59/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 60/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 61/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 62/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 63/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 64/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 65/73 size=2 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 66/73 size=4 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 67/73 size=4 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 68/73 size=4 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 69/73 size=4 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 70/73 size=4 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 71/73 size=4 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 72/73 size=4 expansion=1 cumulative_kept=0
+#   step=4 var=X_4 pattern 73/73 size=4 expansion=1 cumulative_kept=0
+step=4 var=X_4 pi_in=16 n_minimal_J=73 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=4 pi_out_before_sub=20 pi_out_after_sub=20 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=16 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=73 prefix_sub=0 pruned_leaves=73 dup=0 expand_elapsed_s=0.001 elapsed_s=0.002
+# starting step=3 var=X_3 pi_in=16 pi_current=20 cap=16
+#   step=3 var=X_3 grouped pi_bar=16 distinct_value_sets=16 avg_group_size=1.0
+#   step=3 var=X_3 orbit-enum size=1 live=16 new_minimal=0
+#   step=3 var=X_3 orbit-enum size=2 examined=136 live=53 pruned=2 new_minimal=65 cumulative_minimal=65 elapsed_s=0.000
+#   step=3 var=X_3 orbit-enum size=3 examined=465 live=33 pruned=37 new_minimal=0 cumulative_minimal=65 elapsed_s=0.000
+#   step=3 var=X_3 orbit-enum size=4 examined=654 live=0 pruned=16 new_minimal=8 cumulative_minimal=73 elapsed_s=0.000
+#   step=3 var=X_3 pattern 1/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 2/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 3/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 4/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 5/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 6/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 7/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 8/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 9/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 10/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 11/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 12/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 13/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 14/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 15/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 16/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 17/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 18/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 19/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 20/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 21/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 22/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 23/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 24/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 25/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 26/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 27/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 28/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 29/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 30/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 31/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 32/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 33/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 34/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 35/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 36/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 37/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 38/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 39/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 40/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 41/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 42/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 43/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 44/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 45/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 46/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 47/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 48/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 49/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 50/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 51/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 52/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 53/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 54/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 55/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 56/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 57/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 58/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 59/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 60/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 61/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 62/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 63/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 64/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 65/73 size=2 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 66/73 size=4 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 67/73 size=4 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 68/73 size=4 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 69/73 size=4 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 70/73 size=4 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 71/73 size=4 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 72/73 size=4 expansion=1 cumulative_kept=0
+#   step=3 var=X_3 pattern 73/73 size=4 expansion=1 cumulative_kept=0
+step=3 var=X_3 pi_in=16 n_minimal_J=73 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=4 pi_out_before_sub=4 pi_out_after_sub=4 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=16 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=73 prefix_sub=0 pruned_leaves=73 dup=0 expand_elapsed_s=0.001 elapsed_s=0.002
+# starting step=2 var=X_2 pi_in=3 pi_current=4 cap=16
+#   step=2 var=X_2 grouped pi_bar=3 distinct_value_sets=3 avg_group_size=1.0
+#   step=2 var=X_2 orbit-enum size=1 live=3 new_minimal=0
+#   step=2 var=X_2 orbit-enum size=2 examined=6 live=3 pruned=0 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+#   step=2 var=X_2 orbit-enum size=3 examined=7 live=1 pruned=0 new_minimal=0 cumulative_minimal=0 elapsed_s=0.000
+step=2 var=X_2 pi_in=3 n_minimal_J=0 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=0 pi_out_before_sub=1 pi_out_after_sub=1 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=3 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=0.000 elapsed_s=0.000
+# starting step=1 var=X_1 pi_in=1 pi_current=1 cap=16
+#   step=1 var=X_1 grouped pi_bar=1 distinct_value_sets=1 avg_group_size=1.0
+#   step=1 var=X_1 orbit-enum size=1 live=1 new_minimal=0
+step=1 var=X_1 pi_in=1 n_minimal_J=0 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=0 pi_out_before_sub=0 pi_out_after_sub=0 sub_elim=0 sub_elapsed_s=0.000 n_distinct_sets=1 n_taut=0 fwd_sub_amb=0 fwd_sub_intra=0 prefix_taut=0 lookahead_taut=0 prefix_sub=0 pruned_leaves=0 dup=0 expand_elapsed_s=0.000 elapsed_s=0.000
+# starting step=0 var=X_0 pi_in=0 pi_current=0 cap=1
+step=0 var=X_0 pi_in=0 n_minimal_J=0 n_resolvents_raw=0 n_resolvents_kept=0 max_J_size=0 pi_out_before_sub=0 pi_out_after_sub=0 sub_elim=0 sub_elapsed_s=0.000 elapsed_s=0.000

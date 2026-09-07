@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT / "casper"))
 
 from constraints import Constraints
 
@@ -18,7 +18,7 @@ def main() -> None:
     )
     p.add_argument(
         "--artifact", type=Path,
-        default=ROOT / "examples" / "sudoku_group9_compiled.json",
+        default=ROOT / "constraints" / "sudoku" / "sudoku_group9_compiled.json",
     )
     p.add_argument("--size", type=int, default=9)
     p.add_argument("--trials", type=int, default=20000)

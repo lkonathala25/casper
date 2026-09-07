@@ -1,0 +1,13 @@
+=== structural checks ===
+  30x30 monotone == pre-fix encoding: True
+  30x30 monotone is prefix of full:   True
+
+=== alphabet sizes ===
+  30x30 monotone  total_dim=4264   dist=[(2, 4), (3, 112), (5, 784)]
+  30x30 full      total_dim=5944   dist=[(2, 4), (4, 112), (7, 784)]
+
+=== label re-conversion ===
+  30x30 test  n=1000   rejected_by_old_alphabet=89    (8.90%)  full_failures=0  labels_changed=89 (match_rejected=True)  roundtrip=100.0%
+  30x30 train n=10000  rejected_by_old_alphabet=937   (9.37%)  full_failures=0  labels_changed=937 (match_rejected=True)  roundtrip=100.0%
+
+Saved -> logs/warcraft_alphabet_fix_30x30.json

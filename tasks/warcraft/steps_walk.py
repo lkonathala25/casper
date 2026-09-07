@@ -7,8 +7,8 @@ from pathlib import Path
 import numpy as np
 import torch
 
-ROOT = Path(__file__).resolve().parents[1]
-for sub in ("src", "src_steps"):
+ROOT = Path(__file__).resolve().parents[2]
+for sub in ("casper", "tasks/warcraft"):
     if str(ROOT / sub) not in sys.path:
         sys.path.insert(0, str(ROOT / sub))
 

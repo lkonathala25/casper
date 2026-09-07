@@ -1,0 +1,48 @@
+#   s8 orbit-enum size=1 live=18 new_minimal=0
+#   s8 orbit-enum size=2 examined=171 live=36 pruned=72 new_minimal=45 cumulative_minimal=45 elapsed_s=0.000
+#   s8 orbit-enum size=3 examined=579 live=84 pruned=252 new_minimal=0 cumulative_minimal=45 elapsed_s=0.000
+#   s8 orbit-enum size=4 examined=1461 live=126 pruned=504 new_minimal=0 cumulative_minimal=45 elapsed_s=0.000
+#   s8 orbit-enum size=5 examined=2721 live=126 pruned=630 new_minimal=0 cumulative_minimal=45 elapsed_s=0.001
+#   s8 orbit-enum size=6 examined=3939 live=84 pruned=504 new_minimal=0 cumulative_minimal=45 elapsed_s=0.002
+#   s8 orbit-enum size=7 examined=4731 live=36 pruned=252 new_minimal=0 cumulative_minimal=45 elapsed_s=0.000
+#   s8 orbit-enum size=8 examined=5064 live=9 pruned=72 new_minimal=0 cumulative_minimal=45 elapsed_s=0.000
+#   s8 orbit-enum size=9 examined=5146 live=0 pruned=9 new_minimal=1 cumulative_minimal=46 elapsed_s=0.000
+>>> step=8 m=18 patterns=46 enum_time=0.00s
+>>> step=8 eliminated, pi_current=288, step_time=0.33s
+
+#   s7 orbit-enum size=1 live=45 new_minimal=0
+#   s7 orbit-enum size=2 examined=1035 live=360 pruned=252 new_minimal=378 cumulative_minimal=378 elapsed_s=0.001
+#   s7 orbit-enum size=3 examined=6760 live=84 pruned=2016 new_minimal=372 cumulative_minimal=750 elapsed_s=0.003
+#   s7 orbit-enum size=4 examined=9910 live=126 pruned=2772 new_minimal=0 cumulative_minimal=750 elapsed_s=0.002
+#   s7 orbit-enum size=5 examined=14572 live=126 pruned=3780 new_minimal=0 cumulative_minimal=750 elapsed_s=0.002
+#   s7 orbit-enum size=6 examined=19192 live=84 pruned=3276 new_minimal=0 cumulative_minimal=750 elapsed_s=0.002
+#   s7 orbit-enum size=7 examined=22252 live=36 pruned=1764 new_minimal=0 cumulative_minimal=750 elapsed_s=0.002
+#   s7 orbit-enum size=8 examined=23557 live=9 pruned=540 new_minimal=0 cumulative_minimal=750 elapsed_s=0.001
+#   s7 orbit-enum size=9 examined=23882 live=0 pruned=72 new_minimal=1 cumulative_minimal=751 elapsed_s=0.000
+>>> step=7 m=45 patterns=751 enum_time=0.01s
+>>> step=7 eliminated, pi_current=273, step_time=0.21s
+
+#   s6 orbit-enum size=1 live=93 new_minimal=0
+#   s6 orbit-enum size=2 examined=4371 live=2934 pruned=504 new_minimal=840 cumulative_minimal=840 elapsed_s=0.003
+#   s6 orbit-enum size=3 examined=91706 live=2352 pruned=35028 new_minimal=15750 cumulative_minimal=16590 elapsed_s=0.041
+#   s6 orbit-enum size=4 examined=167323 live=126 pruned=27944 new_minimal=1470 cumulative_minimal=18060 elapsed_s=0.034
+#   s6 orbit-enum size=5 examined=178033 live=126 pruned=10080 new_minimal=0 cumulative_minimal=18060 elapsed_s=0.006
+#   s6 orbit-enum size=6 examined=188701 live=84 pruned=9324 new_minimal=0 cumulative_minimal=18060 elapsed_s=0.006
+#   s6 orbit-enum size=7 examined=195793 live=36 pruned=5376 new_minimal=0 cumulative_minimal=18060 elapsed_s=0.004
+#   s6 orbit-enum size=8 examined=198826 live=9 pruned=1764 new_minimal=0 cumulative_minimal=18060 elapsed_s=0.002
+#   s6 orbit-enum size=9 examined=199583 live=0 pruned=252 new_minimal=1 cumulative_minimal=18061 elapsed_s=0.001
+>>> step=6 m=93 patterns=18061 enum_time=0.10s
+>>> step=6 eliminated, pi_current=261, step_time=3.57s
+
+#   s5 orbit-enum size=1 live=135 new_minimal=0
+#   s5 orbit-enum size=2 examined=9180 live=8100 pruned=630 new_minimal=315 cumulative_minimal=315 elapsed_s=0.007
+#   s5 orbit-enum size=3 examined=359077 live=58800 pruned=176820 new_minimal=86940 cumulative_minimal=87255 elapsed_s=0.199
+#   s5 orbit-enum size=4 examined=2383331 live=7560 pruned=904646 new_minimal=122220 cumulative_minimal=209475 elapsed_s=0.950
+#   s5 orbit-enum size=5 examined=2723863 live=126 pruned=152758 new_minimal=3402 cumulative_minimal=212877 elapsed_s=0.166
+#   s5 orbit-enum size=6 examined=2739823 live=84 pruned=15246 new_minimal=0 cumulative_minimal=212877 elapsed_s=0.009
+#   s5 orbit-enum size=7 examined=2750443 live=36 pruned=9324 new_minimal=0 cumulative_minimal=212877 elapsed_s=0.006
+#   s5 orbit-enum size=8 examined=2754988 live=9 pruned=3276 new_minimal=0 cumulative_minimal=212877 elapsed_s=0.003
+#   s5 orbit-enum size=9 examined=2756123 live=0 pruned=504 new_minimal=1 cumulative_minimal=212878 elapsed_s=0.001
+>>> step=5 m=135 patterns=212878 enum_time=1.37s
+>>> step=5 eliminated, pi_current=216, step_time=948.86s
+

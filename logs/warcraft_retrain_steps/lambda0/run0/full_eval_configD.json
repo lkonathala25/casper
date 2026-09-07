@@ -1,0 +1,50 @@
+{
+  "ckpt": "logs/warcraft_retrain_steps/lambda0/run0/crl_in_training/best_run0.pt",
+  "boards": 1000,
+  "config": "D (time-aware + no-backtrack)",
+  "certify": true,
+  "certificates_passed": 1000,
+  "certificate_failures": 0,
+  "dead_ends": 0,
+  "erasure_rate_pct": 2.0,
+  "mean_cells_snipped": 2.262,
+  "mean_arrival": 24.44,
+  "ms_per_board": 0.4399903565645218,
+  "EM_pct": 73.1,
+  "exact_fraction": 0.731,
+  "hamming_mean": 5.058,
+  "optimal_pct": 77.7,
+  "within_1pct": 79.80000000000001,
+  "within_5pct": 88.7,
+  "within_10pct": 91.8,
+  "cost_ratio_mean": 1.0482888886435573,
+  "cost_ratio_median": 1.0,
+  "histogram": {
+    "<1.0 (degenerate)": 0,
+    "[1.00, 1.01)": 798,
+    "[1.01, 1.05)": 89,
+    "[1.05, 1.10)": 31,
+    "[1.10, 1.25)": 44,
+    "[1.25, 1.50)": 17,
+    "[1.50, 2.00)": 10,
+    "[2.00, 5.00)": 11,
+    "[5.00, inf)": 0,
+    "invalid (no path)": 0
+  },
+  "census": {
+    "monotone_gt": {
+      "n": 943,
+      "EM_pct": 76.88229056203606,
+      "optimal_pct": 81.44220572640509,
+      "consistent_pct": 100.0,
+      "ratio_mean": 1.0394743971092897
+    },
+    "non_monotone_gt": {
+      "n": 57,
+      "EM_pct": 10.526315789473683,
+      "optimal_pct": 15.789473684210526,
+      "consistent_pct": 100.0,
+      "ratio_mean": 1.1941145994648652
+    }
+  }
+}

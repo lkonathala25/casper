@@ -7,7 +7,9 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "src"))
+for _sub in ("casper", "tasks/sudoku"):
+    if str(ROOT / _sub) not in sys.path:
+        sys.path.insert(0, str(ROOT / _sub))
 
 from resolution import compile_constraints, to_json
 from signed_clauses import parse_constraints

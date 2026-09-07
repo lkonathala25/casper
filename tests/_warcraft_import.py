@@ -4,20 +4,20 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# src/ and src_warcraft/ both define these module names. Importing a
+# tasks/mnist/ and tasks/warcraft/ both define these module names. Importing a
 # src_warcraft module leaves its versions in sys.modules, which then shadow
 # src/ for every other test collected into the same process.
 _COLLIDING = ("constraint_layer", "data", "model", "minedit", "train")
 
 
 def load_warcraft(name):
-    """Import a src_warcraft module without leaving it shadowing src/.
+    """Import a tasks/warcraft module without leaving it shadowing tasks/mnist/.
 
-    src_warcraft is prepended only for the duration of the import, and the
+    tasks/warcraft is prepended only for the duration of the import, and the
     colliding module names it pulls in are evicted from sys.modules afterwards
-    so a later `import constraint_layer` still resolves against src/.
+    so a later `import constraint_layer` still resolves against tasks/mnist/.
     """
-    path = str(ROOT / "src_warcraft")
+    path = str(ROOT / "tasks" / "warcraft")
     added = path not in sys.path
     sys.path.insert(0, path)
     # Evict first as well as last: a src/ module already cached under a

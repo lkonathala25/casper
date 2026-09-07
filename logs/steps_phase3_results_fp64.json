@@ -1,0 +1,220 @@
+{
+  "grid": 12,
+  "eps": 0.001,
+  "dtype": "float64",
+  "tie_break": "no-backtrack",
+  "seed": 0,
+  "target_cell": 143,
+  "feasible_matches_artifact": null,
+  "modes": {
+    "smooth": {
+      "boards": 200,
+      "dead_ends": 0,
+      "decision_steps": 27113,
+      "argmax_vs_minedit_step_divergences": 0,
+      "argmax_vs_minedit_strict_divergences": 0,
+      "argmax_vs_minedit_board_divergences": 0,
+      "divergence_rate_boards": 0.0,
+      "divergence_rate_steps": 0.0,
+      "divergence_examples": [],
+      "early_cut_boards_checked": 50,
+      "early_cut_mismatches": [],
+      "boards_needing_erasure": 200,
+      "pct_boards_needing_erasure": 100.0,
+      "mean_cells_snipped_all_boards": 112.24,
+      "mean_cells_snipped_when_erased": 112.24,
+      "valid_certificates": 200,
+      "certificate_failures": 0,
+      "mean_arrival_step": 139.79,
+      "horizon": 143,
+      "ms_per_board_argmax": 2.916288385167718
+    },
+    "guided": {
+      "boards": 200,
+      "dead_ends": 0,
+      "decision_steps": 4488,
+      "argmax_vs_minedit_step_divergences": 0,
+      "argmax_vs_minedit_strict_divergences": 0,
+      "argmax_vs_minedit_board_divergences": 0,
+      "divergence_rate_boards": 0.0,
+      "divergence_rate_steps": 0.0,
+      "divergence_examples": [],
+      "early_cut_boards_checked": 50,
+      "early_cut_mismatches": [],
+      "boards_needing_erasure": 23,
+      "pct_boards_needing_erasure": 11.5,
+      "mean_cells_snipped_all_boards": 0.3,
+      "mean_cells_snipped_when_erased": 2.608695652173913,
+      "valid_certificates": 200,
+      "certificate_failures": 0,
+      "mean_arrival_step": 22.44,
+      "horizon": 143,
+      "ms_per_board_argmax": 0.4224879015237093
+    },
+    "ties": {
+      "boards": 200,
+      "dead_ends": 0,
+      "decision_steps": 27187,
+      "argmax_vs_minedit_step_divergences": 379,
+      "argmax_vs_minedit_strict_divergences": 0,
+      "argmax_vs_minedit_board_divergences": 162,
+      "divergence_rate_boards": 0.81,
+      "divergence_rate_steps": 0.013940486261816308,
+      "divergence_examples": [
+        {
+          "board": 0,
+          "mode": "ties",
+          "strict": false,
+          "first": {
+            "step": 49,
+            "candidates": [
+              1,
+              12,
+              14,
+              25
+            ],
+            "argmax": 1,
+            "minedit": 14,
+            "distances": [
+              0.11400907125082542,
+              0.12937971221186037,
+              0.1140090712508254,
+              0.11400907125082542
+            ],
+            "probs": [
+              0.008046123713452657,
+              0.0029600034953012537,
+              0.008046123713452657,
+              0.008046123713452657
+            ],
+            "reversal": 12
+          }
+        },
+        {
+          "board": 1,
+          "mode": "ties",
+          "strict": false,
+          "first": {
+            "step": 59,
+            "candidates": [
+              97,
+              108,
+              110,
+              121
+            ],
+            "argmax": 110,
+            "minedit": 121,
+            "distances": [
+              0.05715855983083081,
+              0.10270917458423647,
+              0.05715855983083082,
+              0.05715855983083081
+            ],
+            "probs": [
+              0.02110487586503457,
+              0.0047091343316778955,
+              0.02110487586503457,
+              0.02110487586503457
+            ],
+            "reversal": 97
+          }
+        },
+        {
+          "board": 2,
+          "mode": "ties",
+          "strict": false,
+          "first": {
+            "step": 53,
+            "candidates": [
+              14,
+              25,
+              27,
+              38
+            ],
+            "argmax": 14,
+            "minedit": 38,
+            "distances": [
+              0.058740849771026844,
+              0.09428720456934288,
+              0.11062903413627777,
+              0.05874084977102684
+            ],
+            "probs": [
+              0.021752885218600283,
+              0.0080024392580852,
+              0.0017855855532346327,
+              0.021752885218600283
+            ],
+            "reversal": 25
+          }
+        },
+        {
+          "board": 3,
+          "mode": "ties",
+          "strict": false,
+          "first": {
+            "step": 48,
+            "candidates": [
+              0,
+              2,
+              13
+            ],
+            "argmax": 2,
+            "minedit": 13,
+            "distances": [
+              0.10575357830353557,
+              0.08382448570107554,
+              0.08382448570107552
+            ],
+            "probs": [
+              0.004715776710818437,
+              0.01281881014008812,
+              0.01281881014008812
+            ],
+            "reversal": 13
+          }
+        },
+        {
+          "board": 4,
+          "mode": "ties",
+          "strict": false,
+          "first": {
+            "step": 49,
+            "candidates": [
+              1,
+              12,
+              14,
+              25
+            ],
+            "argmax": 1,
+            "minedit": 14,
+            "distances": [
+              0.06950940692259672,
+              0.11008205536641959,
+              0.0695094069225967,
+              0.11008205536641959
+            ],
+            "probs": [
+              0.016193838480064563,
+              0.003613333773474612,
+              0.016193838480064563,
+              0.003613333773474612
+            ],
+            "reversal": 14
+          }
+        }
+      ],
+      "early_cut_boards_checked": 50,
+      "early_cut_mismatches": [],
+      "boards_needing_erasure": 200,
+      "pct_boards_needing_erasure": 100.0,
+      "mean_cells_snipped_all_boards": 114.41,
+      "mean_cells_snipped_when_erased": 114.41,
+      "valid_certificates": 200,
+      "certificate_failures": 0,
+      "mean_arrival_step": 140.86,
+      "horizon": 143,
+      "ms_per_board_argmax": 2.901947982609272
+    }
+  }
+}

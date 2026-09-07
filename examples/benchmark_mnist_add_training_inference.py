@@ -15,7 +15,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
 ROOT = Path(__file__).resolve().parents[1]
-SRC = ROOT / "src"
+SRC = ROOT / "tasks/mnist"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
@@ -174,7 +174,7 @@ def main() -> None:
 
     for n_digits in args.n:
         print(f"Benchmarking N={n_digits}...", flush=True)
-        variable_ranges, n_inputs, _ = get_config(n_digits, "add")
+        variable_ranges, n_inputs = get_config(n_digits, "add")
         artifact = args.artifact_dir / f"mnist_add_n{n_digits}_compiled.txt"
         if not artifact.exists():
             raise FileNotFoundError(artifact)
@@ -204,7 +204,6 @@ def main() -> None:
             task="add",
             variable_ranges=variable_ranges,
             n_inputs=n_inputs,
-            projection_backend="compiled",
             compiled_file=artifact,
         ).to(device)
         learning_rate = 3e-4 if n_digits in (100, 256) else 1e-3

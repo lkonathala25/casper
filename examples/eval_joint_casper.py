@@ -10,7 +10,9 @@ from pathlib import Path
 import torch
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "src"))
+for _sub in ("casper", "tasks/sudoku"):
+    if str(ROOT / _sub) not in sys.path:
+        sys.path.insert(0, str(ROOT / _sub))
 sys.path.insert(0, str(ROOT / "examples"))
 
 from constraints import Constraints

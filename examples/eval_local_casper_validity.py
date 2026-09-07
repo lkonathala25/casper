@@ -10,7 +10,9 @@ from pathlib import Path
 import torch
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "src"))
+for _sub in ("casper", "tasks/sudoku"):
+    if str(ROOT / _sub) not in sys.path:
+        sys.path.insert(0, str(ROOT / _sub))
 
 from constraints import Constraints
 from local_casper import (
@@ -22,7 +24,7 @@ from sudoku_groups import build_groups
 
 N = 9
 N_CELLS = 81
-ARTIFACT = ROOT / "examples" / "sudoku_group9_compiled.json"
+ARTIFACT = ROOT / "constraints" / "sudoku" / "sudoku_group9_compiled.json"
 GROUPS = build_groups(N)
 BOX_NAMES = {name for name, _ in GROUPS if name.startswith("box")}
 

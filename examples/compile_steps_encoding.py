@@ -8,7 +8,7 @@ from contextlib import redirect_stdout
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-for sub in ("src", "src_steps"):
+for sub in ("casper", "tasks/warcraft"):
     if str(ROOT / sub) not in sys.path:
         sys.path.insert(0, str(ROOT / sub))
 

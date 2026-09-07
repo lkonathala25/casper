@@ -7,7 +7,7 @@ import pytest
 import torch
 
 ROOT = Path(__file__).resolve().parents[1]
-for p in (ROOT / "src_warcraft", ROOT / "src", ROOT / "examples"):
+for p in (ROOT / "tasks" / "warcraft", ROOT / "casper", ROOT / "examples"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 

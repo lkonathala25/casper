@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import torch
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT / "casper"))
 
 from casper_layer import CasperLayer
 from constraints import Constraints

@@ -8,8 +8,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-ROOT = Path(__file__).resolve().parents[1]
-for sub in ("src_warcraft", "src", "src_steps"):
+ROOT = Path(__file__).resolve().parents[2]
+for sub in ("tasks/warcraft", "tasks/warcraft"):
     if str(ROOT / sub) not in sys.path:
         sys.path.append(str(ROOT / sub))
 

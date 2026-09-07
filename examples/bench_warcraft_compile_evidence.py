@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT / "casper"))
 sys.path.insert(0, str(ROOT / "examples"))
 
 from constraints import Constraints  # noqa: E402
@@ -274,7 +274,7 @@ def run_compile(N, src_txt, out_json, timeout_s):
     t0 = time.perf_counter()
     try:
         r = subprocess.run(
-            env_prefix + [sys.executable, str(ROOT / "src" / "resolution.py"),
+            env_prefix + [sys.executable, str(ROOT / "casper" / "resolution.py"),
                           str(src_txt), str(out_json), "--quiet"],
             capture_output=True, text=True, timeout=timeout_s)
     except subprocess.TimeoutExpired:
@@ -301,7 +301,7 @@ def main() -> None:
                     help="Grids whose raw-vs-compiled comparison is sampled "
                          "rather than exhaustive.")
     ap.add_argument("--sample-walks", type=int, default=20000)
-    ap.add_argument("--outdir", type=Path, default=ROOT / "examples" / "warcraft_artifacts")
+    ap.add_argument("--outdir", type=Path, default=ROOT / "constraints" / "warcraft" / "warcraft_artifacts")
     ap.add_argument("--out-json", type=Path,
                     default=ROOT / "logs" / "warcraft_compile_evidence.json")
     args = ap.parse_args()

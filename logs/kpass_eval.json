@@ -1,0 +1,123 @@
+{
+  "rows": [
+    {
+      "k": 1,
+      "valid_joint": 89.0,
+      "valid_kpass": 100.0,
+      "exact_kpass": 100.0,
+      "cert_pct": 100.0,
+      "mean_rounds_to_cert": 2.0,
+      "dead_final_mean": 0.0,
+      "plateau_pct": 0.0,
+      "weak_rule_wrong": 0,
+      "rounds_used": 2,
+      "edits_curve": [
+        1.0,
+        0.0
+      ],
+      "secs": 0.6
+    },
+    {
+      "k": 3,
+      "valid_joint": 53.0,
+      "valid_kpass": 97.0,
+      "exact_kpass": 97.0,
+      "cert_pct": 97.0,
+      "mean_rounds_to_cert": 2.0,
+      "dead_final_mean": 0.45,
+      "plateau_pct": 0.0,
+      "weak_rule_wrong": 3,
+      "rounds_used": 10,
+      "edits_curve": [
+        2.98,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "secs": 0.7
+    },
+    {
+      "k": 5,
+      "valid_joint": 39.0,
+      "valid_kpass": 94.0,
+      "exact_kpass": 94.0,
+      "cert_pct": 94.0,
+      "mean_rounds_to_cert": 2.0,
+      "dead_final_mean": 1.05,
+      "plateau_pct": 0.0,
+      "weak_rule_wrong": 6,
+      "rounds_used": 10,
+      "edits_curve": [
+        4.95,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "secs": 0.8
+    },
+    {
+      "k": 10,
+      "valid_joint": 22.0,
+      "valid_kpass": 49.0,
+      "exact_kpass": 49.0,
+      "cert_pct": 49.0,
+      "mean_rounds_to_cert": 2.020408163265306,
+      "dead_final_mean": 12.45,
+      "plateau_pct": 0.0,
+      "weak_rule_wrong": 51,
+      "rounds_used": 10,
+      "edits_curve": [
+        8.96,
+        0.01,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "secs": 1.1
+    },
+    {
+      "k": 15,
+      "valid_joint": 5.0,
+      "valid_kpass": 14.0,
+      "exact_kpass": 14.0,
+      "cert_pct": 14.0,
+      "mean_rounds_to_cert": 2.0714285714285716,
+      "dead_final_mean": 30.69,
+      "plateau_pct": 0.0,
+      "weak_rule_wrong": 86,
+      "rounds_used": 10,
+      "edits_curve": [
+        11.99,
+        0.05,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "secs": 1.3
+    }
+  ],
+  "board_seed": 20260731,
+  "corrupt_seed": 12345
+}

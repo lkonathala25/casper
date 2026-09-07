@@ -1,0 +1,335 @@
+{
+  "grid": 12,
+  "eps": 0.001,
+  "dtype": "float32",
+  "tie_break": "no-backtrack",
+  "seed": 0,
+  "target_cell": 143,
+  "feasible_matches_artifact": true,
+  "modes": {
+    "smooth": {
+      "boards": 200,
+      "dead_ends": 0,
+      "decision_steps": 27113,
+      "argmax_vs_minedit_step_divergences": 2,
+      "argmax_vs_minedit_strict_divergences": 0,
+      "argmax_vs_minedit_board_divergences": 2,
+      "divergence_rate_boards": 0.01,
+      "divergence_rate_steps": 7.376535241397116e-05,
+      "divergence_examples": [
+        {
+          "board": 131,
+          "mode": "smooth",
+          "strict": false,
+          "first": {
+            "step": 104,
+            "candidates": [
+              80,
+              91,
+              93,
+              104
+            ],
+            "argmax": 91,
+            "minedit": 93,
+            "distances": [
+              0.2156204879283905,
+              0.210336372256279,
+              0.210336372256279,
+              0.21033750474452972
+            ],
+            "probs": [
+              0.0038730576634407043,
+              0.005634307861328125,
+              0.005633252207189798,
+              0.005396977532655001
+            ],
+            "reversal": 91
+          }
+        },
+        {
+          "board": 146,
+          "mode": "smooth",
+          "strict": false,
+          "first": {
+            "step": 93,
+            "candidates": [
+              66,
+              77,
+              79,
+              90
+            ],
+            "argmax": 90,
+            "minedit": 66,
+            "distances": [
+              0.15879948437213898,
+              0.18421439826488495,
+              0.1761012077331543,
+              0.15879948437213898
+            ],
+            "probs": [
+              0.01003943383693695,
+              0.0024903984740376472,
+              0.004973411560058594,
+              0.010039814747869968
+            ],
+            "reversal": 77
+          }
+        }
+      ],
+      "early_cut_boards_checked": 50,
+      "early_cut_mismatches": [],
+      "boards_needing_erasure": 200,
+      "pct_boards_needing_erasure": 100.0,
+      "mean_cells_snipped_all_boards": 112.24,
+      "mean_cells_snipped_when_erased": 112.24,
+      "valid_certificates": 200,
+      "certificate_failures": 0,
+      "mean_arrival_step": 139.79,
+      "horizon": 143,
+      "ms_per_board_argmax": 2.899030838161707
+    },
+    "guided": {
+      "boards": 200,
+      "dead_ends": 0,
+      "decision_steps": 4488,
+      "argmax_vs_minedit_step_divergences": 2,
+      "argmax_vs_minedit_strict_divergences": 0,
+      "argmax_vs_minedit_board_divergences": 2,
+      "divergence_rate_boards": 0.01,
+      "divergence_rate_steps": 0.000445632798573975,
+      "divergence_examples": [
+        {
+          "board": 71,
+          "mode": "guided",
+          "strict": false,
+          "first": {
+            "step": 10,
+            "candidates": [
+              39,
+              50,
+              52,
+              63
+            ],
+            "argmax": 63,
+            "minedit": 52,
+            "distances": [
+              0.43370530009269714,
+              0.43370530009269714,
+              0.4074121415615082,
+              0.4074121415615082
+            ],
+            "probs": [
+              0.00013073788431938738,
+              0.00012712317402474582,
+              0.0014450051821768284,
+              0.0014506164006888866
+            ],
+            "reversal": 50
+          }
+        },
+        {
+          "board": 102,
+          "mode": "guided",
+          "strict": false,
+          "first": {
+            "step": 17,
+            "candidates": [
+              101,
+              112,
+              114,
+              125
+            ],
+            "argmax": 125,
+            "minedit": 114,
+            "distances": [
+              0.5701472163200378,
+              0.5701461434364319,
+              0.5191451907157898,
+              0.5191451907157898
+            ],
+            "probs": [
+              0.000164560362463817,
+              0.000745712430216372,
+              0.003090205369517207,
+              0.0031167210545390844
+            ],
+            "reversal": 101
+          }
+        }
+      ],
+      "early_cut_boards_checked": 50,
+      "early_cut_mismatches": [],
+      "boards_needing_erasure": 23,
+      "pct_boards_needing_erasure": 11.5,
+      "mean_cells_snipped_all_boards": 0.3,
+      "mean_cells_snipped_when_erased": 2.608695652173913,
+      "valid_certificates": 200,
+      "certificate_failures": 0,
+      "mean_arrival_step": 22.44,
+      "horizon": 143,
+      "ms_per_board_argmax": 0.4238899890333414
+    },
+    "ties": {
+      "boards": 200,
+      "dead_ends": 0,
+      "decision_steps": 27187,
+      "argmax_vs_minedit_step_divergences": 436,
+      "argmax_vs_minedit_strict_divergences": 0,
+      "argmax_vs_minedit_board_divergences": 172,
+      "divergence_rate_boards": 0.86,
+      "divergence_rate_steps": 0.016037076543936442,
+      "divergence_examples": [
+        {
+          "board": 0,
+          "mode": "ties",
+          "strict": false,
+          "first": {
+            "step": 42,
+            "candidates": [
+              13,
+              24,
+              26,
+              37
+            ],
+            "argmax": 13,
+            "minedit": 26,
+            "distances": [
+              0.12159538269042969,
+              0.14652590453624725,
+              0.12159537523984909,
+              0.15515558421611786
+            ],
+            "probs": [
+              0.018050596117973328,
+              0.01094823982566595,
+              0.018050596117973328,
+              0.006640443112701178
+            ],
+            "reversal": 37
+          }
+        },
+        {
+          "board": 1,
+          "mode": "ties",
+          "strict": false,
+          "first": {
+            "step": 13,
+            "candidates": [
+              49,
+              60,
+              62,
+              73
+            ],
+            "argmax": 60,
+            "minedit": 49,
+            "distances": [
+              0.37123924493789673,
+              0.3712392747402191,
+              0.38843512535095215,
+              0.38843512535095215
+            ],
+            "probs": [
+              0.011842985637485981,
+              0.011842985637485981,
+              0.002642527222633362,
+              0.002642527222633362
+            ],
+            "reversal": 49
+          }
+        },
+        {
+          "board": 2,
+          "mode": "ties",
+          "strict": false,
+          "first": {
+            "step": 58,
+            "candidates": [
+              13,
+              24,
+              26,
+              37
+            ],
+            "argmax": 13,
+            "minedit": 24,
+            "distances": [
+              0.09348519891500473,
+              0.09348519146442413,
+              0.11023588478565216,
+              0.10750897973775864
+            ],
+            "probs": [
+              0.008208940736949444,
+              0.008208940736949444,
+              0.0030199007596820593,
+              0.004978974349796772
+            ],
+            "reversal": 26
+          }
+        },
+        {
+          "board": 3,
+          "mode": "ties",
+          "strict": false,
+          "first": {
+            "step": 45,
+            "candidates": [
+              1,
+              12
+            ],
+            "argmax": 12,
+            "minedit": 1,
+            "distances": [
+              0.23556816577911377,
+              0.23556818068027496
+            ],
+            "probs": [
+              0.00429039029404521,
+              0.00429039029404521
+            ],
+            "reversal": 1
+          }
+        },
+        {
+          "board": 4,
+          "mode": "ties",
+          "strict": false,
+          "first": {
+            "step": 47,
+            "candidates": [
+              14,
+              25,
+              27,
+              38
+            ],
+            "argmax": 14,
+            "minedit": 38,
+            "distances": [
+              0.15177009999752045,
+              0.16360880434513092,
+              0.1776013821363449,
+              0.15177008509635925
+            ],
+            "probs": [
+              0.013305926695466042,
+              0.008070452138781548,
+              0.0010922170476987958,
+              0.013305926695466042
+            ],
+            "reversal": 25
+          }
+        }
+      ],
+      "early_cut_boards_checked": 50,
+      "early_cut_mismatches": [],
+      "boards_needing_erasure": 200,
+      "pct_boards_needing_erasure": 100.0,
+      "mean_cells_snipped_all_boards": 114.41,
+      "mean_cells_snipped_when_erased": 114.41,
+      "valid_certificates": 200,
+      "certificate_failures": 0,
+      "mean_arrival_step": 140.86,
+      "horizon": 143,
+      "ms_per_board_argmax": 2.889287043362856
+    }
+  }
+}
