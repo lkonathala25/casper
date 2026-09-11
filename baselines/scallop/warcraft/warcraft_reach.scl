@@ -1,0 +1,27 @@
+// Warcraft 12x12 -- INFERENCE-time single-source reachability.
+//
+// Companion to warcraft_path.scl (used during training). That program derives
+// the full all-pairs transitive closure `path/2` and exposes only the boolean
+// `valid_path(0)`, which is all the training loss needs.
+//
+// For decoding we need something different: the max-product score of reaching
+// EVERY node from the source, so the route can be reconstructed by backtracking.
+// Two changes:
+//
+//   1. Single-source. `reach/1` is seeded at node 0 instead of enumerating all
+//      144x144 pairs -- 144 tuples instead of 20,736, ~30x faster per sample.
+//   2. Queried at k=1 with a non-differentiable provenance. Under topkproofs
+//      with k=1 each derived fact retains exactly its single best proof, so
+//      the tag on reach(v) is the maximum product of edge probabilities over
+//      any route 0 -> v. That is precisely Bellman's recursion for the
+//      max-product path, i.e. Dijkstra on -log p.
+//
+// CAUTION: reach(0) is NOT 1.0. Transitive closure has no empty path, so the
+// engine derives reach(0) as a leave-and-return walk with probability < 1.
+// The decoder must pin the source score to 1.0 before backtracking.
+
+rel undirected(x, y) = edge(x, y)
+rel undirected(x, y) = edge(y, x)
+
+rel reach(y) = undirected(0, y)
+rel reach(z) = reach(y), undirected(y, z)

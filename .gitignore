@@ -15,3 +15,11 @@ baselines/*/**/_cfg_*.yaml
 # Warcraft dataset (~4.7 GB). Provenance and regeneration in data/warcraft/MANIFEST.md
 data/warcraft/
 !data/warcraft/MANIFEST.md
+
+# Warcraft baseline run outputs and regenerable CCN+ requirements files
+baselines/*/warcraft/results/
+baselines/*/warcraft/checkpoints/
+baselines/deepsoftlog/results/warcraft-*/
+constraints/warcraft/ccn/*.txt
+constraints/warcraft/ccn/*.pkl
+constraints/warcraft/ccn/*_atoms.json

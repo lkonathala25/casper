@@ -14,7 +14,7 @@ class WarcraftConstraintLayer(nn.Module):
         self.processing_order = processing_order
 
         self.node_info, self.var_ranges, self.node_order, self.total_dim = \
-            build_node_categories(grid_size)
+            build_node_categories(grid_size, alphabet='monotone')
 
         self.start_indices = []
         offset = 0

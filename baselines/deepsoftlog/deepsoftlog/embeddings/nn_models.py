@@ -240,6 +240,14 @@ class WarcraftPathFunctor(nn.Module):
         self.num_steps = int(WARCRAFT_CONFIG["num_steps"])
         self.semiring = str(WARCRAFT_CONFIG["semiring"])
         assert self.semiring in ("max", "sum"), self.semiring
+        # Steps encoding: an (L+1, num_nodes) mask of the compiled per-tick
+        # domains D_i. When set, P(valid) is over the time-unrolled walk
+        # X_0 = s, ..., X_L = t with X_i in D_i, instead of num_steps free
+        # relaxations (which, at num_steps = 22, only reach minimum-length paths).
+        steps_domains = WARCRAFT_CONFIG.get("steps_domains")
+        self.use_steps = steps_domains is not None
+        if self.use_steps:
+            self.register_buffer("step_mask", torch.as_tensor(steps_domains, dtype=torch.bool))
 
         self.register_buffer("edge_proj", edge_proj.clone().float())
         self.register_buffer("edge_endpoints", edge_endpoints.clone().long())
@@ -282,12 +290,49 @@ class WarcraftPathFunctor(nn.Module):
             reach = torch.maximum(reach, new_reach)
         return reach[self.sink]
 
+    def _steps_adjacency(self, A):
+        """The sink absorbs: no move leaves it, so its outgoing row is cleared."""
+        A = A.clone()
+        A[self.sink, :] = 0.0
+        return A
+
+    def _reach_steps_max(self, A):
+        """Max over steps walks of the product of edge probabilities along the walk."""
+        A = self._steps_adjacency(A)
+        reach = torch.zeros(self.num_nodes, device=A.device, dtype=A.dtype)
+        reach[self.source] = 1.0
+        for i in range(1, self.step_mask.shape[0]):
+            cand = (A * reach.unsqueeze(1)).max(dim=0).values
+            stay = torch.zeros_like(reach)
+            stay[self.sink] = reach[self.sink]
+            reach = torch.where(self.step_mask[i], torch.maximum(cand, stay),
+                                torch.zeros_like(cand))
+        return reach[self.sink]
+
+    def _reach_steps_sum(self, A):
+        """Noisy-OR over steps walks: arrive from any neighbour, or stay at the sink."""
+        eps = 1e-9
+        A = self._steps_adjacency(A)
+        reach = torch.zeros(self.num_nodes, device=A.device, dtype=A.dtype)
+        reach[self.source] = 1.0
+        for i in range(1, self.step_mask.shape[0]):
+            log_miss = torch.log1p(-(A * reach.unsqueeze(1)).clamp(max=1.0 - eps)).sum(dim=0)
+            stay = torch.zeros_like(reach)
+            stay[self.sink] = reach[self.sink]
+            log_miss = log_miss + torch.log1p(-stay.clamp(max=1.0 - eps))
+            reach = torch.where(self.step_mask[i], 1.0 - torch.exp(log_miss),
+                                torch.zeros_like(reach))
+        return reach[self.sink]
+
     def forward(self, x):
         # EmbeddingStore stacks args: shape (1, total_dim).
         flat = x.squeeze(0) if x.dim() == 2 else x
         edge_p = self._edge_probs_from_node_probs(flat).clamp(0.0, 1.0)
         A = self._build_adjacency(edge_p)
-        if self.semiring == "max":
+        if self.use_steps:
+            p = (self._reach_steps_max(A) if self.semiring == "max"
+                 else self._reach_steps_sum(A))
+        elif self.semiring == "max":
             p = self._reach_max(A)
         else:
             p = self._reach_sum(A)

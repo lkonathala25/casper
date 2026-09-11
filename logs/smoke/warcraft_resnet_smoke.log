@@ -1,0 +1,18 @@
+Device: cuda
+Grid: 12x12 | Nodes: 144, total_dim: 868
+Train: 10000, Val: 1000, Test: 1000
+Label conversion gate (alphabet='full'): clean over 12000 instances, 0 UnrepresentablePatternError
+Auxiliary losses off: beta_ce, gamma_focal, lambda_edge, lambda_len, lambda_pair
+
+======================================================================
+CONDITION: no_crl
+  epochs=1, runs=1, lr=0.0005, grid=12x12
+  train-time CRL (WarcraftMaskedLoss): False  | eval-time CRL: False
+  CSV: /tmp/claude-1876222/-home-lk1325-mnist-neurips/069e9dbb-0a3b-4749-8422-f0b142977b28/scratchpad/smoke_resnet/no_crl/no_crl_1runs.csv
+======================================================================
+
+--- Run 1/1 (seed=42) ---
+  Train:   0%|          | 0/79 [00:00<?, ?it/s]  Train:   1%|▏         | 1/79 [00:00<01:09,  1.12it/s]  Train:   4%|▍         | 3/79 [00:00<00:20,  3.70it/s]  Train:   8%|▊         | 6/79 [00:01<00:09,  7.68it/s]  Train:  11%|█▏        | 9/79 [00:01<00:06, 11.49it/s]  Train:  15%|█▌        | 12/79 [00:01<00:04, 15.21it/s]  Train:  20%|██        | 16/79 [00:01<00:03, 19.51it/s]  Train:  25%|██▌       | 20/79 [00:01<00:02, 22.72it/s]  Train:  30%|███       | 24/79 [00:01<00:02, 25.06it/s]  Train:  35%|███▌      | 28/79 [00:01<00:01, 26.79it/s]  Train:  41%|████      | 32/79 [00:02<00:02, 22.28it/s]  Train:  44%|████▍     | 35/79 [00:02<00:01, 23.31it/s]  Train:  48%|████▊     | 38/79 [00:02<00:01, 23.55it/s]  Train:  52%|█████▏    | 41/79 [00:02<00:01, 23.44it/s]  Train:  56%|█████▌    | 44/79 [00:02<00:01, 24.27it/s]  Train:  61%|██████    | 48/79 [00:02<00:01, 26.27it/s]  Train:  66%|██████▌   | 52/79 [00:02<00:00, 27.72it/s]  Train:  71%|███████   | 56/79 [00:02<00:00, 28.75it/s]  Train:  76%|███████▌  | 60/79 [00:03<00:00, 29.05it/s]  Train:  80%|███████▉  | 63/79 [00:03<00:00, 28.87it/s]  Train:  84%|████████▎ | 66/79 [00:03<00:00, 28.37it/s]  Train:  87%|████████▋ | 69/79 [00:03<00:00, 27.98it/s]  Train:  91%|█████████ | 72/79 [00:03<00:00, 27.73it/s]  Train:  95%|█████████▍| 75/79 [00:03<00:00, 27.45it/s]  Train:  99%|█████████▊| 78/79 [00:03<00:00, 27.25it/s]                                                          Eval:   0%|          | 0/8 [00:00<?, ?it/s]  Eval: 100%|██████████| 8/8 [00:00<00:00, 74.48it/s]                                                       Ep   1 | TrLoss: 0.5209 | VLoss: 0.4166 | Ex/Ham/Con:   0.1/ 93.4/  0.2 | Unq R:  298 (top-1 R:   1.4%) | LR: 5.00e-06 | 4.6s
+  Eval:   0%|          | 0/8 [00:00<?, ?it/s]                                               Test | Ex/Ham/Con:   0.2/ 93.4/  0.6
+
+Results → /tmp/claude-1876222/-home-lk1325-mnist-neurips/069e9dbb-0a3b-4749-8422-f0b142977b28/scratchpad/smoke_resnet/no_crl/no_crl_1runs.csv

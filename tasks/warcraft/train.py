@@ -641,8 +641,9 @@ def main():
                              "sweeps anti-diagonals (i+j ascending) with top-down "
                              "tiebreak. Both are valid topological orders.")
     parser.add_argument("--constraint-mode", type=str, default="steps",
-                        choices=["monotone", "lazy_exact", "steps"],
-                        help="Projection layer. 'monotone' is the original "
+                        choices=["none", "monotone", "lazy_exact", "steps"],
+                        help="Projection layer. 'none' builds no layer (only with "
+                             "--condition no_crl). 'monotone' is the original "
                              "down/right flow sweep, retained only for "
                              "reproducing the superseded results; it cannot "
                              "represent non-monotone paths and must be asked "
@@ -674,6 +675,9 @@ def main():
                              "ground truth; 'full' represents every 4-connected "
                              "simple path.")
     args = parser.parse_args()
+    if args.constraint_mode == "none" and args.condition != "no_crl":
+        parser.error("--constraint-mode none has no layer; use it only with "
+                     "--condition no_crl")
 
     device = torch.device(
         "cuda" if torch.cuda.is_available()

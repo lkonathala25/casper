@@ -1,0 +1,12 @@
+Device: cuda
+Nodes: 144, total_dim: 868, alphabet: full
+Train: 256, Val: 1000, Test: 1000
+Scallop program: /home/lk1325/mnist_neurips/baselines/scallop/warcraft/warcraft_path.scl
+Provenance: difftopkproofs (k=3), dispatch: parallel
+Lambda path: 0.1
+
+--- Run 1/1 (seed=42) ---
+  Train:   0%|          | 0/8 [00:00<?, ?it/s]  Train:  12%|█▎        | 1/8 [00:01<00:13,  1.94s/it]  Train:  25%|██▌       | 2/8 [00:03<00:08,  1.46s/it]  Train:  38%|███▊      | 3/8 [00:04<00:07,  1.48s/it]  Train:  50%|█████     | 4/8 [00:06<00:06,  1.60s/it]  Train:  62%|██████▎   | 5/8 [00:08<00:05,  1.74s/it]  Train:  75%|███████▌  | 6/8 [00:10<00:03,  1.83s/it]  Train:  88%|████████▊ | 7/8 [00:12<00:01,  1.90s/it]  Train: 100%|██████████| 8/8 [00:14<00:00,  2.03s/it]                                                        Eval:   0%|          | 0/32 [00:00<?, ?it/s]  Eval:  47%|████▋     | 15/32 [00:00<00:00, 143.83it/s]  Eval:  94%|█████████▍| 30/32 [00:00<00:00, 145.28it/s]                                                          Ep   1 | CE: 1.3082 | Path: 6.0983 | VLoss: 0.9272 | Ex/Ham/Con:   0.0/ 87.0/  1.4 | 15.5s (tr 14.7s) | gpu_peak=328MB cpu_peak=5064MB | LR: 5.00e-06
+  Eval:   0%|          | 0/32 [00:00<?, ?it/s]  Eval:  47%|████▋     | 15/32 [00:00<00:00, 146.43it/s]  Eval:  94%|█████████▍| 30/32 [00:00<00:00, 147.28it/s]                                                          Test | Ex/Ham/Con:   0.0/ 87.2/  0.7
+
+Results -> /tmp/claude-1876222/-home-lk1325-mnist-neurips/069e9dbb-0a3b-4749-8422-f0b142977b28/scratchpad/smoke_scallop/scallop_1runs.csv

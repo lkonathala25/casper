@@ -16,7 +16,8 @@ from node_categories import node_preds_to_edge_preds
 class ResNet18NodeCategorical(nn.Module):
     """ResNet-18 (no pretrained weights) -> per-node softmax over routing categories.
 
-    `constraint_mode` selects the projection: 'monotone' is the original
+    `constraint_mode` selects the projection ('none' builds no layer, for the
+    unconstrained baselines): 'monotone' is the original
     down/right flow sweep, 'lazy_exact' is the compiled degree clauses plus ring
     elimination, 'steps' is the sequential min-edit projection over the
     time-unrolled steps encoding. The mode must match the alphabet
@@ -36,7 +37,9 @@ class ResNet18NodeCategorical(nn.Module):
         in_features = self.backbone.fc.in_features
         self.backbone.fc = nn.Linear(in_features, self.total_dim)
 
-        if constraint_mode == 'monotone':
+        if constraint_mode == 'none':
+            self.constraint_layer = None
+        elif constraint_mode == 'monotone':
             self.constraint_layer = WarcraftConstraintLayer(
                 grid_size=grid_size, processing_order=processing_order
             )
@@ -62,7 +65,8 @@ class ResNet18NodeCategorical(nn.Module):
         # A layer built for a different alphabet than the head silently
         # mis-slices every node block and returns a correctly-shaped, wrong
         # answer. Make that class of bug impossible to reach.
-        layer_dim = getattr(self.constraint_layer, 'total_dim', None)
+        layer_dim = (self.total_dim if self.constraint_layer is None
+                     else getattr(self.constraint_layer, 'total_dim', None))
         if layer_dim != self.total_dim:
             raise ValueError(
                 f"constraint layer total_dim {layer_dim} != head dim "
@@ -80,6 +84,8 @@ class ResNet18NodeCategorical(nn.Module):
             idx += vr
 
         if apply_constraints:
+            if self.constraint_layer is None:
+                raise ValueError("constraint_mode='none' has no layer to apply")
             projected, info = self.constraint_layer(probs.detach())
             return logits, probs, projected, info
 

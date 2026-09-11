@@ -1,0 +1,38 @@
+project: dsl-warcraft-12
+name: warcraft-12-max
+program: "deepsoftlog/experiments/warcraft/programs/warcraft_path.pl"
+semantics: sdd2
+
+# Run settings
+nb_workers: 1
+device: cuda
+seed: 42
+verbose: true
+data_subset: null
+data_dir: ../../data/warcraft/12x12/preprocessed_4conn   # relative to baselines/deepsoftlog
+
+# Path constraint
+constraint: steps           # "steps": walk X_0..X_L over the compiled domains D_i
+                            #   (constraints/warcraft/steps_artifacts); "reach": the
+                            #   original num_path_steps free relaxations.
+steps_artifact: null        # defaults to steps_<GRID>_trimmed_compiled.json
+semiring: max               # "max" (Bellman-Ford max-product) or "sum" (noisy-OR)
+num_path_steps: 22          # constraint: reach only. 2*(N-1) for N=12, which
+                            #   admits only minimum-length (monotone) paths
+lambda_path: 0.1            # weight on -log P(valid_path) in WarcraftTrainer:
+                            #   loss = ce + lambda_path * path_nll
+                            # Mirrors scallop_warcraft.py's --lambda-path default.
+
+# Optimization
+optimizer: AdamW
+functor_learning_rate: 5.0e-4
+embedding_learning_rate: 0
+weight_decay: 0.0
+batch_size: 32
+nb_epochs: 100
+grad_clip: 1.0
+
+# Embeddings
+embedding_dimensions: 2          # ndim=2 makes "1" -> [0, 1]; functor returns [1-p, p]
+embedding_initialization: sphere
+embedding_metric: dot            # dot(one_hot_1, [1-p, p]) == p, so log P(valid) == log p

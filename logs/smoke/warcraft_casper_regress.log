@@ -1,0 +1,21 @@
+Device: cuda
+Grid: 12x12 | Nodes: 144, total_dim: 868
+Train: 10000, Val: 1000, Test: 1000
+Label conversion gate (alphabet='full'): clean over 12000 instances, 0 UnrepresentablePatternError
+Steps constraints loaded from steps_12_trimmed_compiled.json
+Compiled-artifact gate: all 8844 feasible sets agree with the encoding (0.4s)
+Auxiliary losses off: beta_ce, gamma_focal, lambda_edge, lambda_len, lambda_pair
+
+======================================================================
+CONDITION: crl_in_training
+  epochs=1, runs=1, lr=0.0005, grid=12x12
+  train-time CRL (WarcraftMaskedLoss): True (λ_neg=1.0) | eval-time CRL: True
+  aux: edge=0.0 pair=0.0 len=0.0 beta_ce=0.0 focal_gamma=0.0
+  CSV: /tmp/claude-1876222/-home-lk1325-mnist-neurips/069e9dbb-0a3b-4749-8422-f0b142977b28/scratchpad/smoke_casper/crl_in_training/crl_in_training_1runs.csv
+======================================================================
+
+--- Run 1/1 (seed=42) ---
+  Train:   0%|          | 0/79 [00:00<?, ?it/s]  Train:   1%|▏         | 1/79 [00:00<00:46,  1.69it/s]  Train:   5%|▌         | 4/79 [00:00<00:10,  6.92it/s]  Train:   9%|▉         | 7/79 [00:00<00:06, 11.49it/s]  Train:  13%|█▎        | 10/79 [00:00<00:04, 15.27it/s]  Train:  16%|█▋        | 13/79 [00:01<00:03, 18.27it/s]  Train:  20%|██        | 16/79 [00:01<00:03, 20.53it/s]  Train:  24%|██▍       | 19/79 [00:01<00:02, 22.50it/s]  Train:  28%|██▊       | 22/79 [00:01<00:02, 24.07it/s]  Train:  32%|███▏      | 25/79 [00:01<00:02, 25.26it/s]  Train:  35%|███▌      | 28/79 [00:01<00:01, 26.12it/s]  Train:  39%|███▉      | 31/79 [00:01<00:01, 26.74it/s]  Train:  43%|████▎     | 34/79 [00:01<00:01, 27.17it/s]  Train:  47%|████▋     | 37/79 [00:01<00:01, 27.46it/s]  Train:  51%|█████     | 40/79 [00:02<00:01, 27.32it/s]  Train:  54%|█████▍    | 43/79 [00:02<00:01, 27.16it/s]  Train:  58%|█████▊    | 46/79 [00:02<00:01, 27.01it/s]  Train:  62%|██████▏   | 49/79 [00:02<00:01, 26.93it/s]  Train:  66%|██████▌   | 52/79 [00:02<00:01, 26.76it/s]  Train:  70%|██████▉   | 55/79 [00:02<00:00, 26.68it/s]  Train:  73%|███████▎  | 58/79 [00:02<00:00, 26.61it/s]  Train:  77%|███████▋  | 61/79 [00:02<00:00, 26.48it/s]  Train:  81%|████████  | 64/79 [00:02<00:00, 26.39it/s]  Train:  85%|████████▍ | 67/79 [00:03<00:00, 26.29it/s]  Train:  89%|████████▊ | 70/79 [00:03<00:00, 26.22it/s]  Train:  92%|█████████▏| 73/79 [00:03<00:00, 26.25it/s]  Train:  96%|█████████▌| 76/79 [00:03<00:00, 26.35it/s]  Train: 100%|██████████| 79/79 [00:03<00:00, 26.10it/s]                                                          Eval:   0%|          | 0/8 [00:00<?, ?it/s]  Eval:  12%|█▎        | 1/8 [00:00<00:00,  9.53it/s]  Eval:  38%|███▊      | 3/8 [00:00<00:00, 10.65it/s]  Eval:  62%|██████▎   | 5/8 [00:00<00:00, 11.00it/s]  Eval:  88%|████████▊ | 7/8 [00:00<00:00, 11.18it/s]                                                       Ep   1 | TrLoss: 0.6142 | VLoss: 0.4894 | Ex/Ham/Con:   3.5/ 90.4/100.0 | Raw Ex/Ham/Con:   0.0/ 93.4/  0.1 | L2: 2.1867 | ArgΔ: 0.113 | Unq R/P:  173/ 654 (top-1 P:   4.8%) | Pos: 0.3278 | Neg: 0.2864 | LR: 5.00e-06 | 5.7s
+  Eval:   0%|          | 0/8 [00:00<?, ?it/s]  Eval:  25%|██▌       | 2/8 [00:00<00:00, 11.52it/s]  Eval:  50%|█████     | 4/8 [00:00<00:00, 11.51it/s]  Eval:  75%|███████▌  | 6/8 [00:00<00:00, 11.51it/s]  Eval: 100%|██████████| 8/8 [00:00<00:00, 11.34it/s]                                                       Test | Ex/Ham/Con:   2.6/ 90.3/100.0 | Raw:   0.2/ 93.3/  0.4 | L2: 2.1845
+
+Results → /tmp/claude-1876222/-home-lk1325-mnist-neurips/069e9dbb-0a3b-4749-8422-f0b142977b28/scratchpad/smoke_casper/crl_in_training/crl_in_training_1runs.csv

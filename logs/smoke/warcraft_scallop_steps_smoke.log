@@ -1,0 +1,12 @@
+Device: cuda
+Nodes: 144, total_dim: 868, alphabet: full
+Train: 256, Val: 1000, Test: 1000
+Scallop constraint: steps walk X_0..X_143 over steps_12_trimmed_compiled.json (8845 (tick, cell) pairs)
+Provenance: difftopkproofs (k=3), dispatch: parallel
+Lambda path: 0.1
+
+--- Run 1/1 (seed=42) ---
+  Train:   0%|          | 0/8 [00:00<?, ?it/s]  Train:  12%|█▎        | 1/8 [00:05<00:37,  5.39s/it]  Train:  25%|██▌       | 2/8 [00:09<00:28,  4.80s/it]  Train:  38%|███▊      | 3/8 [00:15<00:25,  5.00s/it]  Train:  50%|█████     | 4/8 [00:20<00:20,  5.13s/it]  Train:  62%|██████▎   | 5/8 [00:25<00:15,  5.16s/it]  Train:  75%|███████▌  | 6/8 [00:30<00:10,  5.18s/it]  Train:  88%|████████▊ | 7/8 [00:36<00:05,  5.24s/it]  Train: 100%|██████████| 8/8 [00:41<00:00,  5.21s/it]                                                        Eval:   0%|          | 0/32 [00:00<?, ?it/s]  Eval:  50%|█████     | 16/32 [00:00<00:00, 151.16it/s]  Eval: 100%|██████████| 32/32 [00:00<00:00, 148.35it/s]                                                          Ep   1 | CE: 1.3083 | Path: 6.0687 | VLoss: 0.9359 | Ex/Ham/Con:   0.0/ 86.4/  0.0 | 42.0s (tr 41.3s) | gpu_peak=329MB cpu_peak=8705MB | LR: 5.00e-06
+  Eval:   0%|          | 0/32 [00:00<?, ?it/s]  Eval:  50%|█████     | 16/32 [00:00<00:00, 156.00it/s]  Eval: 100%|██████████| 32/32 [00:00<00:00, 157.26it/s]                                                          Test | Ex/Ham/Con:   0.0/ 86.6/  0.0
+
+Results -> /tmp/claude-1876222/-home-lk1325-mnist-neurips/069e9dbb-0a3b-4749-8422-f0b142977b28/scratchpad/smoke_scallop_steps/scallop_1runs.csv

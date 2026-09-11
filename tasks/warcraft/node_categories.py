@@ -18,7 +18,7 @@ import numpy as np
 _PAIR_ORDER = [('L', 'R'), ('L', 'D'), ('U', 'R'), ('U', 'D'), ('L', 'U'), ('R', 'D')]
 
 
-def build_node_categories(grid_size=12, alphabet='monotone'):
+def build_node_categories(grid_size=12, alphabet='full'):
     """
     Build the categorical variable definition for each node in the grid.
 

@@ -1,0 +1,17 @@
+// Warcraft 12x12 path constraint.
+//
+// Edges are supplied as a probabilistic relation `edge(u, v)` from the
+// Python side: 264 ground tuples, indexed by row-major node ids
+// (node_id = row * 12 + col, so source = 0, sink = 143).
+//
+// We treat edges as undirected (both directions reachable), derive
+// transitive closure as `path/2`, then expose s-t reachability as the
+// boolean predicate `valid_path(0)`.
+
+rel undirected(x, y) = edge(x, y)
+rel undirected(x, y) = edge(y, x)
+
+rel path(x, y) = undirected(x, y)
+rel path(x, z) = path(x, y), undirected(y, z)
+
+rel valid_path(0) = path(0, 143)

@@ -151,7 +151,7 @@ class WarcraftMaskedLoss(nn.Module):
 if __name__ == "__main__":
     from node_categories import build_node_categories
 
-    node_info, var_ranges, node_order, total_dim = build_node_categories(12)
+    node_info, var_ranges, node_order, total_dim = build_node_categories(12, alphabet='monotone')
     print(f"Nodes: {len(node_order)}, total_dim: {total_dim}")
 
     B = 4
