@@ -23,3 +23,13 @@ baselines/deepsoftlog/results/warcraft-*/
 constraints/warcraft/ccn/*.txt
 constraints/warcraft/ccn/*.pkl
 constraints/warcraft/ccn/*_atoms.json
+
+# 30x30 steps artifacts (613-774 MB each, over GitHub's 100 MB file limit).
+# Regenerate: tasks/warcraft/build_steps_artifacts.py --size 30, then
+# tasks/warcraft/compile_steps_encoding.py --no-verbose-pass (~35 min).
+constraints/warcraft/steps_artifacts/steps_30_trimmed.txt
+constraints/warcraft/steps_artifacts/steps_30_trimmed_compiled.json
+constraints/warcraft/steps_artifacts/steps_30_trimmed_compiled.stream.txt
+
+# Smoke-test run outputs (checkpoints are 45-55 MB each)
+results/smoke_*/
