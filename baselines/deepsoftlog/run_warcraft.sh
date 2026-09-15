@@ -4,13 +4,14 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 PY="${PY:-$HOME/miniconda3/envs/casper_env/bin/python}"
-SEEDS="${SEEDS:-42 43}"; EPOCHS="${EPOCHS:-100}"
+SEEDS="${SEEDS:-42 43}"; EPOCHS="${EPOCHS:-100}"; GRID="${GRID:-12}"
 LOGDIR="${LOGDIR:-../../logs/baselines}"; mkdir -p "$LOGDIR"
 for seed in $SEEDS; do
-  echo ">>> DeepSoftLog warcraft 12x12 seed=$seed"
+  echo ">>> DeepSoftLog warcraft ${GRID}x${GRID} seed=$seed"
   WANDB_MODE="${WANDB_MODE:-disabled}" PYTHONPATH=. "$PY" \
     deepsoftlog/experiments/warcraft/warcraft.py \
     --config deepsoftlog/experiments/warcraft/config.yaml \
-    --seed "$seed" --nb-epochs "$EPOCHS" --name "warcraft-12-max-s${seed}" \
-    2>&1 | tee "$LOGDIR/deepsoftlog_warcraft_12_s${seed}.log"
+    --grid-size "$GRID" --data-dir "../../data/warcraft/${GRID}x${GRID}/preprocessed_4conn" \
+    --seed "$seed" --nb-epochs "$EPOCHS" --name "warcraft-${GRID}-max-s${seed}" \
+    2>&1 | tee "$LOGDIR/deepsoftlog_warcraft_${GRID}_s${seed}.log"
 done

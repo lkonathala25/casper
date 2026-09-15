@@ -1,4 +1,4 @@
-"""DSL-compatible warcraft 12x12 dataset.
+"""DSL-compatible warcraft dataset (grid size set by set_grid, default 12x12).
 
 Wraps the shared tasks/warcraft/data.WarcraftDataset so each
 __getitem__ returns a Query(Expr("valid", TensorTerm(img))). Keeps the
@@ -33,9 +33,18 @@ ALPHABET = "full"
 DATA_DIR_DEFAULT = _REPO_ROOT / "data" / "warcraft" / "12x12" / "preprocessed_4conn"
 
 
-def get_node_setup(grid_size=GRID):
+def set_grid(grid_size):
+    """Set the grid size used by the dataset and category setup, and its default data dir."""
+    global GRID, DATA_DIR_DEFAULT
+    GRID = int(grid_size)
+    DATA_DIR_DEFAULT = (_REPO_ROOT / "data" / "warcraft" / f"{GRID}x{GRID}"
+                        / "preprocessed_4conn")
+
+
+def get_node_setup(grid_size=None):
     """(node_info, var_ranges, node_order, total_dim)."""
-    return build_node_categories(grid_size, alphabet=ALPHABET)
+    return build_node_categories(GRID if grid_size is None else grid_size,
+                                 alphabet=ALPHABET)
 
 
 class WarcraftQueryDataset(Dataset):
@@ -57,7 +66,7 @@ class WarcraftQueryDataset(Dataset):
         if data_dir is None:
             data_dir = DATA_DIR_DEFAULT
         if node_info is None or node_order is None:
-            node_info, _, node_order, _ = get_node_setup(GRID)
+            node_info, _, node_order, _ = get_node_setup()
         self.raw_dataset = _RawWarcraftDataset(data_dir, split, node_info, node_order)
         self.split = split
         self.with_labels = with_labels

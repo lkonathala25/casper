@@ -1,4 +1,4 @@
-"""DSL warcraft 12x12 entrypoint.
+"""DSL warcraft entrypoint (grid_size in the config, default 12x12).
 
 Mirrors deepsoftlog/experiments/mnist_addition/addition.py with one
 deliberate divergence: the loss combines per-node CE with the prover NLL,
@@ -52,12 +52,20 @@ from deepsoftlog.training.logger import WandbLogger
 from deepsoftlog.training.loss import nll_loss, get_optimizer
 from deepsoftlog.training.trainer import Trainer
 
+from deepsoftlog.experiments.warcraft import dataset as _wds
 from deepsoftlog.experiments.warcraft.dataset import (
-    GRID,
-    DATA_DIR_DEFAULT,
     WarcraftQueryDataset,
     get_node_setup,
 )
+
+GRID = _wds.GRID
+
+
+def configure_grid(cfg):
+    """Set the grid size from cfg['grid_size'] (default 12) here and in dataset.py."""
+    global GRID
+    GRID = int(cfg.get("grid_size", 12))
+    _wds.set_grid(GRID)
 
 # tasks/warcraft is added to sys.path by dataset.py; safe to import.
 from model import (  # noqa: E402
@@ -73,7 +81,7 @@ _EXP_ROOT = Path(__file__).parent
 # Static setup: build edge_proj, edge_endpoints, and per-endpoint projections
 # =============================================================================
 
-def _build_edge_projections(node_info, node_order, edges_np, num_edges=264):
+def _build_edge_projections(node_info, node_order, edges_np, num_edges=None):
     """Build:
         edge_proj         (num_edges, total_dim) -- 0.5 * (proj @ flat) gives
                           the average of the two endpoints' opinions on edge.
@@ -84,6 +92,7 @@ def _build_edge_projections(node_info, node_order, edges_np, num_edges=264):
                           Used by endpoint_agreement_gt.
     """
     total_dim = sum(info["n_cats"] for info in node_info.values())
+    num_edges = int(edges_np.shape[0]) if num_edges is None else num_edges
     edge_proj = torch.zeros(num_edges, total_dim)
     proj_u = torch.zeros(num_edges, total_dim)
     proj_v = torch.zeros(num_edges, total_dim)
@@ -171,7 +180,7 @@ def configure_dsl_warcraft(cfg, node_info, var_ranges, node_order, edges_np):
 # =============================================================================
 
 def _data_dir(cfg):
-    return Path(cfg.get("data_dir", DATA_DIR_DEFAULT))
+    return Path(cfg.get("data_dir") or _wds.DATA_DIR_DEFAULT)
 
 
 def get_train_dataloader(cfg):
@@ -465,12 +474,13 @@ def train(config_name, overrides=None):
     if torch.cuda.is_available():
         torch.cuda.reset_peak_memory_stats()
 
+    configure_grid(cfg)
     node_info, var_ranges, node_order, total_dim = get_node_setup(GRID)
     edges_np = np.load(_data_dir(cfg) / "edges.npy")
     configure_dsl_warcraft(cfg, node_info, var_ranges, node_order, edges_np)
     print(f"DSL warcraft: name={cfg['name']}  seed={cfg['seed']}  "
           f"nb_epochs={cfg['nb_epochs']}  batch_size={cfg['batch_size']}  "
-          f"lambda_path={cfg.get('lambda_path', 0.1)}  semiring={cfg.get('semiring')}  "
+          f"grid={GRID}x{GRID}  lambda_path={cfg.get('lambda_path', 0.1)}  semiring={cfg.get('semiring')}  "
           f"constraint={cfg.get('constraint', 'steps')}  "
           + (f"num_path_steps={cfg.get('num_path_steps', 2*(GRID-1))}  "
              if str(cfg.get('constraint', 'steps')) == 'reach' else "")
@@ -535,6 +545,7 @@ def train(config_name, overrides=None):
 def eval(folder: str):
     cfg = load_config(f"results/{folder}/config.yaml")
     print(f"EVALING {cfg['name']}")
+    configure_grid(cfg)
 
     node_info, var_ranges, node_order, _ = get_node_setup(GRID)
     edges_np = np.load(_data_dir(cfg) / "edges.npy")
@@ -551,7 +562,11 @@ def eval(folder: str):
 
 
 def _parse_args():
-    p = argparse.ArgumentParser(description="DSL warcraft 12x12 training.")
+    p = argparse.ArgumentParser(description="DSL warcraft training.")
+    p.add_argument("--grid-size", type=int, default=None,
+                   help="Grid size (overrides grid_size in the config).")
+    p.add_argument("--data-dir", type=str, default=None,
+                   help="Data directory (overrides data_dir in the config).")
     p.add_argument("--config", type=str,
                    default="deepsoftlog/experiments/warcraft/config.yaml")
     p.add_argument("--nb-epochs", type=int, default=None)
@@ -575,5 +590,7 @@ if __name__ == "__main__":
         "batch_size": args.batch_size,
         "functor_learning_rate": args.lr,
         "data_subset": args.data_subset,
+        "grid_size": args.grid_size,
+        "data_dir": args.data_dir,
     }
     train(args.config, overrides=overrides)
