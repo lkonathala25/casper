@@ -21,9 +21,11 @@ a different Python, this has to be rebuilt from Rust source.
 
 ## Warcraft (`warcraft/`)
 
-Ported from `/home/lk1325/CTSketch/warcraft_12x12_baseline/`: `scallop_warcraft.py`
-(trainer), `decode_map_warcraft.py` (argmax vs top-1 proof / Dijkstra decode),
-`warcraft_path.scl` (training program) and `warcraft_reach.scl` (decode program).
+Copied from `/home/lk1325/CTSketch/warcraft_12x12_baseline/`: `scallop_warcraft.py`
+(trainer) and `warcraft_path.scl` (the original training program). That directory is
+untracked in the CTSketch clone -- it is our own Warcraft baseline, not code from the
+Scallop or CTSketch authors, whose Scallop baselines cover MNIST only. The trainer uses
+only `scallopy`'s public API (`ScallopContext`, `forward_function`, `difftopkproofs`).
 
 **Adapted:** dataset, backbone, loss, per-cell categories and metrics now come from
 `tasks/warcraft/` -- the modules CASPER uses -- instead of the upstream forks
@@ -56,7 +58,8 @@ Cost: about 2.8x the reach program per training step (42 s vs 15 s for 256 board
 and 8.7 GB vs 5.1 GB peak RAM.
 
 Still to note: the loss scores walks, so it does not by itself forbid extra edges
-off the walk (same as the reach program); and `decode_map_warcraft.py` still decodes
-with `warcraft_reach.scl`.
+off the walk (the per-cell CE term discourages them). The program is used only in
+the training loss; inference is per-cell argmax only, which is not guaranteed to be
+a valid path.
 
-**Run:** `run_warcraft.sh` -- 3 seeds x 50 epochs, each followed by the MAP decode.
+**Run:** `run_warcraft.sh` -- 3 seeds x 50 epochs, argmax inference.

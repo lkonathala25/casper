@@ -26,6 +26,7 @@ Pipeline:
 
 import argparse
 import csv
+from contextlib import contextmanager
 import sys
 from pathlib import Path
 from time import time
@@ -282,6 +283,20 @@ def compute_raw_task_accuracy(program, cfg, trainer=None):
 # Trainer subclass: combine per-node CE with prover path NLL
 # =============================================================================
 
+@contextmanager
+def frozen_bn_stats(module):
+    """Keep BatchNorm running statistics unchanged inside the block (momentum 0)."""
+    bns = [m for m in module.modules() if isinstance(m, torch.nn.modules.batchnorm._BatchNorm)]
+    saved = [m.momentum for m in bns]
+    for m in bns:
+        m.momentum = 0.0
+    try:
+        yield
+    finally:
+        for m, momentum in zip(bns, saved):
+            m.momentum = momentum
+
+
 class WarcraftTrainer(Trainer):
     """Override train_epoch to combine per-node CE with the prover path NLL.
 
@@ -392,16 +407,23 @@ class WarcraftTrainer(Trainer):
             # Path-NLL branch: one prover call per query (each runs its own
             # ResNet forward via the resnet_node functor; gradients
             # accumulate on the shared backbone).
+            # Each prover query runs ResNetNode on a single image in train mode,
+            # which would update batch-norm running statistics from single-image
+            # statistics once per query -- 32 updates per step against one from the
+            # batched CE forward -- and evaluation normalises with those running
+            # statistics. Freeze the updates here so they come from batched forwards
+            # only; this branch's normalisation and gradients are unchanged.
             log_ps = []
             ps_total = 0; nbp_total = 0
-            for q in queries:
-                res, ps, nbp = self.program(q.query, **self.search_args)
-                if not isinstance(res, torch.Tensor):
-                    res = torch.tensor(float(res), device=device)
-                elif res.device != device:
-                    res = res.to(device)
-                log_ps.append(res)
-                ps_total += ps; nbp_total += nbp
+            with frozen_bn_stats(resnet):
+                for q in queries:
+                    res, ps, nbp = self.program(q.query, **self.search_args)
+                    if not isinstance(res, torch.Tensor):
+                        res = torch.tensor(float(res), device=device)
+                    elif res.device != device:
+                        res = res.to(device)
+                    log_ps.append(res)
+                    ps_total += ps; nbp_total += nbp
             path_nll = -torch.stack(log_ps).mean()
 
             loss = ce + self.lambda_path * path_nll
@@ -450,7 +472,9 @@ def train(config_name, overrides=None):
           f"nb_epochs={cfg['nb_epochs']}  batch_size={cfg['batch_size']}  "
           f"lambda_path={cfg.get('lambda_path', 0.1)}  semiring={cfg.get('semiring')}  "
           f"constraint={cfg.get('constraint', 'steps')}  "
-          f"num_path_steps={cfg.get('num_path_steps', 2*(GRID-1))}  total_dim={total_dim}")
+          + (f"num_path_steps={cfg.get('num_path_steps', 2*(GRID-1))}  "
+             if str(cfg.get('constraint', 'steps')) == 'reach' else "")
+          + f"total_dim={total_dim}")
 
     val_dataloader = get_val_dataloader(cfg)
     test_dataloader = get_test_dataloader(cfg)

@@ -44,10 +44,20 @@ free relaxations, so only 22-edge (minimum-length, i.e. monotone) paths could re
 the sink: on ground-truth inputs it gave P(valid) = 1 on 0 of 57 non-monotone test
 boards, against 57 of 57 for the steps version. `constraint: reach` keeps it.
 
-Still to note:
-- The loss scores walks, so it does not by itself forbid extra edges off the walk.
-- `ResNetNode` takes one image per call, so in the prover branch batch norm sees
-  single images in training mode. The CE branch runs batched.
+`num_path_steps` is used, and logged, only in `reach` mode.
+
+**Batch norm:** each prover query runs `ResNetNode` on a single image in train mode,
+which updated batch-norm running statistics once per query -- 32 updates per step
+against one from the batched CE forward. Evaluation normalises with those running
+statistics; measured on Warcraft images, after 6 steps that shifted eval-mode logits
+by a mean of 0.357 against a logit std of 0.171. `WarcraftTrainer` now freezes
+running-statistic updates during the prover branch (`frozen_bn_stats`), so they come
+from batched forwards only; that branch's own normalisation and gradients are
+unchanged.
+
+Still to note: the loss scores walks, so it does not by itself forbid extra edges
+off the walk (the per-cell CE term discourages them). The path term is a training
+loss only; inference is per-cell argmax.
 
 **Run:** `run_warcraft.sh` (seeds 42 43, 100 epochs), from this directory with
 `PYTHONPATH=.`.

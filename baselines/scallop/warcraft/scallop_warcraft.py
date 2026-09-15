@@ -4,15 +4,16 @@ Scallop-constrained Warcraft 12x12 baseline.
 Pipeline:
   ResNet-18 -> per-node categorical (CASPER's head, tasks/warcraft/model.py)
             -> marginalise to per-edge active probabilities
-            -> Scallop differentiable transitive-closure path predicate
-            -> P(valid_path)  i.e. reachability from node 0 to node 143
+            -> Scallop program over the edge facts
+            -> P(valid_path)
 
-Loss = per-node CE  +  lambda_path * (-log P(valid_path)).
+--constraint steps (default): the steps walk at(i, v) over the domains of
+CASPER's compiled steps artifact, each move along a probabilistic edge, the sink
+absorbing, valid_path = at(L, sink). --constraint reach: the original transitive
+closure in warcraft_path.scl, valid_path = path(0, 143).
 
-The path term adds the s-t reachability signal that the purely-local
-categorical CE misses; the categorical head already enforces local
-flow conservation (each interior node has 0 or 2 active edges), so
-adding reachability is sufficient to recover single-path consistency.
+Loss = per-node CE  +  lambda_path * (-log P(valid_path)). The program is used
+only in this training loss; inference is per-node argmax.
 """
 
 import argparse
