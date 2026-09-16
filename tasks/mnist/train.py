@@ -15,6 +15,7 @@ import json
 import socket
 import subprocess
 import os
+import resource
 import signal
 import sys
 import time
@@ -272,6 +273,9 @@ def summarise_run(history, status, wall_time_s):
         'train_layer_time_s': total(history, 'train_layer_time_s'),
         'eval_time_s': total(history, 'eval_time_s'),
         'eval_layer_time_s': total(history, 'eval_layer_time_s'),
+        'gpu_mem_peak_mb': max((r['gpu_mem_peak_mb'] for r in history), default=float('nan')),
+        'gpu_mem_reserved_peak_mb': max((r['gpu_mem_reserved_peak_mb'] for r in history), default=float('nan')),
+        'cpu_rss_peak_mb': max((r['cpu_rss_peak_mb'] for r in history), default=float('nan')),
         'mean_s_per_train_example': total(done, 'train_time_s') / examples if examples else float('nan'),
         'final': done[-1] if done else None,
         'best_by_sum_exact': max(done, key=lambda r: r['sum_exact']) if done else None,
@@ -639,6 +643,9 @@ def run_one(task, n_digits, seed, epochs, lr, batch_size, device,
             'epoch_time_s': time.time() - epoch_start,
             'gpu_mem_peak_mb': (torch.cuda.max_memory_allocated() / (1024 ** 2)
                                 if device.type == 'cuda' else float('nan')),
+            'gpu_mem_reserved_peak_mb': (torch.cuda.max_memory_reserved() / (1024 ** 2)
+                                         if device.type == 'cuda' else float('nan')),
+            'cpu_rss_peak_mb': resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024,
             'timed_out': int(train_info['timed_out']),
         }
         record['epochs'].append(row)
