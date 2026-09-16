@@ -1,20 +1,26 @@
 #!/usr/bin/env bash
-# CCN+ (pishield) on Warcraft: per-cell categorical head (full alphabet), shield over
-# the steps atoms X_i = v, compiled once into constraints/warcraft/ccn/.
-set -euo pipefail
+# CCN+ (pishield) on Warcraft: per-cell categorical head (full alphabet), shield
+# over the steps atoms, compiled once into constraints/warcraft/ccn/.
+# Env: GRIDS, SEEDS, EPOCHS, RUNS_ROOT.
+set -uo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"; cd "$ROOT"
-PY="${PY:-$HOME/miniconda3/envs/casper_env/bin/python}"
-GRIDS="${GRIDS:-12}"; RUNS="${RUNS:-2}"; EPOCHS="${EPOCHS:-300}"; SEED="${SEED:-42}"
-LOGDIR="${LOGDIR:-logs/baselines}"; mkdir -p "$LOGDIR"
+source tools/runlib.sh
+GRIDS="${GRIDS:-12}"; EPOCHS="${EPOCHS:-300}"
 for g in $GRIDS; do
-  if [ ! -f "constraints/warcraft/ccn/warcraft_ccn_steps_${g}x${g}_strata.pkl" ]; then
-    echo ">>> compiling CCN+ steps shield ${g}x${g} (once)"
-    "$PY" baselines/ccn/warcraft/compile_steps_shield.py --grid-size "$g" 2>&1 \
-      | grep -E "^requirements|^RESULT|Error" | tee "$LOGDIR/ccn_compile_${g}.log"
+  if [[ ! -f "constraints/warcraft/ccn/warcraft_ccn_steps_${g}x${g}_strata.pkl" ]]; then
+    if [[ "${DRY_RUN:-0}" == 1 ]]; then
+      echo "[dry-run] would compile the CCN+ steps shield for ${g}x${g} first"
+    else
+      echo ">>> compiling CCN+ steps shield ${g}x${g} (once)"
+      "$PY" baselines/ccn/warcraft/compile_steps_shield.py --grid-size "$g" 2>&1 \
+        | grep -E "^requirements|^RESULT|Error"
+    fi
   fi
-  echo ">>> CCN+ warcraft ${g}x${g}"
-  "$PY" baselines/ccn/warcraft/train_ccn.py --data_dir "data/warcraft/${g}x${g}/preprocessed_4conn" \
-    --grid-size "$g" --alphabet full --constraint steps --n-runs "$RUNS" --epochs "$EPOCHS" \
-    --seed "$SEED" --save_dir "baselines/ccn/warcraft/results/${g}x${g}" \
-    2>&1 | tee "$LOGDIR/ccn_warcraft_${g}.log"
+  for s in $SEEDS; do
+    dir="$RUNS_ROOT/warcraft/${g}x${g}/ccn/seed$s"
+    run_one "$dir" "$PY" baselines/ccn/warcraft/train_ccn.py \
+      --data_dir "data/warcraft/${g}x${g}/preprocessed_4conn" --grid-size "$g" --alphabet full \
+      --constraint steps --n-runs 1 --epochs "$EPOCHS" --seed "$s" --num-workers 4 --save_dir "$dir"
+  done
 done
+finish_runs

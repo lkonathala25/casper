@@ -10,6 +10,7 @@ seed: 42
 verbose: true
 data_subset: null
 data_dir: ../../data/warcraft/12x12/preprocessed_4conn   # relative to baselines/deepsoftlog
+results_dir: results        # run outputs go to <results_dir>/<name>/
 grid_size: 12               # 12 or 30; must match data_dir and the steps artifact
 
 # Path constraint

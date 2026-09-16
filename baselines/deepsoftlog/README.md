@@ -59,5 +59,4 @@ Still to note: the loss scores walks, so it does not by itself forbid extra edge
 off the walk (the per-cell CE term discourages them). The path term is a training
 loss only; inference is per-cell argmax.
 
-**Run:** `run_warcraft.sh` (seeds 42 43, 100 epochs), from this directory with
-`PYTHONPATH=.`.
+**Run:** `run_warcraft.sh` -- 5 seeds (0-4) x 100 epochs, from this directory with `PYTHONPATH=.`; `GRIDS="12 30"` for both sizes. Written via `--results-dir`. Outputs go to `$RUNS_ROOT/warcraft/<N>x<N>/deepsoftlog/seed<S>/` (default `RUNS_ROOT=/Data/lk1325/runs`), log in `train.log`, `DONE` marker when finished so relaunches skip it; `DRY_RUN=1` only prints the commands (`tools/runlib.sh`).

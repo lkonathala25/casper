@@ -62,4 +62,4 @@ off the walk (the per-cell CE term discourages them). The program is used only i
 the training loss; inference is per-cell argmax only, which is not guaranteed to be
 a valid path.
 
-**Run:** `run_warcraft.sh` -- 3 seeds x 50 epochs, argmax inference.
+**Run:** `run_warcraft.sh` -- 5 seeds (0-4) x 50 epochs, argmax inference, 12x12 only. CPU-bound, so launch one copy per seed (`SEEDS=<S>`) to run them in parallel. Outputs go to `$RUNS_ROOT/warcraft/12x12/scallop/seed<S>/` (default `RUNS_ROOT=/Data/lk1325/runs`), log in `train.log`, `DONE` marker when finished so relaunches skip it; `DRY_RUN=1` only prints the commands (`tools/runlib.sh`).

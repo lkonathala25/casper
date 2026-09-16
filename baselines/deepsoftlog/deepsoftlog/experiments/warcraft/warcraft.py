@@ -383,7 +383,7 @@ class WarcraftTrainer(Trainer):
         which deletes the per_epoch.csv we wrote earlier in the same epoch.
         We just overwrite config.yaml + store.pt in place.
         """
-        save_folder = Path(f"results/{config['name']}")
+        save_folder = Path(config.get("results_dir") or "results") / config["name"]
         save_folder.mkdir(parents=True, exist_ok=True)
         config.save(save_folder / "config.yaml")
         torch.save(self.get_store().state_dict(), save_folder / "store.pt")
@@ -492,7 +492,7 @@ def train(config_name, overrides=None):
     optimizer = get_optimizer(program.get_store(), cfg)
     logger = WandbLogger(cfg)
 
-    csv_path = Path("results") / cfg["name"] / "per_epoch.csv"
+    csv_path = Path(cfg.get("results_dir") or "results") / cfg["name"] / "per_epoch.csv"
     trainer_box = []
 
     def raw_eval_fn():
@@ -542,8 +542,8 @@ def train(config_name, overrides=None):
         trainer.close()
 
 
-def eval(folder: str):
-    cfg = load_config(f"results/{folder}/config.yaml")
+def eval(folder: str, results_dir: str = "results"):
+    cfg = load_config(str(Path(results_dir) / folder / "config.yaml"))
     print(f"EVALING {cfg['name']}")
     configure_grid(cfg)
 
@@ -553,7 +553,7 @@ def eval(folder: str):
 
     test_dataloader = get_test_dataloader(cfg)
     program = load_program(cfg, test_dataloader)
-    state_dict = torch.load(f"results/{folder}/store.pt")
+    state_dict = torch.load(Path(results_dir) / folder / "store.pt")
     program.store.load_state_dict(state_dict, strict=False)
 
     metrics = compute_extra_metrics(program, cfg, split="test")
@@ -567,6 +567,9 @@ def _parse_args():
                    help="Grid size (overrides grid_size in the config).")
     p.add_argument("--data-dir", type=str, default=None,
                    help="Data directory (overrides data_dir in the config).")
+    p.add_argument("--results-dir", type=str, default=None,
+                   help="Run outputs go to <results-dir>/<name>/ (overrides results_dir "
+                        "in the config; default results/ under the working directory).")
     p.add_argument("--config", type=str,
                    default="deepsoftlog/experiments/warcraft/config.yaml")
     p.add_argument("--nb-epochs", type=int, default=None)
@@ -592,5 +595,6 @@ if __name__ == "__main__":
         "data_subset": args.data_subset,
         "grid_size": args.grid_size,
         "data_dir": args.data_dir,
+        "results_dir": args.results_dir,
     }
     train(args.config, overrides=overrides)

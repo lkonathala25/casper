@@ -65,5 +65,4 @@ is an old monotone (628-variable) requirements file and is not used.
 
 **Dependency:** `pishield` 1.0.0 from PyPI, which imports `matplotlib` at load time.
 
-**Run:** `run_warcraft.sh` -- compiles the steps shield if missing, then 2 runs x 300
-epochs, lr 5e-4, patience 30 (upstream `run_crl_warcraft_ccn_plus.sh` defaults).
+**Run:** `run_warcraft.sh` -- compiles the steps shield if missing, then 5 seeds (0-4) x 300 epochs, lr 5e-4, patience 30 (upstream `run_crl_warcraft_ccn_plus.sh` defaults), batch 64. Outputs go to `$RUNS_ROOT/warcraft/<N>x<N>/ccn/seed<S>/` (default `RUNS_ROOT=/Data/lk1325/runs`), log in `train.log`, `DONE` marker when finished so relaunches skip it; `DRY_RUN=1` only prints the commands (`tools/runlib.sh`).
