@@ -3,12 +3,13 @@
 # to be functional-DAG fixpoints at load), layer in training and inference.
 # Dataset sizes are fixed per task at every N, examples drawn with replacement so
 # MNIST images are reused (no shrinking at large N): Add 6000/1000, Sum 5000/1000.
-# 200 epochs, no early stopping, no time-out. Seeds are the outer loop so every
-# setting has a seed-0 result before any setting gets a second seed.
+# 200 epochs, no early stopping, no time-out. Seeds 0-2 by default, one process
+# per seed via launch_casper.sh; within a seed, settings run smallest N first.
 # Env: TASKS, SUM_NS, ADD_NS, SEEDS, EPOCHS, ADD_TRAIN, ADD_TEST, SUM_TRAIN,
 # SUM_TEST, RUNS_ROOT.
 set -uo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"; cd "$ROOT"
+SEEDS="${SEEDS:-0 1 2}"  # MNIST CASPER: 3 seeds
 source tools/runlib.sh
 TASKS="${TASKS:-sum add}"; SUM_NS="${SUM_NS:-2 4 16 64 256 1024}"; ADD_NS="${ADD_NS:-2 4 15 100 256}"
 ADD_TRAIN="${ADD_TRAIN:-6000}"; ADD_TEST="${ADD_TEST:-1000}"; SUM_TRAIN="${SUM_TRAIN:-5000}"; SUM_TEST="${SUM_TEST:-1000}"
