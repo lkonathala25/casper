@@ -223,42 +223,26 @@ def _exact_macro(pred, target):
 
 
 def _git_describe():
-    """Commit of the code being run, marked -dirty when the working tree has changes."""
+    """Commit of the code being run, marked -dirty when the working tree has changes.
+
+    Falls back to reading .git directly, since detached runs can start without
+    git on PATH and the run's provenance should be recorded either way.
+    """
+    root = Path(__file__).resolve().parents[2]
     try:
-        out = subprocess.run(
-            ['git', '-C', str(Path(__file__).resolve().parents[2]), 'describe', '--always', '--dirty'],
-            capture_output=True, text=True, timeout=10)
-        return out.stdout.strip() or None
+        out = subprocess.run(['git', '-C', str(root), 'describe', '--always', '--dirty'],
+                             capture_output=True, text=True, timeout=10)
+        if out.returncode == 0 and out.stdout.strip():
+            return out.stdout.strip()
+    except Exception:
+        pass
+    try:
+        head = (root / '.git' / 'HEAD').read_text().strip()
+        if head.startswith('ref: '):
+            return (root / '.git' / head[5:]).read_text().strip()[:12]
+        return head[:12]
     except Exception:
         return None
-
-
-def _json_safe(obj):
-    """Replace NaN/inf with None, recursively, so the file is strict JSON."""
-    if isinstance(obj, dict):
-        return {k: _json_safe(v) for k, v in obj.items()}
-    if isinstance(obj, (list, tuple)):
-        return [_json_safe(v) for v in obj]
-    if isinstance(obj, float) and not np.isfinite(obj):
-        return None
-    return obj
-
-
-def write_run_json(path, record):
-    """Atomically rewrite the run's JSON (config, epochs, summary) so a crash never leaves it half-written."""
-    path = Path(path)
-    tmp = path.with_name(path.name + '.tmp')
-    tmp.write_text(json.dumps(_json_safe(record), indent=2, default=str))
-    os.replace(tmp, path)
-
-
-def save_checkpoint(path, model, optimizer, scheduler, epoch, row):
-    """Atomically save model, optimizer and scheduler state after an epoch, with that epoch's metrics."""
-    path = Path(path)
-    tmp = path.with_name(path.name + '.tmp')
-    torch.save({'epoch': epoch, 'model': model.state_dict(), 'optimizer': optimizer.state_dict(),
-                'scheduler': scheduler.state_dict(), 'metrics': _json_safe(row)}, tmp)
-    os.replace(tmp, path)
 
 
 def summarise_run(history, status, wall_time_s):

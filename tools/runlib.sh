@@ -6,6 +6,15 @@ PY="${PY:-$HOME/miniconda3/envs/casper_env/bin/python}"
 SEEDS="${SEEDS:-0 1 2 3 4}"
 RUN_FAILURES=0
 
+run_commit() {  # commit of $1, reading .git directly when git is not on PATH
+  git -C "$1" describe --always --dirty 2>/dev/null && return
+  local head; head=$(cat "$1/.git/HEAD" 2>/dev/null) || return
+  case "$head" in
+    "ref: "*) cut -c1-12 "$1/.git/${head#ref: }" 2>/dev/null ;;
+    *) printf '%.12s\n' "$head" ;;
+  esac
+}
+
 run_one() {
   local dir=$1; shift
   if [[ "${FORCE:-0}" != 1 && -f "$dir/DONE" ]]; then
@@ -15,7 +24,7 @@ run_one() {
     echo "[dry-run] $dir"; printf '   '; printf ' %q' "$@"; echo; return 0
   fi
   mkdir -p "$dir"
-  { echo "# $(date '+%F %T') host=$(hostname) gpu=${CUDA_VISIBLE_DEVICES:-unset} commit=$(git -C "$ROOT" describe --always --dirty)"
+  { echo "# $(date '+%F %T') host=$(hostname) gpu=${CUDA_VISIBLE_DEVICES:-unset} commit=$(run_commit "$ROOT")"
     printf '#'; printf ' %q' "$@"; echo; } > "$dir/train.log"
   echo "[$(date +%T)] start  $dir"
   if "$@" >> "$dir/train.log" 2>&1; then
