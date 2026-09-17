@@ -65,6 +65,36 @@ class MinEditL2(nn.Module):
         l2 = torch.linalg.vector_norm(p_adj - p, ord=2, dim=1)
         return p_adj, l2, n_active
 
+    def project_rows(self, p, target):
+        """Positive-head projection with a different target per row.
+
+        p: (R, C) probabilities; target: (R,) long. Performs the same
+        element-wise operations as `_positive_head_batch`, so each row's result
+        equals projecting that row alone onto its own target.
+        Returns (p_adj, l2).
+        """
+        onehot = torch.zeros_like(p, dtype=torch.bool).scatter_(1, target.unsqueeze(1), True)
+        p_target = p.gather(1, target.unsqueeze(1))
+
+        active_mask = (p_target < p + self.eps) & ~onehot
+        n_active = active_mask.sum(dim=1)
+        has_active = n_active > 0
+
+        active_sum = (p * active_mask).sum(dim=1)
+        pool = p_target.squeeze(1) + active_sum
+
+        denom = (1 + n_active).float()
+        new_target_val = (pool + n_active.float() * self.eps) / denom
+        new_active_val = (pool - self.eps) / denom
+
+        update_mask = active_mask & has_active.unsqueeze(1)
+        p_adj = torch.where(update_mask, new_active_val.unsqueeze(1).expand_as(p), p)
+        target_col = torch.where(has_active, new_target_val, p_target.squeeze(1))
+        p_adj = torch.where(onehot, target_col.unsqueeze(1).expand_as(p), p_adj)
+
+        l2 = torch.linalg.vector_norm(p_adj - p, ord=2, dim=1)
+        return p_adj, l2
+
     def _negative_head_batch(self, p, forbidden):
         """Project so argmax(p_adj) != forbidden by promoting the runner-up."""
         B, C = p.shape

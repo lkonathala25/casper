@@ -72,7 +72,8 @@ class MNISTConstraintNet(nn.Module):
     """End-to-end model for MNIST-Sum or MNIST-Add with constraint projection."""
 
     def __init__(self, task, variable_ranges, n_inputs, compiled_file,
-                 projection_backend='closed_form', solver_time_limit=None):
+                 projection_backend='closed_form', solver_time_limit=None,
+                 layer='batched'):
         super().__init__()
         if task not in ('sum', 'add'):
             raise ValueError(f"task must be 'sum' or 'add', got {task!r}")
@@ -97,12 +98,21 @@ class MNISTConstraintNet(nn.Module):
             self.head = OutputDigitClassifier(
                 n_inputs * 10, n_digits_per_num + 1)
 
-        from compiled_layer import CompiledConstraintLayer
-
-        self.constraint_layer = CompiledConstraintLayer(
-            compiled_file, variable_ranges,
-            projection_backend=projection_backend,
-            solver_time_limit=solver_time_limit)
+        if layer == 'batched':
+            if projection_backend != 'closed_form':
+                raise ValueError("layer='batched' uses the closed-form projection; "
+                                 "use layer='generic' for other backends")
+            from functional_compiled_layer import FunctionalCompiledConstraintLayer
+            self.constraint_layer = FunctionalCompiledConstraintLayer(
+                compiled_file, variable_ranges)
+        elif layer == 'generic':
+            from compiled_layer import CompiledConstraintLayer
+            self.constraint_layer = CompiledConstraintLayer(
+                compiled_file, variable_ranges,
+                projection_backend=projection_backend,
+                solver_time_limit=solver_time_limit)
+        else:
+            raise ValueError(f"layer must be 'batched' or 'generic', got {layer!r}")
 
     @staticmethod
     def _compute_start_indices(var_ranges):

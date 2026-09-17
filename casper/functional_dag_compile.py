@@ -10,23 +10,21 @@ class NotFunctionalDAG(ValueError):
     pass
 
 
-def compile_functional_dag(cs: ConstraintSet) -> CompiledConstraints:
-    """Compile a topologically ordered, total functional signed-clause DAG.
+def functional_dag_tables(
+    cs: ConstraintSet,
+) -> tuple[list[list[SignedClause]], dict[int, tuple[tuple[int, ...], dict[tuple[int, ...], int]]]]:
+    """Validate a functional-DAG constraint set and return its buckets and tables.
 
-    This is a validated fast path for functional-link encodings.  Every
-    non-empty inference bucket must encode exactly one output for every tuple
-    of its parent values using clauses of the form
-
-        [not a]:A or [not b]:B or [f(a,b)]:Y.
-
-    Such a bucket directly defines Y as a total function of earlier variables.
-    Its clauses are already an INFER artifact: eliminating Y can retain no
-    non-tautological resolvent.  We verify that structure and totality in time
-    linear in the artifact size, then return the correctly bucketed clauses.
+    Returns (buckets, tables): buckets[step] holds the clauses live at that
+    elimination step; tables[output] = (parents, mapping) for every non-empty
+    bucket, where mapping sends each tuple of parent values (in `parents`
+    order) to the output's single feasible value. Raises NotFunctionalDAG when
+    any bucket is not a total deterministic function of earlier variables.
     """
     n_vars = len(cs.var_names)
     step_of = {var: step for step, var in enumerate(cs.ordering)}
     buckets: list[list[SignedClause]] = [[] for _ in range(n_vars)]
+    tables: dict[int, tuple[tuple[int, ...], dict[tuple[int, ...], int]]] = {}
     for clause in cs.clauses:
         if not clause.literals:
             raise NotFunctionalDAG("empty clause")
@@ -94,7 +92,26 @@ def compile_functional_dag(cs: ConstraintSet) -> CompiledConstraints:
             raise NotFunctionalDAG(
                 f"bucket {cs.var_names[output]!r} is not total"
             )
+        tables[output] = (parents, mapping)
 
+    return buckets, tables
+
+
+def compile_functional_dag(cs: ConstraintSet) -> CompiledConstraints:
+    """Compile a topologically ordered, total functional signed-clause DAG.
+
+    This is a validated fast path for functional-link encodings.  Every
+    non-empty inference bucket must encode exactly one output for every tuple
+    of its parent values using clauses of the form
+
+        [not a]:A or [not b]:B or [f(a,b)]:Y.
+
+    Such a bucket directly defines Y as a total function of earlier variables.
+    Its clauses are already an INFER artifact: eliminating Y can retain no
+    non-tautological resolvent.  We verify that structure and totality in time
+    linear in the artifact size, then return the correctly bucketed clauses.
+    """
+    buckets, _tables = functional_dag_tables(cs)
     return CompiledConstraints(
         var_names=list(cs.var_names),
         var_domains=list(cs.var_domains),

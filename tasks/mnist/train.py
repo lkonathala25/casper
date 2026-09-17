@@ -148,8 +148,9 @@ def resolve_compiled_file(task, n_digits, explicit=None):
 def check_fixpoint(path):
     """Refuse to train unless a generated constraint file is its own compile.
 
-    The layer loads the file with Constraints.from_compiled_dsl, i.e. as already
-    compiled, which is only sound if eliminating any variable derives nothing new.
+    Both layers treat the file as already compiled (the generic one via
+    Constraints.from_compiled_dsl, the batched one via the lookup tables this same
+    check builds), which is only sound if eliminating any variable derives nothing new.
     compile_functional_dag verifies that (every bucket a total function of earlier
     variables) in linear time and raises NotFunctionalDAG otherwise. Returns the
     check time and the constraint set's size for the run config.
@@ -549,7 +550,7 @@ def run_one(task, n_digits, seed, epochs, lr, batch_size, device,
             train_loader, test_loader, out_path, record,
             per_iter_timeout_s, max_run_time_s, constraint_mode='train_infer',
             compiled_file=None, projection_backend='closed_form',
-            solver_time_limit=None):
+            solver_time_limit=None, layer='batched'):
     """Train and evaluate one run, appending each epoch to record['epochs'] and
     rewriting the run JSON after every epoch. checkpoint_last.pt (every epoch) and
     checkpoint_best.pt (best sum_exact) go next to the JSON; returns the run summary."""
@@ -569,6 +570,7 @@ def run_one(task, n_digits, seed, epochs, lr, batch_size, device,
         compiled_file=compiled_file,
         projection_backend=projection_backend,
         solver_time_limit=solver_time_limit,
+        layer=layer,
     ).to(device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
@@ -582,7 +584,7 @@ def run_one(task, n_digits, seed, epochs, lr, batch_size, device,
     n_train, n_test = len(train_loader.dataset), len(test_loader.dataset)
     print(f"\n{'=' * 60}")
     print(f"task={task}  N={n_digits}  seed={seed}  "
-          f"projection={projection_backend}  "
+          f"projection={projection_backend}  layer={layer}  "
           f"mode={constraint_mode}")
     print(f"epochs={epochs}  lr={lr}  batch_size={batch_size}  train={n_train}  test={n_test}")
     print(f"{'=' * 60}")
@@ -690,6 +692,9 @@ def main():
     parser.add_argument('--batch-size', type=int, default=None)
     parser.add_argument('--out', type=str, required=True,
                         help='Run JSON: config, per-epoch metrics and summary.')
+    parser.add_argument('--layer', type=str, default='batched', choices=['batched', 'generic'],
+                        help="'batched': functional-DAG INFER batched over variables and samples "
+                             "(same projection and gradients as 'generic', the per-sample walk).")
     parser.add_argument('--projection-backend', type=str, default='closed_form',
                         choices=['closed_form', 'cvxpy'],
                         help="Solver for the MinEdit projection. The constraint "
@@ -796,6 +801,7 @@ def main():
         compiled_file=compiled_file,
         projection_backend=args.projection_backend,
         solver_time_limit=args.solver_time_limit,
+        layer=args.layer,
         per_iter_timeout_s=args.per_iter_timeout_s,
         max_run_time_s=args.max_run_time_s,
         constraint_mode=args.constraint_mode,

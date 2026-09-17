@@ -46,6 +46,24 @@ def mnist_add_num_samples(n_digits, split):
     raise ValueError(f"split must be 'train' or 'test', got {split!r}")
 
 
+_IMAGE_BANKS = {}
+
+
+def image_bank(mnist_dataset):
+    """All images of an MNIST split as one (len, 28, 28) tensor, plus labels.
+
+    Built once per dataset object by running its own transform on every image,
+    so indexing the bank returns exactly what `mnist_dataset[i]` would, without
+    per-image PIL conversion on every access.
+    """
+    key = id(mnist_dataset)
+    if key not in _IMAGE_BANKS:
+        images, labels = zip(*(mnist_dataset[i] for i in range(len(mnist_dataset))))
+        _IMAGE_BANKS[key] = (mnist_dataset, torch.cat(images, dim=0),
+                             torch.tensor(labels, dtype=torch.long))
+    return _IMAGE_BANKS[key][1:]
+
+
 class MNISTSumDataset(Dataset):
     """N-digit MNIST-Sum: each sample is N MNIST images, label is sum of digits."""
 
@@ -57,19 +75,15 @@ class MNISTSumDataset(Dataset):
         rng = np.random.RandomState(data_seed)
         self.sample_indices = rng.randint(
             0, len(mnist_dataset), size=(num_samples, n_digits))
+        self.images, self.labels = image_bank(mnist_dataset)
 
     def __len__(self):
         return self.num_samples
 
     def __getitem__(self, idx):
-        chosen = self.sample_indices[idx].tolist()
-        images, labels = [], []
-        for i in chosen:
-            img, label = self.mnist[i]
-            images.append(img)
-            labels.append(label)
-
-        stacked = torch.cat(images, dim=0)
+        chosen = torch.from_numpy(self.sample_indices[idx])
+        stacked = self.images[chosen]
+        labels = self.labels[chosen].tolist()
         digit_labels = torch.tensor(labels, dtype=torch.long)
         sum_label = torch.tensor(sum(labels), dtype=torch.long)
         return stacked, digit_labels, sum_label
@@ -87,19 +101,15 @@ class MNISTAddDataset(Dataset):
         rng = np.random.RandomState(data_seed)
         self.sample_indices = rng.randint(
             0, len(mnist_dataset), size=(num_samples, self.n_images))
+        self.images, self.labels = image_bank(mnist_dataset)
 
     def __len__(self):
         return self.num_samples
 
     def __getitem__(self, idx):
-        chosen = self.sample_indices[idx].tolist()
-        images, labels = [], []
-        for i in chosen:
-            img, label = self.mnist[i]
-            images.append(img)
-            labels.append(label)
-
-        stacked = torch.cat(images, dim=0)
+        chosen = torch.from_numpy(self.sample_indices[idx])
+        stacked = self.images[chosen]
+        labels = self.labels[chosen].tolist()
         digit_labels = torch.tensor(labels, dtype=torch.long)
 
         a_digits = labels[:self.n_digits]
