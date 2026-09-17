@@ -15,6 +15,8 @@ SEEDS="${SEEDS:-0 1 2}"
 # One sweep per seed shares the box, so cap each process's CPU threads instead of
 # letting every one of them claim all cores.
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-8}"
+# train.log should follow the run, not appear in blocks when the pipe buffer fills.
+export PYTHONUNBUFFERED=1
 out="$RUNS_ROOT/mnist/casper"; mkdir -p "$out"
 stamp="$(date +%Y%m%d_%H%M%S)"
 for s in $SEEDS; do
