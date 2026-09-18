@@ -245,6 +245,69 @@ def _git_describe():
         return None
 
 
+def _json_safe(obj):
+    """Replace NaN/inf with None, recursively, so the file is strict JSON."""
+    if isinstance(obj, dict):
+        return {k: _json_safe(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_json_safe(v) for v in obj]
+    if isinstance(obj, float) and not np.isfinite(obj):
+        return None
+    return obj
+
+
+def write_run_json(path, record):
+    """Atomically rewrite the run's JSON (config, epochs, summary) so a crash never leaves it half-written."""
+    path = Path(path)
+    tmp = path.with_name(path.name + '.tmp')
+    tmp.write_text(json.dumps(_json_safe(record), indent=2, default=str))
+    os.replace(tmp, path)
+
+
+def save_checkpoint(path, model, optimizer, scheduler, epoch, row):
+    """Atomically save model, optimizer and scheduler state after an epoch, with that epoch's metrics."""
+    path = Path(path)
+    tmp = path.with_name(path.name + '.tmp')
+    torch.save({'epoch': epoch, 'model': model.state_dict(), 'optimizer': optimizer.state_dict(),
+                'scheduler': scheduler.state_dict(), 'metrics': _json_safe(row)}, tmp)
+    os.replace(tmp, path)
+
+
+RESUME_KEYS = ['task', 'n_digits', 'seed', 'epochs', 'lr', 'batch_size', 'n_train', 'n_test',
+               'constraint_mode', 'projection_backend', 'layer', 'compiled_file_sha256']
+
+
+def load_resume(out_path, run_config):
+    """Previous record and last checkpoint of an interrupted run with the same settings.
+
+    Returns (record, checkpoint) when out_path and checkpoint_last.pt exist, every
+    RESUME_KEYS setting matches run_config, and no epoch timed out; the record's
+    epochs are cut to the checkpoint's epoch (the JSON is written just before the
+    checkpoint, so it can be one epoch ahead). Returns (None, None) otherwise, and
+    the run starts from scratch.
+    """
+    out_path = Path(out_path)
+    ckpt_path = out_path.parent / 'checkpoint_last.pt'
+    if not (out_path.exists() and ckpt_path.exists()):
+        return None, None
+    try:
+        record = json.loads(out_path.read_text())
+    except (OSError, ValueError) as err:
+        print(f"Not resuming: cannot read {out_path} ({err})")
+        return None, None
+    changed = [k for k in RESUME_KEYS if record['config'].get(k) != run_config.get(k)]
+    if changed:
+        print(f"Not resuming: settings differ from the previous run ({', '.join(changed)})")
+        return None, None
+    ckpt = torch.load(ckpt_path, map_location='cpu', weights_only=False)
+    done = ckpt['epoch']
+    if len(record['epochs']) < done or any(r['timed_out'] for r in record['epochs'][:done]):
+        print(f"Not resuming: {out_path.name} does not cover the checkpoint's {done} epochs")
+        return None, None
+    record['epochs'] = record['epochs'][:done]
+    return record, ckpt
+
+
 def summarise_run(history, status, wall_time_s):
     """Final and best-epoch metrics plus total cost, for the run JSON's summary."""
     done = [r for r in history if not r['timed_out']]
@@ -534,10 +597,16 @@ def run_one(task, n_digits, seed, epochs, lr, batch_size, device,
             train_loader, test_loader, out_path, record,
             per_iter_timeout_s, max_run_time_s, constraint_mode='train_infer',
             compiled_file=None, projection_backend='closed_form',
-            solver_time_limit=None, layer='batched'):
+            solver_time_limit=None, layer='batched', resume=None):
     """Train and evaluate one run, appending each epoch to record['epochs'] and
     rewriting the run JSON after every epoch. checkpoint_last.pt (every epoch) and
-    checkpoint_best.pt (best sum_exact) go next to the JSON; returns the run summary."""
+    checkpoint_best.pt (best sum_exact) go next to the JSON; returns the run summary.
+
+    With resume (a checkpoint from load_resume), model, optimizer and scheduler
+    continue from the checkpoint's epoch. The RNG is reseeded with seed + that
+    epoch, so the resumed epochs are reproducible but do not replay the exact
+    batch order an uninterrupted run would have used.
+    """
     torch.manual_seed(seed)
     if device.type == 'cuda':
         torch.cuda.manual_seed_all(seed)
@@ -573,12 +642,24 @@ def run_one(task, n_digits, seed, epochs, lr, batch_size, device,
     print(f"epochs={epochs}  lr={lr}  batch_size={batch_size}  train={n_train}  test={n_test}")
     print(f"{'=' * 60}")
 
-    history, status = [], 'completed'
-    run_start = time.time()
-    run_dir = Path(out_path).parent
-    best_sum_exact = -1.0
+    start_epoch, prior_wall_s = 0, 0.0
+    if resume is not None:
+        model.load_state_dict(resume['model'])
+        optimizer.load_state_dict(resume['optimizer'])
+        scheduler.load_state_dict(resume['scheduler'])
+        start_epoch = resume['epoch']
+        prior_wall_s = (record.get('summary') or {}).get('wall_time_s') or 0.0
+        torch.manual_seed(seed + start_epoch)
+        if device.type == 'cuda':
+            torch.cuda.manual_seed_all(seed + start_epoch)
+        print(f"Resuming from checkpoint at epoch {start_epoch}/{epochs}")
 
-    for epoch in range(epochs):
+    history, status = list(record['epochs']), 'completed'
+    run_start = time.time() - prior_wall_s
+    run_dir = Path(out_path).parent
+    best_sum_exact = max((r['sum_exact'] for r in history), default=-1.0)
+
+    for epoch in range(start_epoch, epochs):
         if device.type == 'cuda':
             torch.cuda.reset_peak_memory_stats()
         lr_now = optimizer.param_groups[0]['lr']
@@ -766,7 +847,13 @@ def main():
         'torch': torch.__version__, 'cuda': torch.version.cuda,
         'started': time.strftime('%Y-%m-%d %H:%M:%S'),
     }
-    record = {'config': run_config, 'epochs': [], 'summary': None}
+    record, resume = load_resume(args.out, run_config)
+    if record is None:
+        record = {'config': run_config, 'epochs': [], 'summary': None}
+    else:
+        record['config'].setdefault('resumes', []).append({
+            'from_epoch': resume['epoch'], 'started': run_config['started'],
+            'commit': run_config['commit'], 'host': run_config['host'], 'gpu': run_config['gpu']})
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     write_run_json(args.out, record)
 
@@ -789,6 +876,7 @@ def main():
         per_iter_timeout_s=args.per_iter_timeout_s,
         max_run_time_s=args.max_run_time_s,
         constraint_mode=args.constraint_mode,
+        resume=resume,
     )
     record['summary'] = summary
     record['config']['finished'] = time.strftime('%Y-%m-%d %H:%M:%S')

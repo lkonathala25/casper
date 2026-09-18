@@ -1,6 +1,7 @@
 # Shared helpers for the experiment run scripts. Source after setting ROOT.
 # One folder per run under $RUNS_ROOT with train.log inside; finished runs are
 # marked DONE and skipped on relaunch (FORCE=1 reruns); DRY_RUN=1 only prints.
+# train.log is appended to, so a restarted run keeps the log of earlier attempts.
 RUNS_ROOT="${RUNS_ROOT:-/Data/lk1325/runs}"
 PY="${PY:-$HOME/miniconda3/envs/casper_env/bin/python}"
 SEEDS="${SEEDS:-0 1 2 3 4}"
@@ -25,7 +26,7 @@ run_one() {
   fi
   mkdir -p "$dir"
   { echo "# $(date '+%F %T') host=$(hostname) gpu=${CUDA_VISIBLE_DEVICES:-unset} commit=$(run_commit "$ROOT")"
-    printf '#'; printf ' %q' "$@"; echo; } > "$dir/train.log"
+    printf '#'; printf ' %q' "$@"; echo; } >> "$dir/train.log"
   echo "[$(date +%T)] start  $dir"
   if "$@" >> "$dir/train.log" 2>&1; then
     touch "$dir/DONE"; echo "[$(date +%T)] done   $dir"
