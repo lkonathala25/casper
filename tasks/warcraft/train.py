@@ -551,10 +551,11 @@ def run_condition(condition, args, device, train_loader, val_loader, test_loader
                       f"{val['exact']:5.1f}/{val['hamming']:5.1f}/{val['consistent']:5.1f}"
                       f"{extra} | LR: {lr:.2e} | {dt:.1f}s")
 
-                if condition == "crl_in_training" and apply_constraints_at_eval:
-                    select_metric = 0.5 * val["raw_exact"] + 0.5 * val["proj_exact"]
-                else:
-                    select_metric = val["exact"]
+                # Select on what is reported on test: the projected exact match
+                # when the layer is applied at inference, the raw one otherwise.
+                select_metric = (val["proj_exact"]
+                                 if condition == "crl_in_training" and apply_constraints_at_eval
+                                 else val["exact"])
                 if select_metric > best_val_exact:
                     best_val_exact = select_metric
                     patience_counter = 0

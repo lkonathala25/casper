@@ -268,17 +268,19 @@ def compute_extra_metrics(program, cfg, split="test"):
     return metrics
 
 
-def compute_raw_task_accuracy(program, cfg, trainer=None):
+def compute_raw_task_accuracy(program, cfg, trainer=None, split="val"):
     """raw_eval_fn signature: returns (task_acc, digit_acc) in [0, 1].
 
-    Logs the full metric dict + per-epoch peak GPU memory to stdout each
-    epoch. When `trainer` is provided, also appends a row to its CSV via
-    trainer.log_epoch (with epoch_time and peak GPU memory).
+    Scores the validation split so no epoch-selection decision ever sees test,
+    matching the other Warcraft baselines. Logs the full metric dict +
+    per-epoch peak GPU memory to stdout each epoch. When `trainer` is
+    provided, also appends a row to its CSV via trainer.log_epoch (with
+    epoch_time and peak GPU memory) and keeps the best-exact store.
     """
-    metrics = compute_extra_metrics(program, cfg, split="test")
+    metrics = compute_extra_metrics(program, cfg, split=split)
     peak_mb = trainer.log_epoch(metrics) if trainer is not None else float("nan")
     print(
-        f"  metrics(test): exact={metrics['exact']:5.2f}%  "
+        f"  metrics({split}): exact={metrics['exact']:5.2f}%  "
         f"hamming={metrics['hamming']:5.2f}%  "
         f"consistent={metrics['consistent']:5.2f}%  "
         f"endpoint_agreement_gt={metrics['endpoint_agreement_gt']:.4f}  "
@@ -330,6 +332,8 @@ class WarcraftTrainer(Trainer):
         self.var_ranges = list(var_ranges)
         self.lambda_path = float(lambda_path)
         self.csv_path = csv_path
+        self.best_exact = -1.0
+        self.best_epoch = None
         self._csv_file = None
         self._csv_writer = None
         self._csv_epoch = 0
@@ -369,6 +373,27 @@ class WarcraftTrainer(Trainer):
             self._csv_file.flush()
         self._csv_epoch += 1
         return peak_mb
+
+    def keep_if_best(self, metrics, config):
+        """Save the store whenever validation exact match improves."""
+        if metrics["exact"] <= self.best_exact:
+            return False
+        self.best_exact = metrics["exact"]
+        self.best_epoch = self._csv_epoch - 1
+        save_folder = Path(config.get("results_dir") or "results") / config["name"]
+        save_folder.mkdir(parents=True, exist_ok=True)
+        torch.save(self.get_store().state_dict(), save_folder / "best_store.pt")
+        return True
+
+    def train(self, cfg, nb_workers: int = 1):
+        """Train without the base Trainer's per-epoch prover eval on val and test.
+
+        Epoch selection uses raw_eval_fn on the validation split instead, so the
+        test split is touched once, after training.
+        """
+        if nb_workers != 1:
+            raise NotImplementedError("WarcraftTrainer runs single-process")
+        return self._train(cfg, True, do_eval=False)
 
     def close(self):
         if self._csv_file is not None:
@@ -496,9 +521,19 @@ def train(config_name, overrides=None):
     trainer_box = []
 
     def raw_eval_fn():
-        return compute_raw_task_accuracy(
-            program, cfg, trainer=trainer_box[0] if trainer_box else None
+        trainer = trainer_box[0] if trainer_box else None
+        metrics = compute_extra_metrics(program, cfg, split="val")
+        peak_mb = trainer.log_epoch(metrics) if trainer is not None else float("nan")
+        print(
+            f"  metrics(val): exact={metrics['exact']:5.2f}%  "
+            f"hamming={metrics['hamming']:5.2f}%  "
+            f"consistent={metrics['consistent']:5.2f}%  "
+            f"endpoint_agreement_gt={metrics['endpoint_agreement_gt']:.4f}  "
+            f"mean_neg_log_p_valid={metrics['mean_neg_log_p_valid']:.4f}  "
+            f"peak_mem={peak_mb:.0f}MB"
+            + ("  [best so far]" if trainer is not None and trainer.keep_if_best(metrics, cfg) else "")
         )
+        return metrics["exact"] / 100.0, metrics["hamming"] / 100.0
 
     trainer = WarcraftTrainer(
         program,
@@ -519,6 +554,11 @@ def train(config_name, overrides=None):
         trainer.train(cfg, nb_workers=cfg["nb_workers"])
         avg_epoch_time = sum(trainer.epoch_times) / len(trainer.epoch_times) if trainer.epoch_times else 0.0
 
+        best_path = Path(cfg.get("results_dir") or "results") / cfg["name"] / "best_store.pt"
+        if best_path.exists():
+            program.get_store().load_state_dict(torch.load(best_path, map_location=cfg["device"]))
+            print(f"Testing the best-validation epoch ({trainer.best_epoch}, "
+                  f"val exact={trainer.best_exact:.2f}%)")
         final_metrics = compute_extra_metrics(program, cfg, split="test")
         if torch.cuda.is_available():
             peak_memory_mb = torch.cuda.max_memory_allocated() / 1024 / 1024
@@ -533,6 +573,7 @@ def train(config_name, overrides=None):
             f"consistent={final_metrics['consistent']:.4f} "
             f"endpoint_agreement_gt={final_metrics['endpoint_agreement_gt']:.4f} "
             f"mean_neg_log_p_valid={final_metrics['mean_neg_log_p_valid']:.4f} "
+            f"best_epoch={trainer.best_epoch} best_val_exact={trainer.best_exact:.4f} "
             f"peak_memory_mb={peak_memory_mb:.1f} "
             f"epoch_time_s={avg_epoch_time:.2f} "
             f"per_epoch_csv={csv_path}"
