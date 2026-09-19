@@ -780,6 +780,12 @@ def main():
     parser.add_argument('--per-example-timeout-s', type=float, default=None,
                         help='Time-out per training example (the paper uses 5 s); sets '
                              '--per-iter-timeout-s to this times the batch size when that is unset.')
+    parser.add_argument('--data-protocol', type=str, default='resample',
+                        choices=['resample', 'ctsketch'],
+                        help="MNIST-Add only. 'resample': --num-train/test-samples examples "
+                             "drawn with replacement. 'ctsketch': CTSketch's loader -- each "
+                             "split (copied 1-5x by N) dealt into non-overlapping 2N-image "
+                             "examples, e.g. 15000/2500 at N=2, 585/97 at N=256.")
     parser.add_argument('--num-train-samples', type=int, default=None,
                         help='Training examples, drawn with replacement so MNIST images are '
                              'reused. Default: 5000 for sum, 60000 // (2 * n_digits) for add.')
@@ -810,6 +816,8 @@ def main():
     mnist_test = torchvision.datasets.MNIST(
         args.data_root, train=False, download=True, transform=transform)
 
+    if args.task == 'sum' and args.data_protocol != 'resample':
+        raise SystemExit('--data-protocol applies to MNIST-Add only')
     if args.task == 'sum':
         train_n = args.num_train_samples or mnist_sum_num_samples('train')
         test_n = args.num_test_samples or mnist_sum_num_samples('test')
@@ -818,12 +826,18 @@ def main():
         test_ds = MNISTSumDataset(mnist_test, n_digits=args.n_digits,
                                   num_samples=test_n, data_seed=args.seed + 10000)
     else:
+        if args.data_protocol == 'ctsketch' and (args.num_train_samples or args.num_test_samples):
+            raise SystemExit("--data-protocol ctsketch sets the dataset sizes; "
+                             "drop --num-train-samples/--num-test-samples")
         train_n = args.num_train_samples or mnist_add_num_samples(args.n_digits, 'train')
         test_n = args.num_test_samples or mnist_add_num_samples(args.n_digits, 'test')
         train_ds = MNISTAddDataset(mnist_train, n_digits=args.n_digits,
-                                   num_samples=train_n, data_seed=args.seed)
+                                   num_samples=train_n, data_seed=args.seed,
+                                   protocol=args.data_protocol)
         test_ds = MNISTAddDataset(mnist_test, n_digits=args.n_digits,
-                                  num_samples=test_n, data_seed=args.seed + 10000)
+                                  num_samples=test_n, data_seed=args.seed + 10000,
+                                  protocol=args.data_protocol)
+        train_n, test_n = len(train_ds), len(test_ds)
 
     print(f"  train={train_n}  test={test_n}")
 

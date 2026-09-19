@@ -22,7 +22,7 @@ export OMP_NUM_THREADS="${OMP_NUM_THREADS:-8}"
 export PYTHONUNBUFFERED=1
 out="$RUNS_ROOT/mnist/casper"; mkdir -p "$out"
 stamp="$(date +%Y%m%d_%H%M%S)"
-tag="${TAG:-$(echo "${TASKS:-sumadd}_${SUM_NS:-all}_${ADD_NS:-all}" | tr -s ' ' '-' | tr -cd 'A-Za-z0-9_-')}"
+tag="${TAG:-$(echo "${TASKS:-sumadd}_${SUM_NS:-all}_${ADD_NS:-all}${ADD_PROTOCOL:+_$ADD_PROTOCOL}" | tr -s ' ' '-' | tr -cd 'A-Za-z0-9_-')}"
 for s in $SEEDS; do
   pidfile="$out/sweep_${tag}_seed$s.pid"
   if [[ -f "$pidfile" ]] && kill -0 "$(cat "$pidfile")" 2>/dev/null; then

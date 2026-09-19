@@ -89,18 +89,50 @@ class MNISTSumDataset(Dataset):
         return stacked, digit_labels, sum_label
 
 
+def ctsketch_add_copies(n_digits):
+    """How many copies of the MNIST split CTSketch's Add loader deals from at this N."""
+    for threshold, copies in ((200, 5), (100, 4), (50, 3), (25, 2)):
+        if n_digits >= threshold:
+            return copies
+    return 1
+
+
+def ctsketch_add_indices(split_size, n_digits, data_seed):
+    """Deal a shuffled pool of MNIST indices into non-overlapping Add examples.
+
+    Mirrors CTSketch's MNISTMultiDigitSum2Dataset: the split is repeated
+    ctsketch_add_copies(N) times, shuffled, and cut into consecutive groups of
+    2N images, so every image appears once per copy and the number of examples
+    is (copies * split_size) // 2N. Returns an (examples, 2N) index array.
+    """
+    n_images = 2 * n_digits
+    pool = np.tile(np.arange(split_size), ctsketch_add_copies(n_digits))
+    np.random.RandomState(data_seed).shuffle(pool)
+    n_examples = len(pool) // n_images
+    return pool[: n_examples * n_images].reshape(n_examples, n_images)
+
+
 class MNISTAddDataset(Dataset):
     """N-digit MNIST-Add: 2N MNIST images grouped into two N-digit operands."""
 
-    def __init__(self, mnist_dataset, n_digits, num_samples, data_seed=0):
+    def __init__(self, mnist_dataset, n_digits, num_samples, data_seed=0,
+                 protocol='resample'):
+        """protocol 'resample' draws num_samples examples with replacement (images
+        reused); 'ctsketch' deals the split into non-overlapping examples as
+        CTSketch does (ctsketch_add_indices) and ignores num_samples."""
         self.mnist = mnist_dataset
         self.n_digits = n_digits
         self.n_images = 2 * n_digits
-        self.num_samples = num_samples
 
-        rng = np.random.RandomState(data_seed)
-        self.sample_indices = rng.randint(
-            0, len(mnist_dataset), size=(num_samples, self.n_images))
+        if protocol == 'ctsketch':
+            self.sample_indices = ctsketch_add_indices(len(mnist_dataset), n_digits, data_seed)
+        elif protocol == 'resample':
+            rng = np.random.RandomState(data_seed)
+            self.sample_indices = rng.randint(
+                0, len(mnist_dataset), size=(num_samples, self.n_images))
+        else:
+            raise ValueError(f"protocol must be 'resample' or 'ctsketch', got {protocol!r}")
+        self.num_samples = len(self.sample_indices)
         self.images, self.labels = image_bank(mnist_dataset)
 
     def __len__(self):
