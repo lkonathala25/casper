@@ -44,3 +44,4 @@ exp  b=4 m=50   low_conf    width=22.3   n=3   cens=0  res=17950   median=892.41
 exp  b=4 m=50   random      width=17     n=3   cens=0  res=13731   median=341.6755s IQR=[258.8345,224198.6919]
 exp  b=5 m=50   structural  width=5      n=3   cens=0  res=602     median=0.4869s IQR=[0.3989,0.5445]
 exp  b=5 m=50   high_conf   width=23.3   n=3   cens=0  res=43343   median=877925.7746s IQR=[527966.4577,1007168.5624]
+exp  b=5 m=50   low_conf    width=24.7   n=3   cens=0  res=52346   median=248471.3032s IQR=[206230.1510,546740.6081]

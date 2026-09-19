@@ -1,0 +1,2 @@
+m,graph,band,ordering,confidence_metric,trials,censored,induced_width,clauses_in,clauses_out,resolvents,max_bucket,mean_margin,compile_s,compile_std,compile_med,compile_p25,compile_p75,compile_min,compile_max
+50,exp,5,low_conf,neg_nearest_centroid_distance,3,0,24.7,470,52799,52346,20694,5.647,419156.7384,371210.8696,248471.3032,206230.151,546740.6081,163988.9988,845009.913
