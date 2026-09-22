@@ -26,6 +26,7 @@ Pipeline:
 
 import argparse
 import csv
+import os
 from contextlib import contextmanager
 import sys
 from pathlib import Path
@@ -47,10 +48,11 @@ from deepsoftlog.data.dataloader import DataLoader
 from deepsoftlog.embeddings import nn_models as dsl_nn
 from deepsoftlog.embeddings.initialize_vector import SPECIAL_MODELS
 from deepsoftlog.logic.soft_term import TensorTerm
-from deepsoftlog.training import load_program, load_config
+from deepsoftlog.training import load_program, load_config, set_seed
 from deepsoftlog.training.logger import WandbLogger
 from deepsoftlog.training.loss import nll_loss, get_optimizer
 from deepsoftlog.training.trainer import Trainer
+from torch.optim.lr_scheduler import CosineAnnealingLR
 
 from deepsoftlog.experiments.warcraft import dataset as _wds
 from deepsoftlog.experiments.warcraft.dataset import (
@@ -334,6 +336,7 @@ class WarcraftTrainer(Trainer):
         self.csv_path = csv_path
         self.best_exact = -1.0
         self.best_epoch = None
+        self._csv_append = False
         self._csv_file = None
         self._csv_writer = None
         self._csv_epoch = 0
@@ -342,8 +345,12 @@ class WarcraftTrainer(Trainer):
         if self.csv_path is None or self._csv_writer is not None:
             return
         Path(self.csv_path).parent.mkdir(parents=True, exist_ok=True)
-        self._csv_file = open(self.csv_path, "w", newline="")
+        appending = getattr(self, "_csv_append", False) and Path(self.csv_path).exists()
+        self._csv_file = open(self.csv_path, "a" if appending else "w", newline="")
         self._csv_writer = csv.writer(self._csv_file)
+        if appending:
+            self._csv_file.flush()
+            return
         self._csv_writer.writerow([
             "epoch", "epoch_time_s", "gpu_mem_peak_mb",
             "exact", "hamming", "consistent",
@@ -374,6 +381,45 @@ class WarcraftTrainer(Trainer):
         self._csv_epoch += 1
         return peak_mb
 
+    def resume_path(self, config):
+        """Where this run's resume state lives."""
+        return Path(config.get("results_dir") or "results") / config["name"] / "resume.pt"
+
+    def save_resume(self, config, epoch):
+        """Store epoch, weights, optimizer, scheduler and best-so-far after an epoch.
+
+        A 12x12 seed runs for days, so an interrupted run continues from here
+        rather than starting over.
+        """
+        path = self.resume_path(config)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_name(path.name + ".tmp")
+        torch.save({"epoch": epoch, "store": self.get_store().state_dict(),
+                    "optimizer": self.optimizer.state_dict(),
+                    "scheduler": self.scheduler.state_dict() if self.scheduler else None,
+                    "best_exact": self.best_exact, "best_epoch": self.best_epoch,
+                    "csv_epoch": self._csv_epoch, "epoch_times": self.epoch_times,
+                    "nb_epochs": config["nb_epochs"], "seed": config["seed"],
+                    "batch_size": config["batch_size"]}, tmp)
+        os.replace(tmp, path)
+
+    def load_resume(self, config):
+        """Resume state for this run, or None to start from epoch 0.
+
+        Refuses state written for a different seed, epoch budget or batch size,
+        since the schedule and the per-epoch CSV would not line up.
+        """
+        path = self.resume_path(config)
+        if not path.exists():
+            return None
+        state = torch.load(path, map_location="cpu", weights_only=False)
+        changed = [k for k in ("nb_epochs", "seed", "batch_size")
+                   if state.get(k) != config[k]]
+        if changed:
+            print(f"Not resuming: settings differ ({', '.join(changed)})")
+            return None
+        return state
+
     def keep_if_best(self, metrics, config):
         """Save the store whenever validation exact match improves."""
         if metrics["exact"] <= self.best_exact:
@@ -386,14 +432,51 @@ class WarcraftTrainer(Trainer):
         return True
 
     def train(self, cfg, nb_workers: int = 1):
-        """Train without the base Trainer's per-epoch prover eval on val and test.
+        """Train, continuing from resume.pt when one is present.
 
-        Epoch selection uses raw_eval_fn on the validation split instead, so the
-        test split is touched once, after training.
+        Replaces the base Trainer's loop so training can start at a later epoch;
+        it also drops the base per-epoch prover eval on val and test, since epoch
+        selection uses raw_eval_fn on validation and test is scored once at the end.
         """
         if nb_workers != 1:
             raise NotImplementedError("WarcraftTrainer runs single-process")
-        return self._train(cfg, True, do_eval=False)
+        nb_epochs = cfg["nb_epochs"]
+        self.grad_clip = cfg["grad_clip"]
+        self.program.store.to(cfg["device"])
+        self.program.store.train()
+        self.train_dataset = self.load_train_dataset(cfg)
+        self.scheduler = CosineAnnealingLR(self.optimizer, nb_epochs + 1)
+        self.epoch_times = []
+        start_epoch = 0
+
+        state = self.load_resume(cfg) if cfg.get("resume", True) else None
+        if state is not None:
+            self.get_store().load_state_dict(state["store"])
+            self.optimizer.load_state_dict(state["optimizer"])
+            if state["scheduler"] is not None:
+                self.scheduler.load_state_dict(state["scheduler"])
+            self.best_exact = state["best_exact"]
+            self.best_epoch = state["best_epoch"]
+            self._csv_epoch = state["csv_epoch"]
+            self.epoch_times = list(state["epoch_times"])
+            self._csv_append = True
+            start_epoch = state["epoch"] + 1
+            set_seed(cfg["seed"] + start_epoch)
+            print(f"Resuming from epoch {start_epoch}/{nb_epochs} "
+                  f"(best val exact={self.best_exact:.2f} at epoch {self.best_epoch})")
+
+        for epoch in tqdm(range(start_epoch, nb_epochs), desc="Epochs", position=0):
+            print(f"### EPOCH {epoch} (lr={self.scheduler.get_last_lr()[0]:.2g}) ###")
+            t0 = time()
+            self.train_epoch(verbose=cfg["verbose"])
+            self.scheduler.step()
+            self.epoch_times.append(time() - t0)
+            if self.raw_eval_fn is not None:
+                raw_acc, raw_digit_acc = self.raw_eval_fn()
+                print(f"Epoch {epoch}/{nb_epochs}: task_acc={raw_acc*100:.2f}% "
+                      f"digit_acc={raw_digit_acc*100:.2f}% epoch_time={self.epoch_times[-1]:.2f}s")
+            self.save(cfg)
+            self.save_resume(cfg, epoch)
 
     def close(self):
         if self._csv_file is not None:
@@ -621,6 +704,8 @@ def _parse_args():
     p.add_argument("--lr", type=float, default=None,
                    help="Override functor_learning_rate")
     p.add_argument("--data-subset", type=int, default=None)
+    p.add_argument("--no-resume", action="store_true",
+                   help="Ignore resume.pt and train from epoch 0.")
     return p.parse_args()
 
 
@@ -634,6 +719,7 @@ if __name__ == "__main__":
         "batch_size": args.batch_size,
         "functor_learning_rate": args.lr,
         "data_subset": args.data_subset,
+        "resume": not args.no_resume,
         "grid_size": args.grid_size,
         "data_dir": args.data_dir,
         "results_dir": args.results_dir,
