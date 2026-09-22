@@ -19,6 +19,7 @@ only in this training loss; inference is per-node argmax.
 import argparse
 import csv
 import json
+import os
 import resource
 import time
 from pathlib import Path
@@ -211,6 +212,40 @@ def evaluate(model, loader, edges, node_info, node_order, var_ranges, device):
 # Run loop
 # =============================================================================
 
+def save_resume_state(path, run_id, epoch, model, optimizer, scheduler,
+                      best_val_exact, patience_counter):
+    """Write the state needed to continue this run from the next epoch."""
+    path = Path(path)
+    tmp = path.with_name(path.name + ".tmp")
+    torch.save({"run_id": run_id, "epoch": epoch, "model": model.state_dict(),
+                "optimizer": optimizer.state_dict(),
+                "scheduler": scheduler.state_dict() if scheduler is not None else None,
+                "best_val_exact": best_val_exact, "patience_counter": patience_counter}, tmp)
+    os.replace(tmp, path)
+
+
+def load_resume_state(save_dir, run_id, args):
+    """Checkpoint to continue from, or None to start this run from epoch 1.
+
+    Refuses a checkpoint written under different settings (epochs, lr, k,
+    batch size, seed, patience), since the schedule and early stopping would
+    no longer line up.
+    """
+    path = Path(save_dir) / f"resume_run{run_id}.pt"
+    cfg_path = Path(save_dir) / "run_config.json"
+    if not path.exists() or not cfg_path.exists():
+        return None
+    previous = json.loads(cfg_path.read_text())
+    changed = [k for k in ("epochs", "lr", "k", "batch_size", "seed", "patience",
+                           "lambda_path", "scheduler", "provenance")
+               if previous.get(k) != vars(args).get(k)]
+    if changed:
+        print(f"  Not resuming run {run_id}: settings differ ({', '.join(changed)})")
+        return None
+    state = torch.load(path, map_location="cpu", weights_only=False)
+    return state if state.get("run_id") == run_id else None
+
+
 def run(args, device, train_loader, val_loader, test_loader,
         edges, node_info, node_order, var_ranges, scl_path, program_text=None):
     save_dir = Path(args.save_dir)
@@ -219,6 +254,8 @@ def run(args, device, train_loader, val_loader, test_loader,
 
     # Self-describing run record: the k-ablation report reads this rather than
     # re-parsing hyperparameters out of directory names.
+    resume_states = {run_id: load_resume_state(save_dir, run_id, args)
+                     for run_id in range(args.n_runs)} if args.resume else {}
     with open(save_dir / "run_config.json", "w") as cf:
         json.dump(vars(args), cf, indent=2)
 
@@ -230,9 +267,11 @@ def run(args, device, train_loader, val_loader, test_loader,
               "gpu_mem_peak_mb", "cpu_rss_peak_mb",
               "lr"]
 
-    with open(csv_path, "w", newline="") as f:
+    resuming = any(resume_states.get(r) for r in range(args.n_runs))
+    with open(csv_path, "a" if resuming else "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(header)
+        if not resuming:
+            writer.writerow(header)
         f.flush()
 
         for run_id in range(args.n_runs):
@@ -264,8 +303,24 @@ def run(args, device, train_loader, val_loader, test_loader,
             print(f"\n--- Run {run_id + 1}/{args.n_runs} (seed={seed}) ---")
             best_val_exact = -float("inf")
             patience_counter = 0
+            start_epoch = 1
 
-            for epoch in range(1, args.epochs + 1):
+            state = resume_states.get(run_id)
+            if state is not None:
+                model.load_state_dict(state["model"])
+                optimizer.load_state_dict(state["optimizer"])
+                if scheduler is not None and state["scheduler"] is not None:
+                    scheduler.load_state_dict(state["scheduler"])
+                best_val_exact = state["best_val_exact"]
+                patience_counter = state["patience_counter"]
+                start_epoch = state["epoch"] + 1
+                torch.manual_seed(seed + state["epoch"])
+                if torch.cuda.is_available():
+                    torch.cuda.manual_seed_all(seed + state["epoch"])
+                print(f"  Resuming from epoch {state['epoch']}/{args.epochs} "
+                      f"(best val_exact={best_val_exact:.2f}, patience={patience_counter})")
+
+            for epoch in range(start_epoch, args.epochs + 1):
                 t0 = time.time()
                 if device.type == "cuda":
                     torch.cuda.reset_peak_memory_stats(device)
@@ -320,10 +375,13 @@ def run(args, device, train_loader, val_loader, test_loader,
                     torch.save(model.state_dict(), save_dir / f"best_run{run_id}.pt")
                 else:
                     patience_counter += 1
-                    if patience_counter >= args.patience:
-                        print(f"  Early stopping at epoch {epoch} "
-                              f"(best val_exact={best_val_exact:.2f})")
-                        break
+                save_resume_state(save_dir / f"resume_run{run_id}.pt", run_id, epoch,
+                                  model, optimizer, scheduler, best_val_exact,
+                                  patience_counter)
+                if patience_counter >= args.patience:
+                    print(f"  Early stopping at epoch {epoch} "
+                          f"(best val_exact={best_val_exact:.2f})")
+                    break
 
             model.load_state_dict(torch.load(
                 save_dir / f"best_run{run_id}.pt", weights_only=True))
@@ -364,6 +422,9 @@ def main():
     parser.add_argument("--provenance", type=str, default="difftopkproofs")
     parser.add_argument("--k", type=int, default=3,
                         help="Top-k proofs retained per derived fact.")
+    parser.add_argument("--resume", action="store_true",
+                        help="Continue each run from resume_run<id>.pt when one is "
+                             "present and the settings match.")
     parser.add_argument("--dispatch", type=str, default="parallel",
                         choices=["single", "serial", "parallel"])
     parser.add_argument("--alphabet", type=str, default="full",

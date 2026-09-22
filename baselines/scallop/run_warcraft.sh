@@ -13,6 +13,6 @@ for s in $SEEDS; do
   dir="$RUNS_ROOT/warcraft/12x12/scallop/seed$s"
   run_one "$dir" "$PY" baselines/scallop/warcraft/scallop_warcraft.py \
     --data_dir data/warcraft/12x12/preprocessed_4conn --save_dir "$dir" --epochs "$EPOCHS" \
-    --n-runs 1 --seed "$s" --k "$K" --alphabet full --constraint steps
+    --n-runs 1 --seed "$s" --k "$K" --alphabet full --constraint steps --resume
 done
 finish_runs
