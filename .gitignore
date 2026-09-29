@@ -33,3 +33,7 @@ constraints/warcraft/steps_artifacts/steps_30_trimmed_compiled.stream.txt
 
 # Smoke-test run outputs (checkpoints are 45-55 MB each)
 results/smoke_*/
+
+# SPL steps circuits: rebuilt in seconds by baselines/spl/warcraft/steps_sdd.py
+# (the StepsFFCircuit trainer compiles one on first use).
+constraints/warcraft/spl_steps/
