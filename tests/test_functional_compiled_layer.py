@@ -44,3 +44,42 @@ def test_batched_layer_matches_generic_walk(file_name, n_vars, scale):
         assert torch.equal(info_b["projection_loss"].detach(), info_g["projection_loss"].detach())
         assert info_b["total_constraints_applied"] == info_g["total_constraints_applied"]
         assert info_b["avg_l2_per_sample"] == info_g["avg_l2_per_sample"]
+
+
+@pytest.mark.parametrize("file_name, n_vars", [
+    ("mnist_add_n2_compiled.txt", 7),
+    ("mnist_sum_digit_tree_n4.txt", 6),
+])
+@pytest.mark.parametrize("scale", [0.5, 6.0])
+def test_batched_cvxpy_matches_generic_cvxpy(file_name, n_vars, scale):
+    """The batched layer with cvxpy projects as the per-sample cvxpy walk does, to solver tolerance."""
+    pytest.importorskip("cvxpylayers")
+    generator = torch.Generator().manual_seed(11)
+    variable_ranges = [10] * n_vars
+    generic = CompiledConstraintLayer(CONSTRAINTS / file_name, variable_ranges,
+                                      projection_backend="cvxpy")
+    batched = FunctionalCompiledConstraintLayer(CONSTRAINTS / file_name, variable_ranges,
+                                                projection_backend="cvxpy")
+    for batch in (1, 16):
+        probs = _probs(batch, n_vars, scale, generator)
+        out_g, info_g = generic(probs.clone())
+        out_b, info_b = batched(probs.clone())
+        assert torch.allclose(out_b, out_g, atol=1e-4)
+        assert info_b["total_constraints_applied"] == info_g["total_constraints_applied"]
+        assert abs(info_b["avg_l2_per_sample"] - info_g["avg_l2_per_sample"]) < 1e-4
+
+
+def test_cvxpy_project_rows_solves_each_row_exactly():
+    """Each row meets its own target's margin to SCS tolerance, never above the closed form's L2."""
+    pytest.importorskip("cvxpylayers")
+    from cvxpy_minedit import CVXPYMinEditL2
+    from minedit import MinEditL2
+    generator = torch.Generator().manual_seed(3)
+    p = torch.softmax(torch.randn(64, 10, generator=generator) * 3, dim=1)
+    target = torch.randint(0, 10, (64,), generator=generator)
+    exact, l2_exact = CVXPYMinEditL2(10).project_rows(p, target)
+    closed, l2_closed = MinEditL2(10).project_rows(p, target)
+    others = torch.ones_like(p, dtype=torch.bool).scatter_(1, target.unsqueeze(1), False)
+    margin = exact.gather(1, target.unsqueeze(1)) - exact
+    assert bool((margin[others] >= 1e-3 - 2.5e-4).all())
+    assert bool((l2_exact <= l2_closed + 1e-4).all())

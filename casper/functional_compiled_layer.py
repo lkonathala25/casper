@@ -27,6 +27,11 @@ class FunctionalCompiledConstraintLayer(nn.Module):
     with the same forward contract: `(B, sum(variable_ranges))` over the
     network's variables; auxiliary variables are fed uniform distributions,
     only their assignments are used, and their edits are excluded.
+
+    projection_backend='cvxpy' swaps only the projection: each group's rows go
+    to `CVXPYMinEditL2.project_rows`, which solves the same MinEdit QP exactly
+    in one batched cvxpylayers call, so the batching is identical to the
+    closed form's.
     """
 
     def __init__(
@@ -35,6 +40,8 @@ class FunctionalCompiledConstraintLayer(nn.Module):
         variable_ranges: list[int],
         eps: float = 1e-3,
         max_table_entries: int = 100_000,
+        projection_backend: str = "closed_form",
+        solver_time_limit: float | None = None,
     ):
         super().__init__()
         cs = parse_constraints(Path(compiled_path).read_text())
@@ -55,9 +62,18 @@ class FunctionalCompiledConstraintLayer(nn.Module):
         for h in domains[:-1]:
             var_starts.append(var_starts[-1] + h)
 
-        self._minedits: dict[int, MinEditL2] = {}
+        if projection_backend == "closed_form":
+            make = lambda h: MinEditL2(h, eps=eps)
+        elif projection_backend == "cvxpy":
+            from cvxpy_minedit import CVXPYMinEditL2
+            make = lambda h: CVXPYMinEditL2(h, eps=eps, solver_time_limit=solver_time_limit)
+        else:
+            raise ValueError(f"projection_backend must be 'closed_form' or 'cvxpy', "
+                             f"got {projection_backend!r}")
+        self.projection_backend = projection_backend
+        self._minedits: dict[int, nn.Module] = {}
         for h in sorted(set(domains[: self.n_real_vars])):
-            self._minedits[h] = MinEditL2(h, eps=eps)
+            self._minedits[h] = make(h)
             self.add_module(f"_minedit_h{h}", self._minedits[h])
 
         flat_table: list[int] = []

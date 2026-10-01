@@ -68,6 +68,24 @@ class CVXPYMinEditL2(nn.Module):
         n_active = torch.zeros(B, dtype=torch.long, device=p.device)
         return p_adj, l2, n_active
 
+    def project_rows(self, p: torch.Tensor, target: torch.Tensor):
+        """Positive-head projection with a different target per row, solved as one batch.
+
+        Same contract as `MinEditL2.project_rows`: p is (R, C), target is (R,)
+        long, returns (p_adj, l2). Each row swaps its target into column 0, the
+        canonical problem's target, so all R rows go to cvxpylayers in a single
+        batched call; the swap is its own inverse and is undone afterwards.
+        """
+        R, C = p.shape
+        perm = torch.arange(C, device=p.device).unsqueeze(0).repeat(R, 1)
+        rows = torch.arange(R, device=p.device)
+        perm[rows, target] = 0
+        perm[:, 0] = target
+        q_canon = self._project_canonical(p.gather(1, perm))
+        p_adj = q_canon.gather(1, perm)
+        l2 = torch.linalg.vector_norm(p_adj - p, ord=2, dim=1)
+        return p_adj, l2
+
     def _negative_head_batch(self, p: torch.Tensor, forbidden: int):
         B, C = p.shape
         current_argmax = p.argmax(dim=1)

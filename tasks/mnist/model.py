@@ -99,12 +99,11 @@ class MNISTConstraintNet(nn.Module):
                 n_inputs * 10, n_digits_per_num + 1)
 
         if layer == 'batched':
-            if projection_backend != 'closed_form':
-                raise ValueError("layer='batched' uses the closed-form projection; "
-                                 "use layer='generic' for other backends")
             from functional_compiled_layer import FunctionalCompiledConstraintLayer
             self.constraint_layer = FunctionalCompiledConstraintLayer(
-                compiled_file, variable_ranges)
+                compiled_file, variable_ranges,
+                projection_backend=projection_backend,
+                solver_time_limit=solver_time_limit)
         elif layer == 'generic':
             from compiled_layer import CompiledConstraintLayer
             self.constraint_layer = CompiledConstraintLayer(
