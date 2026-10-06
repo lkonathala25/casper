@@ -487,3 +487,106 @@ def group_violations(
         for name, cells in groups
         if sorted(grid[c] for c in cells) != target
     ]
+
+
+class GroupKPassCasper(KPassCasper):
+    """KPassCasper with group-local feasibility (8 peers of the current group).
+
+    Group-local feasibility: while block `cells` is processed, a cell's
+    feasible set is the domain minus the digits currently held by the other 8
+    cells of *that* group, read pairwise from the compiled 9-clique through
+    the inherited `_not_mask` lookups. KPassCasper instead intersects all 24
+    row, column and box peers at once.
+
+    Tolerated cross-group violations: a cell may therefore take a digit that
+    clashes with its other two groups. The clash is repaired when those groups
+    are processed later in the round (or in a later round). This is what lets
+    multi-cell repair chains go through that the 24-peer rule blocks. Because
+    8 peers cannot cover 9 digits, the feasible set is never empty, so there
+    are no dead ends.
+
+    Visiting order: with cell_order="confidence" (default) the cells of a
+    group are visited least-confident first, by the current probability of
+    their assigned digit, so the less trusted cell of a duplicate pair is the
+    one that moves. cell_order="canonical" keeps the group's own order.
+
+    Unchanged from KPassCasper: the single-cell MinEditL2 positive-head
+    projection onto the nearest feasible digit, `max_rounds`, and the stopping
+    rule (a board is certified after a round with zero edits).
+
+    Ported verbatim from llm-sudoku/sudoku/src/casper_sudoku_layer.py; the
+    bit-identical parity test is tasks/sudoku/test_group_kpass.py.
+    """
+
+    def __init__(self, *args, cell_order='confidence', **kwargs):
+        super().__init__(*args, **kwargs)
+        if cell_order not in ('canonical', 'confidence'):
+            raise ValueError(f'cell_order must be canonical or confidence, got {cell_order!r}')
+        self.cell_order = cell_order
+
+    def _feasible_in_group(self, cell, cells, values):
+        m = self._full_mask
+        for p in cells:
+            if p != cell:
+                m &= self._not_mask[values[p]]
+        return [v for v in range(self.domain) if m >> v & 1]
+
+    def forward(self, probs):
+        B, total = probs.shape
+        if total != self.n_cells * self.domain:
+            raise ValueError(f'expected {self.n_cells * self.domain} columns, got {total}')
+
+        board = probs.view(B, self.n_cells, self.domain)
+        slices = [board[:, i, :].clone() for i in range(self.n_cells)]
+        assigned = [[int(v) for v in board[b].argmax(dim=1).tolist()] for b in range(B)]
+
+        # A round with zero edits means every group is a permutation, so the
+        # board is valid; group-local feasible sets are never empty (8 peers
+        # cannot cover 9 digits), so there are no dead ends to track.
+        certified = [None] * B
+        edits_curve = []
+        l2 = torch.zeros(B, device=probs.device, dtype=probs.dtype)
+        rounds_used = 0
+
+        for rnd in range(self.max_rounds):
+            rounds_used = rnd + 1
+            r_edits = [0] * B
+            for _name, cells in self.blocks:
+                for b in range(B):
+                    if certified[b] is not None:
+                        continue
+                    order = list(cells)
+                    if self.cell_order == 'confidence':
+                        conf = {c: slices[c][b, assigned[b][c]].item() for c in cells}
+                        order.sort(key=lambda c: conf[c])
+                    for cell in order:
+                        s = self._feasible_in_group(cell, cells, assigned[b])
+                        if assigned[b][cell] in s:
+                            continue
+                        row = slices[cell][b:b + 1]
+                        best_d = best_t = best_a = None
+                        for t in s:
+                            adj, dist, _ = self.minedit(row, target_category=int(t), is_positive=True)
+                            if best_d is None or dist[0].item() < best_d[0].item():
+                                best_d, best_a, best_t = dist, adj, int(t)
+                        slices[cell] = slices[cell].clone()
+                        slices[cell][b] = best_a[0]
+                        l2[b] = l2[b] + best_d[0]
+                        assigned[b][cell] = best_t
+                        r_edits[b] += 1
+            edits_curve.append(list(r_edits))
+            for b in range(B):
+                if certified[b] is None and r_edits[b] == 0:
+                    certified[b] = rnd + 1
+            if all(c is not None for c in certified):
+                break
+
+        adjusted = torch.stack(slices, dim=1).reshape(B, total)
+        return adjusted, {
+            'projection_loss': l2.sum() / max(B, 1),
+            'total_l2_distance': float(l2.sum().item()),
+            'rounds_used': rounds_used,
+            'certified_at': certified,
+            'edits_per_round': edits_curve,
+            'final_assignments': [list(a) for a in assigned],
+        }

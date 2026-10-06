@@ -37,3 +37,12 @@ results/smoke_*/
 # SPL steps circuits: rebuilt in seconds by baselines/spl/warcraft/steps_sdd.py
 # (the StepsFFCircuit trainer compiles one on first use).
 constraints/warcraft/spl_steps/
+
+# Visual Sudoku pipeline (tasks/sudoku/visual): run outputs and data are never
+# committed. Data, pretrained weights, the LoRA adapter and the LLM cache live
+# outside the repo; see tasks/sudoku/visual/paths.py and the root README.
+tasks/sudoku/visual/checkpoint/
+tasks/sudoku/visual/results/
+tasks/sudoku/visual/data/
+tasks/sudoku/visual/outputs/
+**/llm_cache/
