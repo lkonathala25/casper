@@ -16,6 +16,9 @@
 #               /home/la2324/miniconda3/envs/sudoku/bin/python)
 #   EXTRA_ARGS  extra flags appended to minedit_mask_calibrate.py
 #               (e.g. "--epochs 1" for the smoke gate P4)
+#   CASPER_GROUP_SOLVER  greedy (default) or search; passed to training and
+#               evaluation as --casper-group-solver. search runs get their own
+#               run name (suffix _search) and log dir (mask_calibrated_search).
 # Locations (checkpoints, logs) come from paths.py; override with its SUDOKU_* env vars.
 set -euo pipefail
 
@@ -27,15 +30,21 @@ SEEDS="${SEEDS:-0}"
 GPU="${GPU_ID:-0}"
 PY="${PYTHON_BIN:-$(dirname "$SWIPL_ENV")/sudoku/bin/python}"
 EXTRA_ARGS="${EXTRA_ARGS:-}"
-RUN_NAME="e10_lr1e-4_wd3e-1_bs200_cos_wu0_nw20_clip1_it3-10_pat5_d1_bs0_-1_-2_casper"
+GROUP_SOLVER="${CASPER_GROUP_SOLVER:-greedy}"
+case "$GROUP_SOLVER" in
+    greedy) SUFFIX="" ;;
+    search) SUFFIX="_search" ;;
+    *) echo "CASPER_GROUP_SOLVER must be greedy or search, got '$GROUP_SOLVER'" >&2; exit 2 ;;
+esac
+RUN_NAME="e10_lr1e-4_wd3e-1_bs200_cos_wu0_nw20_clip1_it3-10_pat5_d1_bs0_-1_-2_casper${SUFFIX}"
 MODEL_DIR="$CKPT_DIR/casper/mask_calibrated/$RUN_NAME"
-LOG_DIR="$RESULTS_DIR/mask_calibrated"
+LOG_DIR="$RESULTS_DIR/mask_calibrated${SUFFIX}"
 SEEDS_CSV="$(echo $SEEDS | tr ' ' ',')"
 
 mkdir -p "$MODEL_DIR" "$LOG_DIR"
 export CUDA_VISIBLE_DEVICES="$GPU"
 stamp() { date '+%Y-%m-%d %H:%M:%S'; }
-echo "[$(stamp)] seeds='${SEEDS}' gpu=${GPU} python=${PY} extra='${EXTRA_ARGS}'"
+echo "[$(stamp)] seeds='${SEEDS}' gpu=${GPU} python=${PY} group_solver=${GROUP_SOLVER} extra='${EXTRA_ARGS}'"
 echo "[$(stamp)] model dir ${MODEL_DIR}; logs ${LOG_DIR}"
 
 for S in $SEEDS; do
@@ -56,6 +65,7 @@ for S in $SEEDS; do
         --min-delta 1 \
         --eval-mask-biases "0.0,-1.0,-2.0" \
         --edit-layer casper \
+        --casper-group-solver "$GROUP_SOLVER" \
         --model-dir "$MODEL_DIR" \
         ${EXTRA_ARGS} \
         2>&1 | tee "$LOG_DIR/train_seed${S}.log"
@@ -67,6 +77,7 @@ echo "[$(stamp)] evaluating seeds ${SEEDS_CSV} on -test"
     --seeds "$SEEDS_CSV" \
     --minedit \
     --edit-layer casper \
+    --casper-group-solver "$GROUP_SOLVER" \
     --python-bin "$PY" \
     2>&1 | tee "$LOG_DIR/eval_seeds_${SEEDS_CSV//,/_}.log"
 

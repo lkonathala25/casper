@@ -410,6 +410,8 @@ def main():
                         choices=['auto', 'compiled-txt', 'json', 'dsl'])
     parser.add_argument('--casper-cell-order', default='confidence',
                         choices=['confidence', 'canonical'])
+    parser.add_argument('--casper-group-solver', default='greedy', choices=['greedy', 'search'],
+                        help='Forwarded as --casper-group-solver (casper).')
     parser.add_argument('--pairwise', action='store_true',
                         help='Forwarded as --pairwise (edit-layer minedit only).')
     parser.add_argument('--output-tag', default='', type=str,
@@ -485,7 +487,8 @@ def main():
         if args.constraints_file:
             edit_layer_args += ['--constraints-file', args.constraints_file]
         edit_layer_args += ['--constraints-format', args.constraints_format,
-                            '--casper-cell-order', args.casper_cell_order]
+                            '--casper-cell-order', args.casper_cell_order,
+                            '--casper-group-solver', args.casper_group_solver]
     elif args.pairwise:
         edit_layer_args.append('--pairwise')
     edit_layer_desc = ' '.join(edit_layer_args)

@@ -154,3 +154,73 @@ def test_bit_identical_to_llm_sudoku(group_cs, cell_order):
         assert info_a[key] == info_b[key], key
     # The batch must actually exercise the repair path.
     assert sum(sum(r) for r in info_a["edits_per_round"]) > 0
+
+
+# ---- group_solver="search" -------------------------------------------------
+
+
+def test_rejects_unknown_group_solver(group_cs):
+    with pytest.raises(ValueError):
+        GroupKPassCasper(group_cs, N, group_solver="hungarian")
+
+
+def test_search_valid_board_zero_edits(group_cs):
+    layer = GroupKPassCasper(group_cs, N, max_rounds=10, group_solver="search")
+    p = peaky(LATIN)
+    out, info = layer(p.reshape(1, -1))
+    assert info["edits_per_round"] == [[0]]
+    assert info["certified_at"] == [1]
+    assert torch.equal(out, p.reshape(1, -1))
+
+
+def test_search_single_duplicate_repaired(group_cs):
+    layer = GroupKPassCasper(group_cs, N, max_rounds=10, group_solver="search")
+    out, info = layer(one_duplicate().reshape(1, -1))
+    grid = out.view(1, 81, N).argmax(dim=2)[0].tolist()
+    assert grid == LATIN
+    assert info["certified_at"][0] is not None
+    assert info["final_assignments"][0] == LATIN
+
+
+def test_search_gradient_flows(group_cs):
+    layer = GroupKPassCasper(group_cs, N, max_rounds=10, group_solver="search")
+    p = one_duplicate().reshape(1, -1).clone().requires_grad_(True)
+    out, info = layer(p)
+    (-(out.clamp_min(1e-9)).log().mean()).backward()
+    assert p.grad is not None and p.grad.abs().sum() > 0
+    assert info["projection_loss"].requires_grad
+
+
+def test_search_moves_the_cell_with_the_plausible_alternative(group_cs):
+    """Two cells hold digit 3 and digit 5 is free: the cell that finds 5 plausible moves.
+
+    Greedy (least confident first) would move cell 1, the less confident
+    holder of 3, onto a digit it gives 1%; the optimal assignment moves cell 0.
+    """
+    layer = GroupKPassCasper(group_cs, N, group_solver="search")
+    probs = torch.full((N, N), 0.01)
+    for k, d in enumerate([3, 3, 0, 1, 2, 4, 6, 7, 8]):
+        probs[k, d] = 0.9
+    probs[0] = 0.0125
+    probs[0, 3], probs[0, 5] = 0.60, 0.35
+    probs[1] = 0.0629
+    probs[1, 3], probs[1, 5] = 0.55, 0.01
+    cost = (-(probs / probs.sum(1, keepdim=True)).log()).tolist()
+    assert layer._search_group(cost) == [5, 3, 0, 1, 2, 4, 6, 7, 8]
+
+
+def test_search_matches_optimal_assignment(group_cs):
+    """The compiled-walk search returns a minimum-cost permutation (checked with Hungarian)."""
+    from scipy.optimize import linear_sum_assignment
+
+    layer = GroupKPassCasper(group_cs, N, group_solver="search")
+    gen = torch.Generator().manual_seed(0)
+    for _ in range(20):
+        probs = torch.softmax(3 * torch.randn(N, N, generator=gen), dim=1)
+        cost = -probs.log()
+        values = layer._search_group(cost.tolist())
+        assert sorted(values) == list(range(N))
+        rows, cols = linear_sum_assignment(cost.numpy())
+        optimum = float(cost[rows, cols].sum())
+        got = float(sum(cost[k, v] for k, v in enumerate(values)))
+        assert abs(got - optimum) < 1e-5

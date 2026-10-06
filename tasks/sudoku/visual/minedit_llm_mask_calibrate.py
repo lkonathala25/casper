@@ -646,6 +646,10 @@ class LLMCalibrator:
                             self.args.casper_cell_order
                             if self.args.edit_layer == "casper" else None
                         ),
+                        casper_group_solver=(
+                            getattr(self.args, "casper_group_solver", "greedy")
+                            if self.args.edit_layer == "casper" else None
+                        ),
                     ),
                     f,
                     indent=2,

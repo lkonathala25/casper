@@ -514,15 +514,30 @@ class GroupKPassCasper(KPassCasper):
     projection onto the nearest feasible digit, `max_rounds`, and the stopping
     rule (a board is certified after a round with zero edits).
 
-    Ported verbatim from llm-sudoku/sudoku/src/casper_sudoku_layer.py; the
-    bit-identical parity test is tasks/sudoku/test_group_kpass.py.
+    Group solver: group_solver="greedy" (default) is the cell-by-cell repair
+    above, ported verbatim from llm-sudoku/sudoku/src/casper_sudoku_layer.py;
+    the bit-identical parity test is tasks/sudoku/test_group_kpass.py.
+    group_solver="search" instead repairs a group that is not yet satisfied
+    as a whole: it finds the complete assignment of the group with the lowest
+    total cost -log p, enumerating only values the compiled artifact reports
+    feasible for the prefix assigned so far (branch and bound over the
+    compiled walk), then projects every cell whose digit changed onto its new
+    digit with the same positive-head MinEditL2. Greedy commits each cell
+    before seeing the others, so a confident cell can lose its digit to a less
+    plausible neighbour; search compares whole assignments. Every other part
+    of the layer (rounds, stopping rule, projection, gradients) is shared.
     """
 
-    def __init__(self, *args, cell_order='confidence', **kwargs):
+    def __init__(self, *args, cell_order='confidence', group_solver='greedy', **kwargs):
         super().__init__(*args, **kwargs)
         if cell_order not in ('canonical', 'confidence'):
             raise ValueError(f'cell_order must be canonical or confidence, got {cell_order!r}')
+        if group_solver not in ('greedy', 'search'):
+            raise ValueError(f'group_solver must be greedy or search, got {group_solver!r}')
         self.cell_order = cell_order
+        self.group_solver = group_solver
+        # Compiled feasible sets keyed by the prefix of values in walk order.
+        self._prefix_feasible: dict[tuple[int, ...], tuple[int, ...]] = {}
 
     def _feasible_in_group(self, cell, cells, values):
         m = self._full_mask
@@ -530,6 +545,79 @@ class GroupKPassCasper(KPassCasper):
             if p != cell:
                 m &= self._not_mask[values[p]]
         return [v for v in range(self.domain) if m >> v & 1]
+
+    def _compiled_feasible(self, prefix):
+        """Values the compiled walk allows at step len(prefix) after `prefix`."""
+        hit = self._prefix_feasible.get(prefix)
+        if hit is None:
+            order = self.constraints.ordering
+            prior = {order[i]: v for i, v in enumerate(prefix)}
+            hit = tuple(sorted(self.constraints.feasible_set(len(prefix), prior)))
+            self._prefix_feasible[prefix] = hit
+        return hit
+
+    def _search_group(self, cost):
+        """Lowest-cost complete group assignment over compiled-feasible values.
+
+        cost[k][t] is the cost of giving digit t to the group's k-th cell (the
+        compiled variable k). Variables are assigned in the compiled walk's
+        order, so the artifact is queried exactly as INFER queries it and no
+        symmetry of the constraint is assumed. Branch and bound with the sum of
+        per-variable minimum costs as the (admissible) bound returns the exact
+        optimum; ties go to the first assignment found, trying cheaper values
+        first. Returns the digit per group cell, or None when the compiled
+        walk admits no complete assignment.
+        """
+        order = list(self.constraints.ordering)
+        n = len(order)
+        bound = [0.0] * (n + 1)
+        for i in range(n - 1, -1, -1):
+            bound[i] = bound[i + 1] + min(cost[order[i]])
+        best_cost = math.inf
+        best = None
+
+        def dfs(i, prefix, acc):
+            nonlocal best_cost, best
+            if acc + bound[i] >= best_cost:
+                return
+            if i == n:
+                best_cost, best = acc, prefix
+                return
+            row = cost[order[i]]
+            for t in sorted(self._compiled_feasible(prefix), key=row.__getitem__):
+                dfs(i + 1, prefix + (t,), acc + row[t])
+
+        dfs(0, (), 0.0)
+        if best is None:
+            return None
+        values = [0] * n
+        for i, var in enumerate(order):
+            values[var] = best[i]
+        return values
+
+    def _repair_group_search(self, cells, b, slices, assigned, l2):
+        """Search-solve one unsatisfied group of sample b in place; returns #edits."""
+        cur = [assigned[b][c] for c in cells]
+        if len(set(cur)) == len(cur):
+            return 0
+        probs = torch.stack([slices[c][b] for c in cells]).detach()
+        cost = (-probs.clamp_min(1e-12).log()).tolist()
+        target = self._search_group(cost)
+        if target is None:
+            # Returning 0 edits here would let the round certify an invalid board.
+            raise RuntimeError(f'compiled group constraints admit no complete assignment '
+                               f'(sample {b}, cells {list(cells)})')
+        edits = 0
+        for cell, t in zip(cells, target):
+            if assigned[b][cell] == t:
+                continue
+            adj, dist, _ = self.minedit(slices[cell][b:b + 1], target_category=int(t), is_positive=True)
+            slices[cell] = slices[cell].clone()
+            slices[cell][b] = adj[0]
+            l2[b] = l2[b] + dist[0]
+            assigned[b][cell] = int(t)
+            edits += 1
+        return edits
 
     def forward(self, probs):
         B, total = probs.shape
@@ -554,6 +642,9 @@ class GroupKPassCasper(KPassCasper):
             for _name, cells in self.blocks:
                 for b in range(B):
                     if certified[b] is not None:
+                        continue
+                    if self.group_solver == 'search':
+                        r_edits[b] += self._repair_group_search(cells, b, slices, assigned, l2)
                         continue
                     order = list(cells)
                     if self.cell_order == 'confidence':

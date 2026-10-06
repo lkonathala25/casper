@@ -97,7 +97,7 @@ class CasperSudokuLayer(nn.Module):
 
     def __init__(self, constraints_path=DEFAULT_CONSTRAINTS_FILE, constraints_format='auto',
                  grid_size=9, eps=1e-3, group_order=None, max_rounds=10,
-                 cell_order='confidence'):
+                 cell_order='confidence', group_solver='greedy'):
         super().__init__()
         assert grid_size == 9, 'Only 9x9 Sudoku supported'
         self.grid_size = grid_size
@@ -109,6 +109,7 @@ class CasperSudokuLayer(nn.Module):
         validate_group_constraints(cs, grid_size)
         self.kpass = GroupKPassCasper(
             cs, grid_size, max_rounds=max_rounds, eps=eps, cell_order=cell_order,
+            group_solver=group_solver,
         )
         self.max_rounds = max_rounds
 
@@ -171,7 +172,13 @@ def add_edit_layer_args(parser):
                         help='Format of --constraints-file. auto: .json or *_compiled.txt.')
     parser.add_argument('--casper-cell-order', default='confidence',
                         choices=['confidence', 'canonical'],
-                        help='Within-group visiting order for --edit-layer casper.')
+                        help='Within-group visiting order for --edit-layer casper '
+                             '(greedy group solver only).')
+    parser.add_argument('--casper-group-solver', default='greedy', choices=['greedy', 'search'],
+                        help='How --edit-layer casper repairs a group. greedy (default): '
+                             'cell by cell, each conflicting cell moves to its nearest free '
+                             'digit. search: the lowest -log p complete assignment of the '
+                             'group over the compiled feasible sets (branch and bound).')
 
 
 def build_edit_layer(args, device=None):
@@ -198,8 +205,10 @@ def build_edit_layer(args, device=None):
             constraints_format=args.constraints_format,
             group_order=group_order,
             cell_order=args.casper_cell_order,
+            group_solver=getattr(args, 'casper_group_solver', 'greedy'),
         )
         print(f'[edit-layer] casper group-local KPass (constraints={args.constraints_file}, '
               f'format={args.constraints_format}, cell_order={args.casper_cell_order}, '
+              f'group_solver={getattr(args, "casper_group_solver", "greedy")}, '
               f'group_order={format_group_order(group_order)})')
     return layer.to(device) if device is not None else layer

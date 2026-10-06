@@ -9,6 +9,7 @@ layer and the solver before anything is retrained.
 Layers:
     legacy   llm-sudoku's Hungarian SudokuConstraintLayer (--edit-layer minedit)
     casper   CasperSudokuLayer = casper's GroupKPassCasper (--edit-layer casper)
+    casper-search  the same layer with --casper-group-solver search
     kpass24  casper's original 24-peer KPassCasper
 
 Expected on satnet -test, identical on CPU and GPU: legacy 330/500 (sat 0.9619),
@@ -34,7 +35,7 @@ from legacy.sudoku_constraint_layer import SudokuConstraintLayer    # noqa: E402
 from local_casper import KPassCasper                                # noqa: E402  (casper)
 from models.transformer_sudoku import get_model                     # noqa: E402
 
-LAYERS = ('legacy', 'casper', 'kpass24')
+LAYERS = ('legacy', 'casper', 'casper-search', 'kpass24')
 
 
 def main():
@@ -74,6 +75,11 @@ def main():
         built['casper'] = CasperSudokuLayer(
             constraints_path=args.constraints_file, max_rounds=args.rounds,
         ).to(dev)
+    if 'casper-search' in layers:
+        built['casper-search'] = CasperSudokuLayer(
+            constraints_path=args.constraints_file, max_rounds=args.rounds,
+            group_solver='search',
+        ).to(dev)
     if 'kpass24' in layers:
         built['kpass24'] = KPassCasper(
             load_group_constraints(args.constraints_file), 9, max_rounds=args.rounds,
@@ -95,7 +101,7 @@ def main():
                 t0 = time.time()
                 if name == 'legacy':
                     out, info = built[name](probs, max_iterations=args.rounds)
-                elif name == 'casper':
+                elif name in ('casper', 'casper-search'):
                     out, info = built[name](probs, max_iterations=args.rounds)
                     cert[name] += info['n_certified']
                 else:

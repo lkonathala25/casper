@@ -20,6 +20,9 @@
 #               (e.g. "--epochs 1" for the smoke gate P5)
 #   FILL_CACHE  1 = run fill_llm_cache.py first (generates missing boards and
 #               WRITES the cache); default 0 = cache is read-only
+#   CASPER_GROUP_SOLVER  greedy (default) or search; passed to training and
+#               evaluation as --casper-group-solver. search runs get their own
+#               checkpoint dir (llm_mask_calibrated_search) and log dir.
 # Before training, a cache-coverage check runs on the GPU (perception only, no
 # LLM) and aborts if test < 483/500 or train < 8847/9000 boards are cached.
 set -euo pipefail
@@ -32,14 +35,20 @@ SEEDS="${SEEDS:-0}"
 GPU="${GPU_ID:-0}"
 PY="${PYTHON_BIN:-$(dirname "$SWIPL_ENV")/sudoku-fine/bin/python}"
 EXTRA_ARGS="${EXTRA_ARGS:-}"
-CKPT_BASE="$CKPT_DIR/casper/llm_mask_calibrated"
-LOG_DIR="$RESULTS_DIR/llm_mask_calibrated"
+GROUP_SOLVER="${CASPER_GROUP_SOLVER:-greedy}"
+case "$GROUP_SOLVER" in
+    greedy) SUFFIX="" ;;
+    search) SUFFIX="_search" ;;
+    *) echo "CASPER_GROUP_SOLVER must be greedy or search, got '$GROUP_SOLVER'" >&2; exit 2 ;;
+esac
+CKPT_BASE="$CKPT_DIR/casper/llm_mask_calibrated${SUFFIX}"
+LOG_DIR="$RESULTS_DIR/llm_mask_calibrated${SUFFIX}"
 SEEDS_CSV="$(echo $SEEDS | tr ' ' ',')"
 
 mkdir -p "$CKPT_BASE" "$LOG_DIR"
 export CUDA_VISIBLE_DEVICES="$GPU"
 stamp() { date '+%Y-%m-%d %H:%M:%S'; }
-echo "[$(stamp)] seeds='${SEEDS}' gpu=${GPU} python=${PY} extra='${EXTRA_ARGS}'"
+echo "[$(stamp)] seeds='${SEEDS}' gpu=${GPU} python=${PY} group_solver=${GROUP_SOLVER} extra='${EXTRA_ARGS}'"
 echo "[$(stamp)] checkpoints ${CKPT_BASE}; logs ${LOG_DIR}; LLM cache ${LLM_CACHE_DIR}"
 
 # ---- LLM cache ---------------------------------------------------------------
@@ -76,6 +85,7 @@ for S in $SEEDS; do
         --stage-mask-freeze-epochs 0 \
         --patience 7 \
         --edit-layer casper \
+        --casper-group-solver "$GROUP_SOLVER" \
         --freeze-fusion-head \
         ${EXTRA_ARGS} \
         2>&1 | tee "$LOG_DIR/train_seed${S}_frozenhead.log"
@@ -89,6 +99,7 @@ echo "[$(stamp)] evaluating seeds ${SEEDS_CSV} on -test"
     --seeds "$SEEDS_CSV" \
     --minedit --llm \
     --edit-layer casper \
+    --casper-group-solver "$GROUP_SOLVER" \
     --llm-cache-dir "$LLM_CACHE_DIR" \
     --skip-cache-miss \
     --generation-batch-size 4 \
