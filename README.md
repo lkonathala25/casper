@@ -55,9 +55,12 @@ MODE=train_infer L2_PENALTY=1 TASKS=sum SUM_NS=64 SEEDS=0 bash tasks/mnist/run_c
 
 ## Warcraft pathfinding
 
-1. **Data.** Download the Warcraft shortest-path dataset of Vlastelica Pogančić et al. (2020) (linked from [martius-lab/blackbox-backprop](https://github.com/martius-lab/blackbox-backprop)). Put the raw `{train,val,test}_{maps,vertex_weights,shortest_paths}.npy` files in `data/warcraft/12x12/` and `data/warcraft/30x30/`. Then derive the 4-connected labels:
+1. **Data.** Download `warcraft_maps.tar.gz` from the Warcraft shortest-path dataset of Vlastelica Pogančić et al. (2020), hosted on Edmond ([doi:10.17617/3.YJCQ5S](https://doi.org/10.17617/3.YJCQ5S), CC BY 4.0). The maps were generated with the MIT-licensed [war2edit](https://github.com/war2/war2edit) toolset; the tile assets remain the property of Blizzard Entertainment. Copy its `12x12/` and `30x30/` folders (from `warcraft_shortest_path_oneskin/`) to `data/warcraft/`, then derive the 4-connected labels:
 
    ```bash
+   tar -xzf warcraft_maps.tar.gz
+   mkdir -p data/warcraft
+   cp -r warcraft_shortest_path_oneskin/12x12 warcraft_shortest_path_oneskin/30x30 data/warcraft/
    python tasks/warcraft/data_prep/warcraft_preprocess.py --data_dir data/warcraft/12x12 --grid_size 12
    python tasks/warcraft/data_prep/warcraft_preprocess.py --data_dir data/warcraft/30x30 --grid_size 30
    ```
