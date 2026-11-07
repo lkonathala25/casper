@@ -89,16 +89,16 @@ MODE=train_infer L2_PENALTY=1 TASKS=sum SUM_NS=64 SEEDS=0 bash tasks/mnist/run_c
 
 ## Visual Sudoku
 
-The pipeline follows Cornelio et al. (2023): a CNN, then a board solver, then CASPER, then a mask network, then a Prolog solver. It needs:
+The pipeline is NASR (Cornelio et al., 2023; [corneliocristina/NASR](https://github.com/corneliocristina/NASR), MIT): a CNN, then a board solver, then CASPER, then a mask network, then a Prolog solver. The data loading, models and Prolog solver under `tasks/sudoku/visual/` are adapted from the NASR code. It needs:
 
-- the SATNet visual Sudoku data and MNIST, under `data/sudoku/data/` (`SUDOKU_DATA_DIR`);
-- the pretrained NASR weights `{perception,solvernn,mask}/satnet/checkpoint_best.pth`, under `data/sudoku/pretrained/` (`SUDOKU_PRETRAINED_DIR`);
+- the SATNet visual Sudoku data and MNIST, prepared with NASR's `src/sudoku_data.py` from the [SATNet dataset](https://powei.tw/sudoku.zip), under `data/sudoku/data/` (`SUDOKU_DATA_DIR`);
+- the pretrained NASR weights `{perception,solvernn,mask}/satnet/checkpoint_best.pth` from the NASR repository's `outputs/` folder, under `data/sudoku/pretrained/` (`SUDOKU_PRETRAINED_DIR`);
 - SWI-Prolog for `pyswip`. It is found in the active conda env by default (`SUDOKU_SWIPL_ENV`).
 
 Run `python tasks/sudoku/visual/paths.py` to check that every location is found. Then:
 
 ```bash
-# Board solver from Cornelio et al. (2023)
+# NASR board solver
 bash tasks/sudoku/visual/scripts/run_mask_calibrated.sh
 
 # LLM board solver (Qwen2.5-14B-Instruct + SATNet LoRA adapter under data/sudoku/satnet_qwen_sft/)
@@ -116,4 +116,4 @@ If you use this code, please cite:
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE), which also carries the MIT notice of the NASR code adapted in `tasks/sudoku/visual/`.
