@@ -1,0 +1,15 @@
+# --- CASPER core, MNIST and Warcraft ---
+torch>=2.0
+torchvision>=0.15
+numpy>=1.23
+tqdm>=4.65
+cvxpy>=1.4
+cvxpylayers>=0.1.6
+scs>=3.2
+
+# --- tasks/sudoku/visual: Sudoku pipeline (Transformer and LLM) ---
+scipy>=1.10          # Hungarian assignment in the legacy MinEdit layer (--edit-layer minedit)
+h5py>=3.8            # SATNet image tensors
+matplotlib>=3.7      # imported by datasets.py / board.py / utils.py
+joblib>=1.3          # imported by sudoku_data.py
+pyswip>=0.3.2        # Prolog completion; needs a system SWI-Prolog (see README)

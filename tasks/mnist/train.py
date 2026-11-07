@@ -1,0 +1,811 @@
+import sys as _sys
+from pathlib import Path as _Path
+
+# Runnable entry point: put the shared compiler and this task's own directory on
+# the path. Sibling task directories are deliberately not added -- they share
+# module names (data, model, train, minedit).
+_ROOT = _Path(__file__).resolve().parents[2]
+for _d in (_ROOT / "casper", _Path(__file__).resolve().parent):
+    if str(_d) not in _sys.path:
+        _sys.path.insert(0, str(_d))
+
+import argparse
+import hashlib
+import json
+import socket
+import subprocess
+import os
+import resource
+import signal
+import sys
+import time
+from collections import defaultdict
+from contextlib import contextmanager
+from pathlib import Path
+
+import numpy as np
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torchvision
+import torchvision.transforms as transforms
+from torch.utils.data import DataLoader
+from tqdm import tqdm
+
+from data import (
+    MNISTSumDataset,
+    MNISTAddDataset,
+)
+from casper_loss import (CASPER_MODES, VariableLayout, casper_loss, layer_at_inference,
+                         layer_in_training, resolve_l2_penalty)
+from model import MNISTConstraintNet
+from carry_chain import compute_carry_chain
+
+
+class IterTimeoutError(Exception):
+    pass
+
+
+@contextmanager
+def _iter_timeout(seconds):
+    """SIGALRM-based wall-clock cap on a single training step. No-op if seconds <= 0."""
+    if seconds is None or seconds <= 0:
+        yield
+        return
+
+    def _handler(signum, frame):
+        raise IterTimeoutError(f"training step exceeded {seconds:.1f}s")
+
+    prev = signal.signal(signal.SIGALRM, _handler)
+    signal.setitimer(signal.ITIMER_REAL, float(seconds))
+    try:
+        yield
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, prev)
+
+
+def n_sum_digits(n_digits):
+    """Answer digits in the balanced decimal sum tree: one per level, plus one."""
+    if n_digits < 2 or n_digits & (n_digits - 1):
+        raise ValueError(f"digit-tree MNIST-Sum needs a power-of-two N, got {n_digits}")
+    return n_digits.bit_length()
+
+
+def sum_to_digits(totals, k):
+    """(B,) integer totals -> (B, k) decimal digits, most significant first."""
+    out = []
+    x = totals
+    for _ in range(k):
+        out.append(x % 10)
+        x = torch.div(x, 10, rounding_mode='floor')
+    return torch.stack(out[::-1], dim=1)
+
+
+def digits_to_sum(digit_preds):
+    """List of k (B,) digit predictions, most significant first -> (B,) integers."""
+    total = torch.zeros_like(digit_preds[0])
+    for d in digit_preds:
+        total = total * 10 + d
+    return total
+
+
+def _sum_targets(digit_labels, sum_label, n_digits, n_vars):
+    """Per-variable targets for MNIST-Sum under either output encoding."""
+    targets = [digit_labels[:, i] for i in range(n_digits)]
+    n_out = n_vars - n_digits
+    if n_out == 1:
+        return targets + [sum_label]
+    digits = sum_to_digits(sum_label, n_out)
+    return targets + [digits[:, j] for j in range(n_out)]
+
+
+def get_config(n_digits, task):
+    """Return (variable_ranges, n_inputs) for the chosen task.
+
+    MNIST-Sum's answer is the balanced decimal digit tree's output digits; the
+    flat single-sum-variable encoding needs one clause per combination of all N
+    digits and is not used.
+    """
+    if task == 'sum':
+        return [10] * (n_digits + n_sum_digits(n_digits)), n_digits
+    if task == 'add':
+        n_inputs = 2 * n_digits
+        return [10] * (n_inputs + n_digits + 1), n_inputs
+    raise ValueError(f"Unknown task: {task!r}")
+
+
+def resolve_compiled_file(task, n_digits, explicit=None):
+    """Path to the constraint file for (task, n_digits), generating it if absent.
+
+    Both tasks' constraint files are their own compile fixpoints -- every bucket
+    is a deterministic function of earlier variables, so eliminating anything
+    yields only tautologies. They are therefore generated and loaded directly,
+    never compiled.
+    """
+    if explicit is not None:
+        return explicit
+
+    root = Path(__file__).resolve().parents[2]
+    out = root / "constraints" / "mnist"
+    out.mkdir(parents=True, exist_ok=True)
+    sys.path.append(str(Path(__file__).resolve().parent))
+    if task == 'add':
+        dsl = out / f"mnist_add_n{n_digits}.txt"
+        if not dsl.exists():
+            from generate_mnist_add import generate_mnist_add_dsl
+            dsl.write_text(generate_mnist_add_dsl(n_digits))
+        return str(dsl)
+
+    dsl = out / f"mnist_sum_digit_tree_n{n_digits}.txt"
+    if not dsl.exists():
+        from generate_mnist_sum_digit_tree import generate_mnist_sum_digit_tree_dsl
+        dsl.write_text(generate_mnist_sum_digit_tree_dsl(n_digits))
+    return str(dsl)
+
+
+def check_fixpoint(path):
+    """Refuse to train unless a generated constraint file is its own compile.
+
+    Both layers treat the file as already compiled (the generic one via
+    Constraints.from_compiled_dsl, the batched one via the lookup tables this same
+    check builds), which is only sound if eliminating any variable derives nothing new.
+    compile_functional_dag verifies that (every bucket a total function of earlier
+    variables) in linear time and raises NotFunctionalDAG otherwise. Returns the
+    check time and the constraint set's size for the run config.
+    """
+    from functional_dag_compile import NotFunctionalDAG, compile_functional_dag
+    from signed_clauses import parse_constraints
+    start = time.perf_counter()
+    cs = parse_constraints(Path(path).read_text())
+    try:
+        compile_functional_dag(cs)
+    except NotFunctionalDAG as err:
+        raise SystemExit(
+            f"{path} is not a functional-DAG fixpoint ({err}); loading it as compiled "
+            f"would enforce an incomplete constraint. Compile it and pass --compiled-file.")
+    elapsed = time.perf_counter() - start
+    print(f"Fixpoint check: {Path(path).name} is a functional DAG, loaded as compiled "
+          f"({elapsed:.1f}s)", flush=True)
+    return {'fixpoint_check_s': elapsed, 'n_variables': len(cs.var_names),
+            'n_clauses': len(cs.clauses)}
+
+
+def split_logits(logits, variable_ranges):
+    out, offset = [], 0
+    for n_cats in variable_ranges:
+        out.append(logits[:, offset:offset + n_cats])
+        offset += n_cats
+    return out
+
+
+METRIC_KEYS = [
+    'digit_exact', 'digit_macro', 'operand1_exact', 'operand1_macro', 'operand2_exact', 'operand2_macro',
+    'sum_exact', 'sum_macro', 'raw_sum_exact', 'raw_sum_macro', 'symbolic_sum_exact',
+    'constraint_sat', 'avg_l2_edit',
+]
+
+
+def _sync(device):
+    """Wait for queued CUDA work so wall-clock timings are accurate."""
+    if device.type == 'cuda':
+        torch.cuda.synchronize()
+
+
+class _LayerTimer:
+    """Accumulates wall time spent inside the constraint layer, synchronising CUDA around each call."""
+
+    def __init__(self, device):
+        self.device = device
+        self.total = 0.0
+
+    @contextmanager
+    def __call__(self):
+        _sync(self.device)
+        start = time.perf_counter()
+        try:
+            yield
+        finally:
+            _sync(self.device)
+            self.total += time.perf_counter() - start
+
+
+def _argmax_slices(probs, variable_ranges):
+    """(B, sum(variable_ranges)) probabilities -> (B, n_vars) argmax per variable."""
+    return torch.stack([sl.argmax(dim=1) for sl in split_logits(probs, variable_ranges)], dim=1)
+
+
+def _exact_macro(pred, target):
+    """Row sums of (every position right, fraction of positions right) for (B, P) tensors."""
+    ok = pred == target
+    return ok.all(dim=1).sum().item(), ok.float().mean(dim=1).sum().item()
+
+
+def _git_describe():
+    """Commit of the code being run, marked -dirty when the working tree has changes.
+
+    Falls back to reading .git directly, since detached runs can start without
+    git on PATH and the run's provenance should be recorded either way.
+    """
+    root = Path(__file__).resolve().parents[2]
+    try:
+        out = subprocess.run(['git', '-C', str(root), 'describe', '--always', '--dirty'],
+                             capture_output=True, text=True, timeout=10)
+        if out.returncode == 0 and out.stdout.strip():
+            return out.stdout.strip()
+    except Exception:
+        pass
+    try:
+        head = (root / '.git' / 'HEAD').read_text().strip()
+        if head.startswith('ref: '):
+            return (root / '.git' / head[5:]).read_text().strip()[:12]
+        return head[:12]
+    except Exception:
+        return None
+
+
+def _json_safe(obj):
+    """Replace NaN/inf with None, recursively, so the file is strict JSON."""
+    if isinstance(obj, dict):
+        return {k: _json_safe(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_json_safe(v) for v in obj]
+    if isinstance(obj, float) and not np.isfinite(obj):
+        return None
+    return obj
+
+
+def write_run_json(path, record):
+    """Atomically rewrite the run's JSON (config, epochs, summary) so a crash never leaves it half-written."""
+    path = Path(path)
+    tmp = path.with_name(path.name + '.tmp')
+    tmp.write_text(json.dumps(_json_safe(record), indent=2, default=str))
+    os.replace(tmp, path)
+
+
+def save_checkpoint(path, model, optimizer, scheduler, epoch, row):
+    """Atomically save model, optimizer and scheduler state after an epoch, with that epoch's metrics."""
+    path = Path(path)
+    tmp = path.with_name(path.name + '.tmp')
+    torch.save({'epoch': epoch, 'model': model.state_dict(), 'optimizer': optimizer.state_dict(),
+                'scheduler': scheduler.state_dict(), 'metrics': _json_safe(row)}, tmp)
+    os.replace(tmp, path)
+
+
+RESUME_KEYS = ['task', 'n_digits', 'seed', 'epochs', 'lr', 'batch_size', 'n_train', 'n_test',
+               'casper_mode', 'l2_penalty', 'projection_backend', 'layer', 'compiled_file_sha256']
+
+
+def load_resume(out_path, run_config):
+    """Previous record and last checkpoint of an interrupted run with the same settings.
+
+    Returns (record, checkpoint) when out_path and checkpoint_last.pt exist, every
+    RESUME_KEYS setting matches run_config, and no epoch timed out; the record's
+    epochs are cut to the checkpoint's epoch (the JSON is written just before the
+    checkpoint, so it can be one epoch ahead). Returns (None, None) otherwise, and
+    the run starts from scratch.
+    """
+    out_path = Path(out_path)
+    ckpt_path = out_path.parent / 'checkpoint_last.pt'
+    if not (out_path.exists() and ckpt_path.exists()):
+        return None, None
+    try:
+        record = json.loads(out_path.read_text())
+    except (OSError, ValueError) as err:
+        print(f"Not resuming: cannot read {out_path} ({err})")
+        return None, None
+    changed = [k for k in RESUME_KEYS if record['config'].get(k) != run_config.get(k)]
+    if changed:
+        print(f"Not resuming: settings differ from the previous run ({', '.join(changed)})")
+        return None, None
+    ckpt = torch.load(ckpt_path, map_location='cpu', weights_only=False)
+    done = ckpt['epoch']
+    if len(record['epochs']) < done or any(r['timed_out'] for r in record['epochs'][:done]):
+        print(f"Not resuming: {out_path.name} does not cover the checkpoint's {done} epochs")
+        return None, None
+    record['epochs'] = record['epochs'][:done]
+    return record, ckpt
+
+
+def summarise_run(history, status, wall_time_s):
+    """Final and best-epoch metrics plus total cost, for the run JSON's summary."""
+    done = [r for r in history if not r['timed_out']]
+    total = lambda rows, k: float(sum(r[k] for r in rows))
+    examples = sum(r['n_train'] for r in done)
+    return {
+        'status': status,
+        'epochs_completed': len(done),
+        'wall_time_s': wall_time_s,
+        'train_time_s': total(history, 'train_time_s'),
+        'train_layer_time_s': total(history, 'train_layer_time_s'),
+        'eval_time_s': total(history, 'eval_time_s'),
+        'eval_layer_time_s': total(history, 'eval_layer_time_s'),
+        'gpu_mem_peak_mb': max((r['gpu_mem_peak_mb'] for r in history), default=float('nan')),
+        'gpu_mem_reserved_peak_mb': max((r['gpu_mem_reserved_peak_mb'] for r in history), default=float('nan')),
+        'cpu_rss_peak_mb': max((r['cpu_rss_peak_mb'] for r in history), default=float('nan')),
+        'mean_s_per_train_example': total(done, 'train_time_s') / examples if examples else float('nan'),
+        'final': done[-1] if done else None,
+    }
+
+
+def batch_targets(task, batch, n_digits, n_vars, device):
+    """(images, (B, n_vars) per-variable targets) for one batch of either task, inputs first."""
+    if task == 'sum':
+        imgs, digit_labels, sum_label = batch
+        targets = torch.stack(_sum_targets(digit_labels, sum_label, n_digits, n_vars), dim=1)
+    else:
+        imgs, digit_labels, output_digit_labels, _sum_label = batch
+        targets = torch.cat([digit_labels, output_digit_labels], dim=1)
+    return imgs.to(device), targets.to(device)
+
+
+def train_epoch(model, loader, optimizer, layout, task, n_digits, device, per_iter_timeout_s,
+                use_layer, l2_penalty, layer_timer=None):
+    """One epoch of the shared CASPER objective (casper_loss.casper_loss) on either task.
+
+    With use_layer the constraint layer runs in the forward pass, the task loss is
+    on its projected output (gradients flow through the layer) and l2_penalty
+    weights ½‖z̃ − ŷ‖²; without it the task loss is on the raw logits.
+    """
+    model.train()
+    layer_timer = layer_timer or _LayerTimer(device)
+    n_vars = len(layout.var_ranges)
+    sums, n_batches = defaultdict(float), 0
+    total_grad_norm, grad_norm_count = 0.0, 0
+    timed_out = False
+
+    pbar = tqdm(loader, leave=False, desc="train", disable=None)
+    for batch_idx, batch in enumerate(pbar):
+        imgs, targets = batch_targets(task, batch, n_digits, n_vars, device)
+        try:
+            with _iter_timeout(per_iter_timeout_s):
+                logits = model.get_logits(imgs)
+                probs = projected = None
+                if use_layer:
+                    probs = model.logits_to_probs(logits)
+                    with layer_timer():
+                        projected, _info = model.constraint_layer(probs)
+                loss, parts = casper_loss(layout, logits, probs, projected, targets, l2_penalty)
+
+                optimizer.zero_grad()
+                loss.backward()
+
+                grad_params = [p for p in model.digit_encoder.parameters() if p.grad is not None]
+                if grad_params:
+                    total_grad_norm += torch.sqrt(sum((p.grad ** 2).sum() for p in grad_params)).item()
+                    grad_norm_count += 1
+
+                optimizer.step()
+        except IterTimeoutError as e:
+            print(f"  [TIMEOUT] {task} step exceeded budget at iter {batch_idx}: {e}")
+            timed_out = True
+            break
+
+        sums['loss'] += loss.item()
+        for k, v in parts.items():
+            sums[k] += v
+        n_batches += 1
+
+    denom = max(1, n_batches)
+    return {
+        'loss': sums['loss'] / denom,
+        'task_loss': sums['task_loss'] / denom,
+        'l2_penalty_term': sums['l2_penalty_term'] / denom,
+        'l2_edit': sums['l2_edit'] / denom,
+        'grad_norm': total_grad_norm / grad_norm_count if grad_norm_count else float('nan'),
+        'timed_out': timed_out,
+    }
+
+
+def evaluate_sum(model, loader, variable_ranges, n_digits, device, apply_constraint=True,
+                 layer_timer=None):
+    """Test metrics for MNIST-Sum (exact = every digit right, macro = per-digit accuracy).
+
+    digit_exact/digit_macro read the raw network's N input digits (all right / share right). sum_* read the answer digits
+    after the layer when it is applied at inference; raw_sum_* the network's own
+    answer head; symbolic_sum_exact the sum of the raw input digits. Sum has no
+    two operands, so the operand columns are NaN.
+    """
+    model.eval()
+    layer_timer = layer_timer or _LayerTimer(device)
+    n_vars = len(variable_ranges)
+    c = defaultdict(float)
+    total = 0
+    with torch.no_grad():
+        for imgs, digit_labels, sum_label in tqdm(loader, leave=False, desc="eval", disable=None):
+            imgs = imgs.to(device)
+            digit_labels = digit_labels.to(device)
+            sum_label = sum_label.to(device)
+
+            raw_probs = model.forward_raw(imgs)
+            eval_probs = raw_probs
+            if apply_constraint:
+                with layer_timer():
+                    eval_probs, _info = model.constraint_layer(raw_probs.clone())
+                c['l2'] += torch.norm(eval_probs - raw_probs, p=2, dim=1).sum().item()
+
+            raw_preds = _argmax_slices(raw_probs, variable_ranges)
+            eval_preds = _argmax_slices(eval_probs, variable_ranges)
+            targets = torch.stack(_sum_targets(digit_labels, sum_label, n_digits, n_vars), dim=1)
+
+            e, m = _exact_macro(raw_preds[:, :n_digits], targets[:, :n_digits])
+            c['digit_exact'] += e
+            c['digit'] += m
+            e, m = _exact_macro(eval_preds[:, n_digits:], targets[:, n_digits:])
+            c['sum_exact'] += e
+            c['sum_macro'] += m
+            e, m = _exact_macro(raw_preds[:, n_digits:], targets[:, n_digits:])
+            c['raw_sum_exact'] += e
+            c['raw_sum_macro'] += m
+            c['symbolic'] += (raw_preds[:, :n_digits].sum(dim=1) == sum_label).sum().item()
+            eval_total = (eval_preds[:, -1] if n_vars - n_digits == 1
+                          else digits_to_sum(list(eval_preds[:, n_digits:].unbind(dim=1))))
+            c['constraint'] += (eval_preds[:, :n_digits].sum(dim=1) == eval_total).sum().item()
+            total += imgs.shape[0]
+
+    t, nan = max(total, 1), float('nan')
+    return {
+        'digit_exact': 100 * c['digit_exact'] / t,
+        'digit_macro': 100 * c['digit'] / t,
+        'operand1_exact': nan, 'operand1_macro': nan,
+        'operand2_exact': nan, 'operand2_macro': nan,
+        'sum_exact': 100 * c['sum_exact'] / t,
+        'sum_macro': 100 * c['sum_macro'] / t,
+        'raw_sum_exact': 100 * c['raw_sum_exact'] / t,
+        'raw_sum_macro': 100 * c['raw_sum_macro'] / t,
+        'symbolic_sum_exact': 100 * c['symbolic'] / t,
+        'constraint_sat': 100 * c['constraint'] / t,
+        'avg_l2_edit': c['l2'] / t,
+    }
+
+
+def evaluate_add(model, loader, variable_ranges, n_inputs, n_digits_per_num, device,
+                 apply_constraint=True, layer_timer=None):
+    """Test metrics for MNIST-Add, with the operand/sum breakdown's definitions.
+
+    Exact = every digit right; macro = per-digit accuracy, both on the hard argmax.
+    operand{1,2}_* and digit_exact/digit_macro (all 2N digits) read the raw network's
+    digits for the two N-digit operands (independent of the layer). sum_* read the N+1 answer digits after the
+    layer when it is applied at inference; raw_sum_* the network's own answer head;
+    symbolic_sum_exact the carry chain of the raw operand digits. constraint_sat is
+    the share of answers that equal that carry chain.
+    """
+    model.eval()
+    layer_timer = layer_timer or _LayerTimer(device)
+    N = n_digits_per_num
+    c = defaultdict(float)
+    total = 0
+    with torch.no_grad():
+        for imgs, digit_labels, output_digit_labels, _sum_label in tqdm(loader, leave=False, desc="eval", disable=None):
+            imgs = imgs.to(device)
+            digit_labels = digit_labels.to(device)
+            output_digit_labels = output_digit_labels.to(device)
+
+            raw_probs = model.forward_raw(imgs)
+            eval_probs = raw_probs
+            if apply_constraint:
+                with layer_timer():
+                    eval_probs, _info = model.constraint_layer(raw_probs.clone())
+                c['l2'] += torch.norm(eval_probs - raw_probs, p=2, dim=1).sum().item()
+
+            raw_preds = _argmax_slices(raw_probs, variable_ranges)
+            eval_preds = _argmax_slices(eval_probs, variable_ranges)
+            operands = raw_preds[:, :n_inputs]
+
+            e, m = _exact_macro(operands, digit_labels)
+            c['digit_exact'] += e
+            c['digit'] += m
+            for k, cols in ((1, slice(0, N)), (2, slice(N, 2 * N))):
+                e, m = _exact_macro(operands[:, cols], digit_labels[:, cols])
+                c[f'op{k}_exact'] += e
+                c[f'op{k}_macro'] += m
+            e, m = _exact_macro(eval_preds[:, n_inputs:], output_digit_labels)
+            c['sum_exact'] += e
+            c['sum_macro'] += m
+            e, m = _exact_macro(raw_preds[:, n_inputs:], output_digit_labels)
+            c['raw_sum_exact'] += e
+            c['raw_sum_macro'] += m
+            chain = compute_carry_chain(operands[:, :N], operands[:, N:])
+            c['symbolic'] += (chain == output_digit_labels).all(dim=1).sum().item()
+            c['constraint'] += (eval_preds[:, n_inputs:] == chain).all(dim=1).sum().item()
+            total += imgs.shape[0]
+
+    t = max(total, 1)
+    return {
+        'digit_exact': 100 * c['digit_exact'] / t,
+        'digit_macro': 100 * c['digit'] / t,
+        'operand1_exact': 100 * c['op1_exact'] / t,
+        'operand1_macro': 100 * c['op1_macro'] / t,
+        'operand2_exact': 100 * c['op2_exact'] / t,
+        'operand2_macro': 100 * c['op2_macro'] / t,
+        'sum_exact': 100 * c['sum_exact'] / t,
+        'sum_macro': 100 * c['sum_macro'] / t,
+        'raw_sum_exact': 100 * c['raw_sum_exact'] / t,
+        'raw_sum_macro': 100 * c['raw_sum_macro'] / t,
+        'symbolic_sum_exact': 100 * c['symbolic'] / t,
+        'constraint_sat': 100 * c['constraint'] / t,
+        'avg_l2_edit': c['l2'] / t,
+    }
+
+
+def run_one(task, n_digits, seed, epochs, lr, batch_size, device,
+            train_loader, test_loader, out_path, record,
+            per_iter_timeout_s, max_run_time_s, casper_mode, l2_penalty,
+            compiled_file=None, projection_backend='closed_form',
+            solver_time_limit=None, layer='batched', resume=None):
+    """Train and evaluate one run, appending each epoch to record['epochs'] and
+    rewriting the run JSON after every epoch. checkpoint_last.pt (every epoch) goes
+    next to the JSON; nothing is selected on the test set. Returns the run summary.
+
+    With resume (a checkpoint from load_resume), model, optimizer and scheduler
+    continue from the checkpoint's epoch. The RNG is reseeded with seed + that
+    epoch, so the resumed epochs are reproducible but do not replay the exact
+    batch order an uninterrupted run would have used.
+    """
+    torch.manual_seed(seed)
+    if device.type == 'cuda':
+        torch.cuda.manual_seed_all(seed)
+
+    train_constraint = layer_in_training(casper_mode)
+    infer_constraint = layer_at_inference(casper_mode)
+
+    variable_ranges, n_inputs = get_config(n_digits, task)
+    layout = VariableLayout(variable_ranges)
+
+    model = MNISTConstraintNet(
+        task=task,
+        variable_ranges=variable_ranges,
+        n_inputs=n_inputs,
+        compiled_file=compiled_file,
+        projection_backend=projection_backend,
+        solver_time_limit=solver_time_limit,
+        layer=layer,
+    ).to(device)
+
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        optimizer, T_max=epochs, eta_min=1e-5)
+
+    n_train, n_test = len(train_loader.dataset), len(test_loader.dataset)
+    print(f"\n{'=' * 60}")
+    print(f"task={task}  N={n_digits}  seed={seed}  "
+          f"projection={projection_backend}  layer={layer}  "
+          f"casper_mode={casper_mode}  l2_penalty={l2_penalty}")
+    print(f"epochs={epochs}  lr={lr}  batch_size={batch_size}  train={n_train}  test={n_test}")
+    print(f"{'=' * 60}")
+
+    start_epoch, prior_wall_s = 0, 0.0
+    if resume is not None:
+        model.load_state_dict(resume['model'])
+        optimizer.load_state_dict(resume['optimizer'])
+        scheduler.load_state_dict(resume['scheduler'])
+        start_epoch = resume['epoch']
+        prior_wall_s = (record.get('summary') or {}).get('wall_time_s') or 0.0
+        torch.manual_seed(seed + start_epoch)
+        if device.type == 'cuda':
+            torch.cuda.manual_seed_all(seed + start_epoch)
+        print(f"Resuming from checkpoint at epoch {start_epoch}/{epochs}")
+
+    history, status = list(record['epochs']), 'completed'
+    run_start = time.time() - prior_wall_s
+    run_dir = Path(out_path).parent
+
+    for epoch in range(start_epoch, epochs):
+        if device.type == 'cuda':
+            torch.cuda.reset_peak_memory_stats()
+        lr_now = optimizer.param_groups[0]['lr']
+        train_timer, eval_timer = _LayerTimer(device), _LayerTimer(device)
+        epoch_start = time.time()
+
+        _sync(device)
+        t0 = time.perf_counter()
+        train_info = train_epoch(
+            model, train_loader, optimizer, layout, task, n_digits, device, per_iter_timeout_s,
+            use_layer=train_constraint, l2_penalty=l2_penalty, layer_timer=train_timer)
+        _sync(device)
+        train_time = time.perf_counter() - t0
+
+        if train_info['timed_out']:
+            metrics, eval_time = {k: float('nan') for k in METRIC_KEYS}, 0.0
+        else:
+            t1 = time.perf_counter()
+            if task == 'sum':
+                metrics = evaluate_sum(model, test_loader, variable_ranges, n_digits, device,
+                                       apply_constraint=infer_constraint, layer_timer=eval_timer)
+            else:
+                metrics = evaluate_add(model, test_loader, variable_ranges, n_inputs,
+                                       n_digits, device, apply_constraint=infer_constraint,
+                                       layer_timer=eval_timer)
+            _sync(device)
+            eval_time = time.perf_counter() - t1
+
+        row = {
+            'task': task, 'n_digits': n_digits, 'projection_backend': projection_backend,
+            'casper_mode': casper_mode, 'l2_penalty': l2_penalty,
+            'seed': seed, 'epoch': epoch + 1, 'lr': lr_now,
+            'train_loss': train_info['loss'],
+            'train_task_loss': train_info['task_loss'],
+            'train_l2_penalty_term': train_info['l2_penalty_term'],
+            'train_l2_edit': train_info['l2_edit'],
+            'grad_norm': train_info['grad_norm'],
+            **metrics,
+            'n_train': n_train, 'n_test': n_test,
+            'train_time_s': train_time, 'train_layer_time_s': train_timer.total,
+            'eval_time_s': eval_time, 'eval_layer_time_s': eval_timer.total,
+            's_per_train_example': train_time / max(n_train, 1),
+            'epoch_time_s': time.time() - epoch_start,
+            'gpu_mem_peak_mb': (torch.cuda.max_memory_allocated() / (1024 ** 2)
+                                if device.type == 'cuda' else float('nan')),
+            'gpu_mem_reserved_peak_mb': (torch.cuda.max_memory_reserved() / (1024 ** 2)
+                                         if device.type == 'cuda' else float('nan')),
+            'cpu_rss_peak_mb': resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024,
+            'timed_out': int(train_info['timed_out']),
+        }
+        record['epochs'].append(row)
+        history.append(row)
+        record['summary'] = summarise_run(history, 'running', time.time() - run_start)
+        write_run_json(out_path, record)
+
+        if train_info['timed_out']:
+            status = 'timed_out'
+            print(f"  Aborting after epoch {epoch+1}: a training step exceeded its time budget.")
+            break
+
+        operands = (f"op exact={row['operand1_exact']:.1f}/{row['operand2_exact']:.1f}% | "
+                    if task == 'add' else "")
+        print(f"Epoch {epoch+1:3d} | loss={row['train_loss']:.4f} | digit={row['digit_macro']:.1f}% | "
+              f"{operands}sum exact={row['sum_exact']:.1f}% macro={row['sum_macro']:.1f}% "
+              f"(raw {row['raw_sum_exact']:.1f}%) | sat={row['constraint_sat']:.1f}% | "
+              f"L2={row['avg_l2_edit']:.4f} | train {train_time:.1f}s (layer {train_timer.total:.1f}s) "
+              f"eval {eval_time:.1f}s")
+
+        scheduler.step()
+        save_checkpoint(run_dir / 'checkpoint_last.pt', model, optimizer, scheduler, epoch + 1, row)
+
+        if max_run_time_s is not None and (time.time() - run_start) > max_run_time_s:
+            status = 'run_time_cap'
+            print(f"  Per-run cap hit ({time.time() - run_start:.1f}s > {max_run_time_s}s). Aborting.")
+            break
+
+    return summarise_run(history, status, time.time() - run_start)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--task', type=str, required=True, choices=['sum', 'add'])
+    parser.add_argument('--n-digits', type=int, required=True)
+    parser.add_argument('--seed', type=int, required=True)
+    parser.add_argument('--epochs', type=int, default=None)
+    parser.add_argument('--lr', type=float, default=None)
+    parser.add_argument('--batch-size', type=int, default=None)
+    parser.add_argument('--out', type=str, required=True,
+                        help='Run JSON: config, per-epoch metrics and summary.')
+    parser.add_argument('--layer', type=str, default='batched', choices=['batched', 'generic'],
+                        help="'batched': functional-DAG INFER batched over variables and samples "
+                             "(same projection and gradients as 'generic', the per-sample walk).")
+    parser.add_argument('--projection-backend', type=str, default='closed_form',
+                        choices=['closed_form', 'cvxpy'],
+                        help="Solver for the MinEdit projection. The constraint "
+                             "set is identical either way; 'cvxpy' solves the "
+                             "same projection as a QP via SCS.")
+    parser.add_argument('--solver-time-limit', type=float, default=None,
+                        help="Per-solve budget for --projection-backend cvxpy.")
+    parser.add_argument('--compiled-file', type=str, default=None,
+                        help="Constraint file to load. Defaults to the "
+                             "generated one for (task, N).")
+    parser.add_argument('--casper-mode', type=str, required=True, choices=CASPER_MODES,
+                        help="Where the layer runs. 'train_infer': in training (task loss on "
+                             "its projected output) and at inference; 'train_only': training "
+                             "only; 'infer_only': raw-logit task loss, layer applied only at "
+                             "inference; 'none': never.")
+    parser.add_argument('--l2-penalty', type=float, default=None,
+                        help="Weight of ½‖z̃ − ŷ‖² added to the task loss. Required with "
+                             "train_infer/train_only (1.0 = full CASPER, 0 = the "
+                             "w/o-l2-penalty ablation); rejected otherwise.")
+    parser.add_argument('--per-iter-timeout-s', type=float, default=None)
+    parser.add_argument('--max-run-time-s', type=float, default=None)
+    parser.add_argument('--data-root', type=str, default='./data')
+    parser.add_argument('--per-example-timeout-s', type=float, default=None,
+                        help='Time-out per training example (the paper uses 5 s); sets '
+                             '--per-iter-timeout-s to this times the batch size when that is unset.')
+    args = parser.parse_args()
+    try:
+        args.l2_penalty = resolve_l2_penalty(args.casper_mode, args.l2_penalty)
+    except ValueError as err:
+        parser.error(str(err))
+
+    if args.epochs is None:
+        args.epochs = 200 if args.task == 'sum' else 100
+    if args.batch_size is None:
+        args.batch_size = 16 if args.task == 'sum' else 64
+    if args.lr is None:
+        if args.task == 'sum':
+            args.lr = 1e-3
+        else:
+            args.lr = 3e-4 if args.n_digits in (100, 256) else 1e-3
+
+    if args.per_example_timeout_s is not None and args.per_iter_timeout_s is None:
+        args.per_iter_timeout_s = args.per_example_timeout_s * args.batch_size
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"Device: {device}")
+
+    transform = transforms.Compose([transforms.ToTensor()])
+    mnist_train = torchvision.datasets.MNIST(
+        args.data_root, train=True, download=True, transform=transform)
+    mnist_test = torchvision.datasets.MNIST(
+        args.data_root, train=False, download=True, transform=transform)
+
+    if args.task == 'sum':
+        train_ds = MNISTSumDataset(mnist_train, n_digits=args.n_digits, split='train',
+                                   data_seed=args.seed)
+        test_ds = MNISTSumDataset(mnist_test, n_digits=args.n_digits, split='test',
+                                  data_seed=args.seed + 10000)
+    else:
+        train_ds = MNISTAddDataset(mnist_train, n_digits=args.n_digits, data_seed=args.seed)
+        test_ds = MNISTAddDataset(mnist_test, n_digits=args.n_digits, data_seed=args.seed + 10000)
+    train_n, test_n = len(train_ds), len(test_ds)
+
+    print(f"  train={train_n}  test={test_n}")
+
+    train_loader = DataLoader(train_ds, batch_size=args.batch_size, shuffle=True)
+    test_loader = DataLoader(test_ds, batch_size=args.batch_size, shuffle=False)
+
+    compiled_file = resolve_compiled_file(args.task, args.n_digits, args.compiled_file)
+    check_info = {}
+    if args.compiled_file is None:
+        check_info = check_fixpoint(compiled_file)
+    else:
+        print(f"Using --compiled-file {compiled_file} as a compile output (not re-checked)")
+
+    blob = Path(compiled_file).read_bytes()
+    run_config = {
+        **vars(args), 'n_train': train_n, 'n_test': test_n,
+        'data_construction': 'ctsketch_dealt',
+        'compiled_file': str(compiled_file), 'compiled_file_bytes': len(blob),
+        'compiled_file_sha256': hashlib.sha256(blob).hexdigest(), **check_info,
+        'commit': _git_describe(), 'host': socket.gethostname(),
+        'gpu': torch.cuda.get_device_name(0) if device.type == 'cuda' else None,
+        'torch': torch.__version__, 'cuda': torch.version.cuda,
+        'started': time.strftime('%Y-%m-%d %H:%M:%S'),
+    }
+    record, resume = load_resume(args.out, run_config)
+    if record is None:
+        record = {'config': run_config, 'epochs': [], 'summary': None}
+    else:
+        record['config'].setdefault('resumes', []).append({
+            'from_epoch': resume['epoch'], 'started': run_config['started'],
+            'commit': run_config['commit'], 'host': run_config['host'], 'gpu': run_config['gpu']})
+    Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+    write_run_json(args.out, record)
+
+    summary = run_one(
+        task=args.task,
+        n_digits=args.n_digits,
+        seed=args.seed,
+        epochs=args.epochs,
+        lr=args.lr,
+        batch_size=args.batch_size,
+        device=device,
+        train_loader=train_loader,
+        test_loader=test_loader,
+        out_path=args.out,
+        record=record,
+        compiled_file=compiled_file,
+        projection_backend=args.projection_backend,
+        solver_time_limit=args.solver_time_limit,
+        layer=args.layer,
+        per_iter_timeout_s=args.per_iter_timeout_s,
+        max_run_time_s=args.max_run_time_s,
+        casper_mode=args.casper_mode,
+        l2_penalty=args.l2_penalty,
+        resume=resume,
+    )
+    record['summary'] = summary
+    record['config']['finished'] = time.strftime('%Y-%m-%d %H:%M:%S')
+    write_run_json(args.out, record)
+    print(f"Run {summary['status']}: {summary['epochs_completed']} epochs -> {args.out}")
+
+
+if __name__ == "__main__":
+    main()
