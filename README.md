@@ -1,11 +1,11 @@
 # CASPER
 
-Code for **CASPER: A Projection-Based Neurosymbolic Layer for Scalable & Guaranteed Constraint Satisfaction** (NeurIPS 2026).
+**CASPER: A Projection-Based Neurosymbolic Layer for Scalable & Guaranteed Constraint Satisfaction** (NeurIPS 2026).
 Lohith Konathala, Luca Andolfi, Eleonora Giunchiglia, Imperial College London.
 
 > Many real-world problems demand exact constraint satisfaction to be meaningfully solved, yet existing neurosymbolic methods face a stark trade-off: those that guarantee satisfaction fail to scale, while those that scale must resort to approximation. Meanwhile, traditional deep learning approaches offer no satisfaction guarantees at all. In this paper, we propose CASPER, a neurosymbolic layer that simultaneously (i) guarantees constraint satisfaction, (ii) scales at inference time, (iii) is fully automated, requiring no problem-specific engineering, and (iv) is fully differentiable, making it composable with any neural predictor both at training and at inference time. CASPER casts constraint satisfaction as a closed-form Euclidean projection onto the constraint-feasible region, computable in a single forward pass. Experiments across MNIST arithmetic (up to 1024 digits), Sudoku solving, and Warcraft pathfinding show that CASPER is the only method that produces guaranteed-valid outputs at scale: on 30×30 Warcraft grids, exact baselines time out and approximate ones produce valid paths less than 7% of the time, while CASPER produces them 100% of the time.
 
-This repository contains CASPER and the scripts to train and evaluate it on the three tasks. The baselines are not included.
+This repository contains CASPER and the scripts to train and evaluate it on the three tasks.
 
 ## Layout
 
@@ -105,14 +105,3 @@ FILL_CACHE=1 bash tasks/sudoku/visual/scripts/run_llm_mask_calibrated.sh
 ```
 
 `FILL_CACHE=1` generates the LLM's completed boards once and caches them in `data/sudoku/llm_cache/`. Later runs read from the cache.
-
-## Citation
-
-```bibtex
-@inproceedings{konathala2026casper,
-  title     = {{CASPER}: A Projection-Based Neurosymbolic Layer for Scalable \& Guaranteed Constraint Satisfaction},
-  author    = {Konathala, Lohith and Andolfi, Luca and Giunchiglia, Eleonora},
-  booktitle = {Advances in Neural Information Processing Systems},
-  year      = {2026}
-}
-```
