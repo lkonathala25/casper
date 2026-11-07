@@ -110,3 +110,7 @@ FILL_CACHE=1 bash tasks/sudoku/visual/scripts/run_llm_mask_calibrated.sh
 If you use this code, please cite:
 
 > Lohith Konathala, Luca Andolfi, Eleonora Giunchiglia. *CASPER: A Projection-Based Neurosymbolic Layer for Scalable & Guaranteed Constraint Satisfaction*. Advances in Neural Information Processing Systems (NeurIPS), 2026.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
