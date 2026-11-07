@@ -72,10 +72,9 @@ MODE=train_infer L2_PENALTY=1 TASKS=sum SUM_NS=64 SEEDS=0 bash tasks/mnist/run_c
 3. **Train** (ResNet-18, 300 epochs, early stopping after at least 100):
 
    ```bash
-   MODE=train_infer L2_PENALTY=2 GRIDS="12 30" bash tasks/warcraft/run_casper.sh   # CASPER
+   MODE=train_infer L2_PENALTY=1 GRIDS="12 30" bash tasks/warcraft/run_casper.sh   # CASPER (λ = 1); also the Train Only row
    MODE=train_infer L2_PENALTY=0 GRIDS="12 30" bash tasks/warcraft/run_casper.sh   # w/o ℓ2
    MODE=infer_only               GRIDS="12 30" bash tasks/warcraft/run_casper.sh   # Inference Only
-   MODE=train_infer L2_PENALTY=1 GRIDS="12 30" bash tasks/warcraft/run_casper.sh   # source of the Train Only row
    ```
 
 4. **Evaluate.** This computes optimal, ≤1/5/10%, exact match, Hamming and consistency on the loop-erased path, plus the cumulative cost-optimality curve:

@@ -2,7 +2,7 @@
 # CASPER on Warcraft: steps constraint loaded from the compiled artifact, full
 # alphabet. MODE and L2_PENALTY pick the CASPER configuration, with the same
 # meaning as in tasks/mnist/run_casper.sh:
-#   MODE=train_infer L2_PENALTY=2   full CASPER as reported (task loss on the projected output + λ·½‖z̃−ŷ‖²)
+#   MODE=train_infer L2_PENALTY=1   full CASPER (task loss on the projected output + λ·½‖z̃−ŷ‖², λ = 1)
 #   MODE=train_infer L2_PENALTY=0   w/o l2 penalty
 #   MODE=infer_only                 raw-logit task loss, layer only at test
 #   MODE=train_only L2_PENALTY=1    layer only in training

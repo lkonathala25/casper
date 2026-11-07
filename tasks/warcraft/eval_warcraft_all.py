@@ -30,8 +30,6 @@ METHODS = {
                                        "decode": "steps_projection"},
     "casper_train_infer_l2_penalty0": {"ckpt": ("train_infer/best_run0.pt",),
                                        "decode": "steps_projection"},
-    "casper_train_infer_l2_penalty2": {"ckpt": ("train_infer/best_run0.pt",),
-                                       "decode": "steps_projection"},
     "casper_train_only": {"dir": "casper_train_infer_l2_penalty1",
                           "ckpt": ("train_infer/best_raw_run0.pt",), "decode": "argmax",
                           "metrics": "metrics_train_only.json"},
