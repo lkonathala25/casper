@@ -105,3 +105,9 @@ FILL_CACHE=1 bash tasks/sudoku/visual/scripts/run_llm_mask_calibrated.sh
 ```
 
 `FILL_CACHE=1` generates the LLM's completed boards once and caches them in `data/sudoku/llm_cache/`. Later runs read from the cache.
+
+## Citation
+
+If you use this code, please cite:
+
+> Lohith Konathala, Luca Andolfi, Eleonora Giunchiglia. *CASPER: A Projection-Based Neurosymbolic Layer for Scalable & Guaranteed Constraint Satisfaction*. Advances in Neural Information Processing Systems (NeurIPS), 2026.
